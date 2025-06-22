@@ -1,0 +1,24 @@
+package "KCN-judu/err_marker"
+
+// Values
+
+// Types and methods
+pub struct ErrorData {
+  err_type : String?
+  err_msg : String
+  err_pos : Int
+  err_offset : Int
+}
+fn ErrorData::make(err_type~ : String? = .., String, err_pos~ : Int = .., err_offset~ : Int = ..) -> Self
+fn[T : Show] ErrorData::mark(Self, Sequence[T], marker~ : Char = .., gen_msg~ : (String?, String) -> String = ..) -> String
+
+type Sequence[T]
+fn[T : Show] Sequence::from_array(Array[T], join~ : String = ..) -> Self[T]
+fn Sequence::from_string(String) -> Self[Char]
+
+pub(all) suberror WrappedError ErrorData
+
+// Type aliases
+
+// Traits
+
