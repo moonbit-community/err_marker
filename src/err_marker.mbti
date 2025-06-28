@@ -16,8 +16,6 @@ type Sequence[T]
 fn[T : Show] Sequence::from_array(Array[T], join~ : String = ..) -> Self[T]
 fn Sequence::from_string(String) -> Self[Char]
 
-pub(all) suberror WrappedError ErrorData
-
 // Type aliases
 
 // Traits
