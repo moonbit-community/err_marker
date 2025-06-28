@@ -135,6 +135,6 @@ Generic type representing a sequence, supporting two construction methods.
 
     ```txt
     hello world
-        ^^^^^
+          ^^^^^
     Error(TypeError): Invalid token
     ```
