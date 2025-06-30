@@ -148,13 +148,17 @@ fn gen_err_msg(err_type : String?, err_msg : String) -> String {
 /// let data = @err_marker.ErrorData::{ err_pos: 1, err_offset: 0, err_type: Some("TypeError"), err_msg: "Invalid token" }
 /// let arr_seq = @err_marker.Sequence::Arr(["hello", "world"], " ")
 /// inspect(data.mark(arr_seq), content=
-///   "hello world\n      ^^^^^\nError(TypeError): Invalid token")
+///   #|hello world
+///   #|      ^^^^^
+///   #|Error(TypeError): Invalid token
 ///
 /// // With string sequence
 /// let str_data = @err_marker.ErrorData::{ err_pos: 6, err_offset: 4, err_type: None, err_msg: "Unexpected character" }
 /// let str_seq = @err_marker.Sequence::Str("hello world test")
-/// inspect(str_data.mark(str_seq), content=
-///   "hello world test\n      ~~~~~\nError: Unexpected character")
+/// inspect(str_data.mark(str_seq, marker = "~"), content=
+///   #|hello world test
+///   #|      ~~~~~
+///   #|Error: Unexpected character")
 /// ```
 ///
 pub fn[T : Show] ErrorData::mark(
