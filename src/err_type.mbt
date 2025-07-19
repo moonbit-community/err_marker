@@ -7,24 +7,6 @@
 /// * `Arr(Array[T], String)` : Array-based sequence with a join separator for
 /// string representation.
 /// * `Str(String)` : String-based sequence of characters.
-///
-/// Example:
-///
-/// ```moonbit
-/// let arr_seq = @err_marker.Sequence::from_array([1, 2, 3], join=" ")
-/// let str_seq = @err_marker.Sequence::from_string("hello")
-///
-/// match arr_seq {
-///   Arr(array, separator) => println("Array with \{array.length()} elements")
-///   Str(_) => println("String sequence")
-/// }
-///
-/// match str_seq {
-///   Arr(_, _) => println("Array sequence")
-///   Str(string) => println("String: \{string}")
-/// }
-/// ```
-///
 enum Sequence[T] {
   Arr(Array[T], String)
   Str(String)

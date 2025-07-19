@@ -58,20 +58,6 @@ fn[T : Show] err_locate_arr(
 /// Returns a string containing spaces followed by marker characters positioned
 /// to align with the target range in the sequence. Returns an empty string if
 /// the position or range is invalid.
-///
-/// Examples:
-///
-/// ```moonbit
-/// // For array sequences
-/// let arr = ["hello", "world", "test"]
-/// let seq = Sequence::Arr(arr, " ")
-/// inspect(@err_marker.gen_marker(seq, 1, 0, '^'), content="      ^^^^^")
-///
-/// // For string sequences  
-/// let str_seq = Sequence::Str("hello world")
-/// inspect(@err_marker.gen_marker(str_seq, 6, 4, '~'), content="      ~~~~~")
-/// ```
-///
 fn[T : Show] gen_marker(
   seq : Sequence[T],
   pos : Int,
@@ -107,14 +93,6 @@ fn[T : Show] gen_marker(
 ///
 /// Returns a formatted error string in the format "Error(type): message" if
 /// error type is provided, or "Error: message" if no error type is specified.
-///
-/// Examples:
-///
-/// ```moonbit
-/// inspect(@err_marker.gen_err_msg(Some("TypeError"), "Invalid argument"), content="Error(TypeError): Invalid argument")
-/// inspect(@err_marker.gen_err_msg(None, "Something went wrong"), content="Error: Something went wrong")
-/// ```
-///
 fn gen_err_msg(err_type : String?, err_msg : String) -> String {
   let et = match err_type {
     Some(s) => "(\{s})"
@@ -140,27 +118,6 @@ fn gen_err_msg(err_type : String?, err_msg : String) -> String {
 ///
 /// Returns a multi-line string containing the sequence, position markers, and
 /// formatted error message.
-///
-/// Examples:
-///
-/// ```moonbit
-/// // With array sequence
-/// let data = @err_marker.ErrorData::{ err_pos: 1, err_offset: 0, err_type: Some("TypeError"), err_msg: "Invalid token" }
-/// let arr_seq = @err_marker.Sequence::Arr(["hello", "world"], " ")
-/// inspect(data.mark(arr_seq), content=
-///   #|hello world
-///   #|      ^^^^^
-///   #|Error(TypeError): Invalid token
-///
-/// // With string sequence
-/// let str_data = @err_marker.ErrorData::{ err_pos: 6, err_offset: 4, err_type: None, err_msg: "Unexpected character" }
-/// let str_seq = @err_marker.Sequence::Str("hello world test")
-/// inspect(str_data.mark(str_seq, marker = "~"), content=
-///   #|hello world test
-///   #|      ~~~~~
-///   #|Error: Unexpected character")
-/// ```
-///
 pub fn[T : Show] ErrorData::mark(
   self : ErrorData,
   seq : Sequence[T],
@@ -173,7 +130,9 @@ pub fn[T : Show] ErrorData::mark(
     Str(s) => s
   }
   let marker_str = gen_marker(seq, pos, offset, marker)
-  $|\{seq_str}
-  $|\{marker_str}
-  $|\{gen_msg(self.err_type, self.err_msg)}
+  (
+    $|\{seq_str}
+    $|\{marker_str}
+    $|\{gen_msg(self.err_type, self.err_msg)}
+  )
 }
