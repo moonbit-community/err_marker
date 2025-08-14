@@ -16,7 +16,7 @@ fn ErrorData::make(err_type? : String?, String, err_pos? : Int, err_offset? : In
 fn[T : Show] ErrorData::mark(Self, Sequence[T], marker? : Char, gen_msg? : (String?, String) -> String) -> String
 
 type Sequence[T]
-fn[T : Show] Sequence::from_array(Array[T], join? : String) -> Self[T]
+fn[T] Sequence::from_array(Array[T], join? : String) -> Self[T]
 fn Sequence::from_string(String) -> Self[Char]
 
 // Type aliases

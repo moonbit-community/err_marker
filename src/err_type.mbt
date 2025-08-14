@@ -13,7 +13,7 @@ enum Sequence[T] {
 }
 
 ///|
-pub fn[T : Show] Sequence::from_array(
+pub fn[T] Sequence::from_array(
   arr : Array[T],
   join~ : String = " ",
 ) -> Sequence[T] {
