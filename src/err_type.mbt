@@ -13,9 +13,9 @@ enum Sequence[T] {
 }
 
 ///|
-pub fn[T : Show] Sequence::from_array(
+pub fn[T] Sequence::from_array(
   arr : Array[T],
-  join~ : String = " "
+  join~ : String = " ",
 ) -> Sequence[T] {
   Arr(arr, join)
 }
@@ -38,7 +38,7 @@ pub fn ErrorData::make(
   err_type~ : String? = None,
   err_msg : String,
   err_pos~ : Int = -1,
-  err_offset~ : Int = 0
+  err_offset~ : Int = 0,
 ) -> ErrorData {
   ErrorData::{ err_type, err_msg, err_pos, err_offset }
 }

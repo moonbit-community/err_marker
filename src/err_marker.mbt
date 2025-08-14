@@ -23,7 +23,7 @@ fn[T : Show] err_locate_arr(
   seq : Array[T],
   pos : Int,
   offset : Int,
-  join~ : Int = 1
+  join~ : Int = 1,
 ) -> (Int, Int) {
   guard pos >= 0 && pos < seq.length() && offset >= 0 else { (-1, -1) }
   let start = seq.foldi(init=0, (i, acc, x) => if i < pos {
@@ -62,7 +62,7 @@ fn[T : Show] gen_marker(
   seq : Sequence[T],
   pos : Int,
   offset : Int,
-  marker : Char
+  marker : Char,
 ) -> String {
   match seq {
     Arr(a, j) => {
@@ -122,7 +122,7 @@ pub fn[T : Show] ErrorData::mark(
   self : ErrorData,
   seq : Sequence[T],
   marker~ : Char = '^',
-  gen_msg~ : (String?, String) -> String = gen_err_msg
+  gen_msg~ : (String?, String) -> String = gen_err_msg,
 ) -> String {
   let (pos, offset) = (self.err_pos, self.err_offset)
   let seq_str = match seq {
