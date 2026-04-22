@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "KCN-judu/err_marker"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct ErrorData {
+  err_type : String?
+  err_msg : String
+  err_pos : Int
+  err_offset : Int
+}
+pub fn ErrorData::make(err_type? : String?, String, err_pos? : Int, err_offset? : Int) -> Self
+pub fn[T : Show] ErrorData::mark(Self, Sequence[T], marker? : Char, gen_msg? : (String?, String) -> String) -> String
+
+type Sequence[T]
+pub fn[T] Sequence::from_array(Array[T], join? : String) -> Self[T]
+pub fn Sequence::from_string(String) -> Self[Char]
+
+// Type aliases
+
+// Traits
+
