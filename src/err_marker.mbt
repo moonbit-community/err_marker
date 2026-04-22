@@ -23,20 +23,24 @@ fn[T : Show] err_locate_arr(
   seq : Array[T],
   pos : Int,
   offset : Int,
-  join~ : Int = 1,
+  join? : Int = 1,
 ) -> (Int, Int) {
   guard pos >= 0 && pos < seq.length() && offset >= 0 else { (-1, -1) }
-  let start = seq.foldi(init=0, (i, acc, x) => if i < pos {
-      acc + x.to_string().length()
-    } else {
-      acc
+  let start = seq.foldi(init=0, (i, acc, x) => {
+      if i < pos {
+        acc + x.to_string().length()
+      } else {
+        acc
+      }
     }) +
     join * pos
   let end = start +
-    seq.foldi(init=0, (i, acc, x) => if i >= pos && i <= pos + offset {
-      acc + x.to_string().length()
-    } else {
-      acc
+    seq.foldi(init=0, (i, acc, x) => {
+      if i >= pos && i <= pos + offset {
+        acc + x.to_string().length()
+      } else {
+        acc
+      }
     }) +
     join * offset
   (start, end)
@@ -121,8 +125,8 @@ fn gen_err_msg(err_type : String?, err_msg : String) -> String {
 pub fn[T : Show] ErrorData::mark(
   self : ErrorData,
   seq : Sequence[T],
-  marker~ : Char = '^',
-  gen_msg~ : (String?, String) -> String = gen_err_msg,
+  marker? : Char = '^',
+  gen_msg? : (String?, String) -> String = gen_err_msg,
 ) -> String {
   let (pos, offset) = (self.err_pos, self.err_offset)
   let seq_str = match seq {
