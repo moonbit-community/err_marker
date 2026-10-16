@@ -1,0 +1,15 @@
+name = "KCN-judu/err_marker"
+
+version = "0.1.3"
+
+readme = "README.md"
+
+repository = "https://github.com/moonbit-community/err_marker"
+
+license = "Apache-2.0"
+
+keywords = [ "error", "mark", "formate" ]
+
+description = "This is a visualizing tool that locates the source of errors within sequences and outputs formatted results, designed to assist users and developers in quickly identifying input that triggers errors."
+
+source = "src"
