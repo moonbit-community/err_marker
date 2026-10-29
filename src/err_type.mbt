@@ -15,7 +15,7 @@ enum Sequence[T] {
 ///|
 pub fn[T] Sequence::from_array(
   arr : Array[T],
-  join? : String = " ",
+  join~ : String = " ",
 ) -> Sequence[T] {
   Arr(arr, join)
 }
@@ -29,16 +29,16 @@ pub fn Sequence::from_string(str : String) -> Sequence[Char] {
 pub struct ErrorData {
   err_type : String?
   err_msg : String
-  err_pos : Int
-  err_offset : Int
+  err_pos : Int32
+  err_offset : Int32
 }
 
 ///|
 pub fn ErrorData::make(
-  err_type? : String? = None,
+  err_type~ : String? = None,
   err_msg : String,
-  err_pos? : Int = -1,
-  err_offset? : Int = 0,
+  err_pos~ : Int32 = -1,
+  err_offset~ : Int32 = 0,
 ) -> ErrorData {
-  ErrorData::{ err_type, err_msg, err_pos, err_offset }
+  ErrorData::{ err_type, err_msg, err_pos, err_offset, }
 }
