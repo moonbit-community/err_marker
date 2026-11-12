@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "KCN-judu/err_marker/error_report"
+
+import {
+  "KCN-judu/err_marker",
+  "marianoguerra/error-report",
+}
+
+// Values
+pub fn[T : Show] to_error_report(@err_marker.Report, @err_marker.Sequence[T], name? : String) -> (@error-report.Report, @error-report.Sources)
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
