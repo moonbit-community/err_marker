@@ -13,6 +13,15 @@ The roadmap to 0.2.0 is tracked in
 
 ### Added
 
+- Report API (the 0.2.0 replacement for `ErrorData::mark`): `Severity`,
+  `Style`, `Span`, `Mark`, `Report` with builders, and `Report::render` in the
+  compact layout. Several marks per sequence overlay as a semilattice
+  (priority, later start, earlier end, primary, message), messages are placed
+  after the rightmost marker and on as few rows as possible below, spans are
+  clamped and snapped to grapheme clusters, columns follow Unicode 18.0.0
+  widths, multi-line text shows the primary line with `line:col`, and ANSI
+  colour is optional. Also `Sequence::from_args` and `utf16_to_scalar`
+  ([#33](https://github.com/moonbit-community/err_marker/issues/33)).
 - New public package `KCN-judu/err_marker/cursor`: terminal layout of text
   as a monoid of cursor moves (`Shift`, `Tab`, `Break` normal forms) under a
   `Model` (tab width, ambiguous width), grapheme clusters (`clusters`, UAX #29)
