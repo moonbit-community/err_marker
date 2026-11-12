@@ -1,0 +1,16 @@
+{
+  "name": "err-marker-demo",
+  "private": true,
+  "description": "Remotion source of the README demo GIF of err_marker",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts Demo out/demo.mp4",
+    "gif": "ffmpeg -y -i out/demo.mp4 -vf \"fps=15,scale=720:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none:diff_mode=rectangle\" ../assets/demo.gif"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.543",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.543"
+  }
+}
