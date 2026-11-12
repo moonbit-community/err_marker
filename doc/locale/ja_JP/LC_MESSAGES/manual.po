@@ -84,6 +84,7 @@ msgid "The defaults are `err_type = None`, `err_pos = -1` and `err_offset = 0`. 
 msgstr "既定値は `err_type = None`、`err_pos = -1`、`err_offset = 0` です。負の `err_pos` は「位置なし」を意味し、このとき `mark` は空のマーカー行を出力します。`make` は失敗しません。位置はエラーをマークするときに初めて検査されます。"
 
 #: manual/api/core.md:143
+#: manual/design/core.md:154
 msgid "Rendering"
 msgstr "レンダリング"
 
@@ -212,32 +213,84 @@ msgid "a tab gets one marker character although it moves to the next tab stop; t
 msgstr "タブは次のタブ位置まで進むのにマーカー文字は 1 つだけ。範囲より前のタブは埋め文字にコピーされ、マーカーをずらさなくなった"
 
 #: manual/design/core.md:70
-msgid "The model in 0.2.0"
-msgstr "0.2.0 のモデル"
+msgid "The 0.2.0 contract"
+msgstr "0.2.0 の契約"
 
 #: manual/design/core.md:72
-msgid "0.2.0 measures columns instead of length, with these decisions (details and the rejected alternatives are recorded in #5):"
-msgstr "0.2.0 では長さではなく桁を測ります。決定事項は次のとおりです（詳細と却下した案は #5 に記録されています）。"
+msgid "0.2.0 measures columns instead of length. This section is the contract that the 0.2.0 code is written and tested against; the decisions and the rejected alternatives are recorded in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
+msgstr "0.2.0 では長さではなく桁を測ります。この節は、0.2.0 のコードを書きテストする際の拠り所となる契約です。決定事項と却下した案は [#5](https://github.com/moonbit-community/err_marker/issues/5) に記録されています。"
 
-#: manual/design/core.md:75
-msgid "**Positions.** Arrays use element indices; strings use Unicode scalar indices. Every span is snapped outward to extended grapheme cluster boundaries (UAX #29). Snapping is a closure operator on spans ordered by inclusion: if $\\sigma$ snaps a span, then $S \\subseteq \\sigma(S)$, $S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$ and $\\sigma(\\sigma(S)) = \\sigma(S)$."
-msgstr "**位置。** 配列は要素の添字、文字列は Unicode スカラー値の添字を使います。各範囲は拡張書記素クラスタの境界（UAX #29）まで外側に揃えられます。この揃えは包含順序に関する範囲上の閉包作用素です。$\\sigma$ を揃えとすると、$S \\subseteq \\sigma(S)$、$S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$、$\\sigma(\\sigma(S)) = \\sigma(S)$ が成り立ちます。"
+#: manual/design/core.md:77
+msgid "Coordinates"
+msgstr "座標"
 
-#: manual/design/core.md:81
-msgid "**Columns.** Each grapheme cluster acts on the cursor $(\\ell, c)$: an ordinary cluster of width $w$ maps $c \\mapsto c + w$, a tab maps $c \\mapsto t(\\lfloor c/t \\rfloor + 1)$, and a newline maps $(\\ell, c) \\mapsto (\\ell + 1, 0)$. These moves form a monoid. Every composite is a shift, a tab move $c \\mapsto T(c + a) + b$ with $0 \\le a < t$, or a line break, because $T(T(x) + b) = T(x) + T(b)$. The marker column of a span is the move of its prefix applied to the origin."
-msgstr "**桁。** 各書記素クラスタはカーソル $(\\ell, c)$ に作用します。幅 $w$ の通常のクラスタは $c \\mapsto c + w$、タブは $c \\mapsto t(\\lfloor c/t \\rfloor + 1)$、改行は $(\\ell, c) \\mapsto (\\ell + 1, 0)$ です。これらの移動はモノイドをなします。$T(T(x) + b) = T(x) + T(b)$ なので、任意の合成はシフト、タブ移動 $c \\mapsto T(c + a) + b$（$0 \\le a < t$）、改行のいずれかです。範囲のマーカー列は、その前置部分の移動を原点に作用させた結果です。"
+#: manual/design/core.md:79
+msgid "An array sequence has elements $x_0, \\dots, x_{n-1}$ and positions $0, \\dots, n$. A string sequence is read as Unicode scalar values $u_0, \\dots, u_{m-1}$ and has positions $0, \\dots, m$. A helper converts a UTF-16 offset $o$ into the number of scalars before it; an offset inside a surrogate pair counts that pair as not yet passed."
+msgstr "配列のシーケンスは要素 $x_0, \\dots, x_{n-1}$ を持ち、位置は $0, \\dots, n$ です。文字列のシーケンスは Unicode スカラー値 $u_0, \\dots, u_{m-1}$ として読まれ、位置は $0, \\dots, m$ です。補助関数は UTF-16 オフセット $o$ を、それより前にあるスカラー値の個数に変換します。サロゲートペアの途中にあるオフセットは、そのペアをまだ通過していないものとして数えます。"
 
-#: manual/design/core.md:88
-msgid "**Widths** come from tables generated from the Unicode Character Database (Unicode 18.0.0), with East Asian Width (UAX #11) for wide characters."
-msgstr "**幅** は Unicode 文字データベース（Unicode 18.0.0）から生成した表に基づき、全角文字は東アジアの文字幅（UAX #11）で判定します。"
+#: manual/design/core.md:85
+msgid "Spans"
+msgstr "範囲"
 
-#: manual/design/core.md:90
-msgid "**Several marks** overlay as a semilattice, so the output does not depend on the order in which marks are added."
-msgstr "**複数のマーク** の重ね合わせは半束をなすので、出力はマークを追加する順序に依存しません。"
+#: manual/design/core.md:87
+msgid "A span is a half-open interval $[a, b)$ of positions with $0 \\le a \\le b$. Constructors make every span valid: a negative end point becomes $0$, and $b < a$ becomes $b = a$. A zero-width span $[p, p)$ is an insertion point."
+msgstr "範囲は位置の半開区間 $[a, b)$ で、$0 \\le a \\le b$ を満たします。コンストラクタはすべての範囲を正しい形にします。負の端点は $0$ になり、$b < a$ のときは $b = a$ とします。幅 0 の範囲 $[p, p)$ は挿入位置です。"
 
-#: manual/design/core.md:92
-msgid "**Elements are quoted** when needed, so the rendered line can always be split back into its elements."
-msgstr "**要素は必要に応じて引用符で囲まれる** ので、レンダリングした行は常に元の要素に分割し直せます。"
+#: manual/design/core.md:91
+msgid "Clamping to a sequence of length $n$ is the map"
+msgstr "長さ $n$ のシーケンスへの切り詰めは次の写像です。"
+
+#: manual/design/core.md:97
+msgid "It is a retraction onto the spans inside the sequence: it is idempotent and leaves every span inside the sequence unchanged. A span past the end becomes the insertion point $[n, n)$."
+msgstr "これはシーケンス内の範囲へのレトラクションです。冪等であり、シーケンス内にある範囲はすべてそのまま保ちます。末尾を越える範囲は挿入位置 $[n, n)$ になります。"
+
+#: manual/design/core.md:101
+msgid "Snapping to grapheme clusters"
+msgstr "書記素クラスタへの揃え"
+
+#: manual/design/core.md:103
+msgid "Let $B \\subseteq \\{0, \\dots, m\\}$ be the extended grapheme cluster boundaries of the rendered text (UAX #29); $0 \\in B$ and $m \\in B$. For a position $x$, let $\\lfloor x \\rfloor_B$ be the greatest boundary $\\le x$ and $\\lceil x \\rceil_B$ the least boundary $\\ge x$. Snapping is"
+msgstr "$B \\subseteq \\{0, \\dots, m\\}$ をレンダリングしたテキストの拡張書記素クラスタ境界（UAX #29）とし、$0 \\in B$、$m \\in B$ とします。位置 $x$ に対し、$\\lfloor x \\rfloor_B$ を $\\le x$ である最大の境界、$\\lceil x \\rceil_B$ を $\\ge x$ である最小の境界とします。揃えは次のとおりです。"
+
+#: manual/design/core.md:112
+msgid "With $e$ the inclusion of $B$ into the positions, $\\lfloor \\cdot \\rfloor_B$ is right adjoint and $\\lceil \\cdot \\rceil_B$ left adjoint to $e$: $e(\\beta) \\le x \\iff \\beta \\le \\lfloor x \\rfloor_B$ and $\\lceil x \\rceil_B \\le \\beta \\iff x \\le e(\\beta)$. Hence $\\sigma$ is a closure operator on spans ordered by inclusion:"
+msgstr "$e$ を $B$ から位置全体への包含写像とすると、$\\lfloor \\cdot \\rfloor_B$ と $\\lceil \\cdot \\rceil_B$ はそれぞれ $e$ の右随伴と左随伴です。すなわち $e(\\beta) \\le x \\iff \\beta \\le \\lfloor x \\rfloor_B$、$\\lceil x \\rceil_B \\le \\beta \\iff x \\le e(\\beta)$ が成り立ちます。したがって $\\sigma$ は包含順序に関する範囲上の閉包作用素です。"
+
+#: manual/design/core.md:124
+msgid "A zero-width span strictly inside a cluster widens to that cluster. The three laws are property tests."
+msgstr "書記素クラスタの内部に厳密に含まれる幅 0 の範囲は、そのクラスタ全体に広がります。この 3 つの法則はプロパティテストになっています。"
+
+#: manual/design/core.md:127
+msgid "Order of operations"
+msgstr "処理の順序"
+
+#: manual/design/core.md:129
+msgid "A mark on an array is first mapped to the text: element span $[i, j)$ becomes the scalar span from the start of $r_i$ to the end of $r_{j-1}$, the hull of the rendered elements. Every span is then clamped with $\\kappa$ and snapped with $\\sigma$, in that order, and only then turned into columns."
+msgstr "配列上のマークはまずテキストに写されます。要素の範囲 $[i, j)$ は、$r_i$ の先頭から $r_{j-1}$ の末尾までのスカラー範囲、つまりレンダリングした要素の凸包になります。その後、各範囲をこの順で $\\kappa$ によって切り詰め、$\\sigma$ によって揃え、最後に桁へ変換します。"
+
+#: manual/design/core.md:134
+msgid "Columns"
+msgstr "桁"
+
+#: manual/design/core.md:136
+msgid "Each grapheme cluster $g$ acts on the cursor $(\\ell, c)$:"
+msgstr "各書記素クラスタ $g$ はカーソル $(\\ell, c)$ に次のように作用します。"
+
+#: manual/design/core.md:144
+msgid "where $w(g)$ is the cluster width from the generated UCD 18.0.0 tables and $t \\ge 1$ is the tab width of the model, 8 by default. These moves form a monoid under composition. Every composite has exactly one of three normal forms: a shift $c \\mapsto c + k$; a tab move $c \\mapsto T(c + a) + b$ with $0 \\le a < t$, where $T(x) = t(\\lfloor x/t \\rfloor + 1)$; or a line break $(\\ell, c) \\mapsto (\\ell + n, k)$. The forms are closed under composition because $T(T(x) + b) = T(x) + T(b)$. Laying out a text is a monoid homomorphism from cluster sequences, and the column of a span is the move of the text before it applied to $(0, 0)$."
+msgstr "ここで $w(g)$ は生成した UCD 18.0.0 の表によるクラスタの幅、$t \\ge 1$ はモデルのタブ幅で既定値は 8 です。これらの移動は合成についてモノイドをなします。任意の合成はちょうど 3 つの標準形のいずれかを持ちます。シフト $c \\mapsto c + k$、タブ移動 $c \\mapsto T(c + a) + b$（$0 \\le a < t$、$T(x) = t(\\lfloor x/t \\rfloor + 1)$）、改行 $(\\ell, c) \\mapsto (\\ell + n, k)$ です。$T(T(x) + b) = T(x) + T(b)$ なので、これらの形は合成について閉じています。テキストのレイアウトはクラスタ列からのモノイド準同型であり、範囲の桁はその前にあるテキストの移動を $(0, 0)$ に作用させた結果です。"
+
+#: manual/design/core.md:156
+msgid "Array rendering is injective: an element is quoted exactly when its text is empty or contains whitespace, a double quote or the separator."
+msgstr "配列のレンダリングは単射です。要素のテキストが空、または空白・二重引用符・区切り文字を含むときに限り、その要素を引用符で囲みます。"
+
+#: manual/design/core.md:158
+msgid "Several marks overlay as a semilattice (commutative, associative, idempotent). Where marks overlap, the column goes to the higher priority, then the higher severity, then the later start, then the earlier end, then the primary mark, then the message that is smaller in code-point order."
+msgstr "複数のマークの重ね合わせは半束（可換・結合的・冪等）をなします。マークが重なる桁は、優先度の高いもの、重大度の高いもの、開始位置が後のもの、終了位置が前のもの、主マーク、コードポイント順で小さいメッセージの順に割り当てられます。"
+
+#: manual/design/core.md:162
+msgid "Message rows are assigned greedily by left endpoint, which uses the minimum number of rows: the largest number of messages that overlap at one column."
+msgstr "メッセージの行は左端点の順に貪欲に割り当てられ、使う行数は最小になります。すなわち、1 つの桁で重なるメッセージの最大個数です。"
 
 #: manual/index.md:1
 msgid "err_marker"
@@ -422,6 +475,21 @@ msgstr "次へ"
 #: manual/tutorial/core.md:133
 msgid "Read the [API](../api/core.md) for every parameter and edge case."
 msgstr "各パラメータと境界ケースについては [API](../api/core.md) を読んでください。"
+
+#~ msgid "0.2.0 measures columns instead of length, with these decisions (details and the rejected alternatives are recorded in #5):"
+#~ msgstr "0.2.0 では長さではなく桁を測ります。決定事項は次のとおりです（詳細と却下した案は #5 に記録されています）。"
+
+#~ msgid "**Positions.** Arrays use element indices; strings use Unicode scalar indices. Every span is snapped outward to extended grapheme cluster boundaries (UAX #29). Snapping is a closure operator on spans ordered by inclusion: if $\\sigma$ snaps a span, then $S \\subseteq \\sigma(S)$, $S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$ and $\\sigma(\\sigma(S)) = \\sigma(S)$."
+#~ msgstr "**位置。** 配列は要素の添字、文字列は Unicode スカラー値の添字を使います。各範囲は拡張書記素クラスタの境界（UAX #29）まで外側に揃えられます。この揃えは包含順序に関する範囲上の閉包作用素です。$\\sigma$ を揃えとすると、$S \\subseteq \\sigma(S)$、$S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$、$\\sigma(\\sigma(S)) = \\sigma(S)$ が成り立ちます。"
+
+#~ msgid "**Widths** come from tables generated from the Unicode Character Database (Unicode 18.0.0), with East Asian Width (UAX #11) for wide characters."
+#~ msgstr "**幅** は Unicode 文字データベース（Unicode 18.0.0）から生成した表に基づき、全角文字は東アジアの文字幅（UAX #11）で判定します。"
+
+#~ msgid "**Several marks** overlay as a semilattice, so the output does not depend on the order in which marks are added."
+#~ msgstr "**複数のマーク** の重ね合わせは半束をなすので、出力はマークを追加する順序に依存しません。"
+
+#~ msgid "**Elements are quoted** when needed, so the rendered line can always be split back into its elements."
+#~ msgstr "**要素は必要に応じて引用符で囲まれる** ので、レンダリングした行は常に元の要素に分割し直せます。"
 
 #~ msgid "positions are code units, so an odd offset splits a character"
 #~ msgstr "位置がコード単位なので、奇数のオフセットが 1 文字を分断する"
