@@ -11,6 +11,17 @@ The roadmap to 0.2.0 is tracked in
 
 ## [Unreleased]
 
+### Added
+
+- New public package `KCN-judu/err_marker/cursor`: terminal layout of text
+  as a monoid of cursor moves (`Shift`, `Tab`, `Break` normal forms) under a
+  `Model` (tab width, ambiguous width), grapheme clusters (`clusters`, UAX #29)
+  and cluster widths (`Model::cluster_width`, UAX #11), all from Unicode
+  18.0.0 tables generated from the UCD. The renderer will use it in 0.2.0
+  ([#32](https://github.com/moonbit-community/err_marker/issues/32),
+  [#28](https://github.com/moonbit-community/err_marker/issues/28),
+  [#29](https://github.com/moonbit-community/err_marker/issues/29)).
+
 ## [0.1.4] — 2026-11-12
 
 Bug-fix release. No public API change; rendered output changes only in the
