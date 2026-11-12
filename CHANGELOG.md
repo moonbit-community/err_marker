@@ -11,6 +11,12 @@ The roadmap to 0.2.0 is tracked in
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-11-12
+
+The report API replaces `ErrorData::mark`, which is deprecated and kept for
+the 0.2.x releases; columns follow Unicode 18.0.0 display widths. See
+"Migrating from 0.1" in the tutorial.
+
 ### Changed
 
 - **Breaking:** `ErrorData::mark` now renders with the 0.2.0 engine. Columns
