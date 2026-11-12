@@ -1,0 +1,428 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luna-Flow documentation\n"
+"Report-Msgid-Bugs-To: https://github.com/Luna-Flow\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: conf.json:summary
+msgid "Marks the place of an error under a rendered sequence (command-line arguments, tokens or a string) and prints it with a message."
+msgstr ""
+
+#: manual/api/core.md:1
+msgid "core API"
+msgstr ""
+
+#: manual/api/core.md:5
+msgid "Purpose"
+msgstr ""
+
+#: manual/api/core.md:7
+msgid "The root package of `KCN-judu/err_marker` turns a sequence, a position and a message into a three-line error report: the rendered sequence, a marker line under the position, and the message. Its public surface is recorded in `src/pkg.generated.mbti`; how the marker column is computed, and where that computation is wrong in 0.1, is explained in the [design](../design/core.md)."
+msgstr ""
+
+#: manual/api/core.md:13
+msgid "Importing"
+msgstr ""
+
+#: manual/api/core.md:15
+msgid "Add the package to your `moon.pkg`:"
+msgstr ""
+
+#: manual/api/core.md:23
+msgid "The examples on this page call it as `@err_marker`."
+msgstr ""
+
+#: manual/api/core.md:25
+msgid "Sequences"
+msgstr ""
+
+#: manual/api/core.md:29
+msgid "The text that an error is marked in: an array of elements joined by a separator, or a string."
+msgstr ""
+
+#: manual/api/core.md:36
+msgid "The type is abstract; build values with `Sequence::from_array` or `Sequence::from_string`. The type parameter is the element type, which must implement `Show` when the sequence is rendered by `ErrorData::mark`."
+msgstr ""
+
+#: manual/api/core.md:42
+msgid "Builds a sequence from an array whose elements are rendered with `Show` and joined by `join`."
+msgstr ""
+
+#: manual/api/core.md:49
+msgid "`join` defaults to a single space. Positions in this sequence are element indices: position `i` covers the rendered text of element `i`. Elements are not quoted, so an element that is empty or contains the separator cannot be told apart from its neighbours ([#11](https://github.com/moonbit-community/err_marker/issues/11))."
+msgstr ""
+
+#: manual/api/core.md:72
+msgid "Builds a sequence from a string."
+msgstr ""
+
+#: manual/api/core.md:78
+msgid "Positions in this sequence are UTF-16 code-unit offsets into the string, which equal character indices only for text in the Basic Multilingual Plane ([#7](https://github.com/moonbit-community/err_marker/issues/7))."
+msgstr ""
+
+#: manual/api/core.md:97
+msgid "Error data"
+msgstr ""
+
+#: manual/api/core.md:101
+msgid "What went wrong and where: an optional error type, a message, a start position and an offset."
+msgstr ""
+
+#: manual/api/core.md:113
+msgid "The marked span is `err_pos` through `err_pos + err_offset`, both ends included, in the units of the sequence it is marked in. The fields are readable from outside the package; build values with `ErrorData::make`."
+msgstr ""
+
+#: manual/api/core.md:119
+msgid "Builds an `ErrorData` from a message and optional type, position and offset."
+msgstr ""
+
+#: manual/api/core.md:125
+msgid "The defaults are `err_type = None`, `err_pos = -1` and `err_offset = 0`. A negative `err_pos` means \"no position\": `mark` then prints an empty marker line. `make` never fails; positions are only checked when the error is marked."
+msgstr ""
+
+#: manual/api/core.md:140
+msgid "Rendering"
+msgstr ""
+
+#: manual/api/core.md:144
+msgid "Renders the sequence, a marker line under the span, and the formatted message, separated by newlines."
+msgstr ""
+
+#: manual/api/core.md:151
+msgid "`marker` is the character repeated under the span; it defaults to `^`."
+msgstr ""
+
+#: manual/api/core.md:152
+msgid "`gen_msg` formats the last line from `err_type` and `err_msg`. The default prints `Error(type): message`, or `Error: message` when `err_type` is `None`."
+msgstr ""
+
+#: manual/api/core.md:155
+msgid "If `err_pos` is negative or not inside the sequence, the marker line is empty. A span that runs past the end is drawn past the end of the text for arrays and not at all for strings ([#10](https://github.com/moonbit-community/err_marker/issues/10))."
+msgstr ""
+
+#: manual/api/core.md:159
+msgid "The marker column counts UTF-16 code units, not terminal columns, so it is only correct for ASCII-width text without tabs or newlines ([#6](https://github.com/moonbit-community/err_marker/issues/6), [#8](https://github.com/moonbit-community/err_marker/issues/8), [#9](https://github.com/moonbit-community/err_marker/issues/9))."
+msgstr ""
+
+#: manual/design/core.md:1
+msgid "core design"
+msgstr ""
+
+#: manual/design/core.md:3
+msgid "This page explains the model behind `err_marker` 0.1, how the marker line is computed, and where that model is wrong. The 0.2.0 model that replaces it is specified in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
+msgstr ""
+
+#: manual/design/core.md:7
+msgid "The model"
+msgstr ""
+
+#: manual/design/core.md:9
+msgid "A report has three lines: the rendered sequence $s$, a marker line, and the message. The marker line is $p$ spaces followed by $w$ marker characters, so the whole design is the choice of $p$ (where the span starts) and $w$ (how wide it is)."
+msgstr ""
+
+#: manual/design/core.md:14
+msgid "Arrays"
+msgstr ""
+
+#: manual/design/core.md:16
+msgid "For elements $x_0, \\dots, x_{n-1}$ rendered as strings $r_i = \\texttt{to\\_string}(x_i)$ and a separator of length $j$, the rendered text is"
+msgstr ""
+
+#: manual/design/core.md:23
+msgid "A span from element $a$ with offset $k$ covers elements $a$ to $a + k$, and"
+msgstr ""
+
+#: manual/design/core.md:30
+msgid "where $|r|$ is `String::length`, the number of UTF-16 code units. The span is drawn only if $0 \\le a < n$ and $k \\ge 0$."
+msgstr ""
+
+#: manual/design/core.md:33
+msgid "Strings"
+msgstr ""
+
+#: manual/design/core.md:35
+msgid "For a string, the span from $a$ with offset $k$ covers code units $a$ to $a + k$, so $p = a$ and $w = k + 1$. It is drawn only if both $a$ and $a + k$ lie inside the string."
+msgstr ""
+
+#: manual/design/core.md:39
+msgid "Where the model is wrong"
+msgstr ""
+
+#: manual/design/core.md:41
+msgid "The formulas measure length, but the reader sees columns. The two agree only when every code unit takes exactly one terminal column. Each known bug is a case where they disagree, or where the two sequence kinds disagree with each other:"
+msgstr ""
+
+#: manual/design/core.md:46
+msgid "Case"
+msgstr ""
+
+#: manual/design/core.md:46
+msgid "What happens"
+msgstr ""
+
+#: manual/design/core.md:46
+msgid "Issue"
+msgstr ""
+
+#: manual/design/core.md:48
+msgid "Wide characters (CJK, emoji)"
+msgstr ""
+
+#: manual/design/core.md:48
+msgid "one character is 2 columns but 1 or 2 code units; the marker drifts left"
+msgstr ""
+
+#: manual/design/core.md:49
+msgid "Surrogate pairs"
+msgstr ""
+
+#: manual/design/core.md:49
+msgid "positions are code units, so an odd offset splits a character"
+msgstr ""
+
+#: manual/design/core.md:50
+msgid "Tabs"
+msgstr ""
+
+#: manual/design/core.md:50
+msgid "a tab is 1 code unit but moves to the next tab stop"
+msgstr ""
+
+#: manual/design/core.md:51
+msgid "Newlines"
+msgstr ""
+
+#: manual/design/core.md:51
+msgid "the marker is counted from the start of the text, not of its line"
+msgstr ""
+
+#: manual/design/core.md:52
+msgid "Spans past the end"
+msgstr ""
+
+#: manual/design/core.md:52
+msgid "arrays draw past the text, strings draw nothing"
+msgstr ""
+
+#: manual/design/core.md:53
+msgid "Separators inside elements, empty elements"
+msgstr ""
+
+#: manual/design/core.md:53
+msgid "the joined text cannot be split back into elements"
+msgstr ""
+
+#: manual/design/core.md:55
+msgid "The model in 0.2.0"
+msgstr ""
+
+#: manual/design/core.md:57
+msgid "0.2.0 measures columns instead of length, with these decisions (details and the rejected alternatives are recorded in #5):"
+msgstr ""
+
+#: manual/design/core.md:60
+msgid "**Positions.** Arrays use element indices; strings use Unicode scalar indices. Every span is snapped outward to extended grapheme cluster boundaries (UAX #29). Snapping is a closure operator on spans ordered by inclusion: if $\\sigma$ snaps a span, then $S \\subseteq \\sigma(S)$, $S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$ and $\\sigma(\\sigma(S)) = \\sigma(S)$."
+msgstr ""
+
+#: manual/design/core.md:66
+msgid "**Columns.** Each grapheme cluster acts on the cursor $(\\ell, c)$: an ordinary cluster of width $w$ maps $c \\mapsto c + w$, a tab maps $c \\mapsto t(\\lfloor c/t \\rfloor + 1)$, and a newline maps $(\\ell, c) \\mapsto (\\ell + 1, 0)$. These moves form a monoid. Every composite is a shift, a tab move $c \\mapsto T(c + a) + b$ with $0 \\le a < t$, or a line break, because $T(T(x) + b) = T(x) + T(b)$. The marker column of a span is the move of its prefix applied to the origin."
+msgstr ""
+
+#: manual/design/core.md:73
+msgid "**Widths** come from tables generated from the Unicode Character Database (Unicode 18.0.0), with East Asian Width (UAX #11) for wide characters."
+msgstr ""
+
+#: manual/design/core.md:75
+msgid "**Several marks** overlay as a semilattice, so the output does not depend on the order in which marks are added."
+msgstr ""
+
+#: manual/design/core.md:77
+msgid "**Elements are quoted** when needed, so the rendered line can always be split back into its elements."
+msgstr ""
+
+#: manual/index.md:1
+msgid "err_marker"
+msgstr ""
+
+#: manual/index.md:5
+msgid "This manual documents version `v0.1.3` of `KCN-judu/err_marker`."
+msgstr ""
+
+#: manual/index.md:7
+msgid "Overview"
+msgstr ""
+
+#: manual/index.md:9
+msgid "`err_marker` shows a reader where an error is. It renders a sequence (the command-line arguments of a program, a list of tokens, or a string), draws a line of markers under the part that is wrong, and prints a message below:"
+msgstr ""
+
+#: manual/index.md:19
+msgid "The library is one package with two types and four functions. It does not read files, track line numbers or colour its output; it turns a sequence, a position and a message into three lines of text."
+msgstr ""
+
+#: manual/index.md:23
+msgid "The 0.1 series has known limits with non-ASCII text, tabs, newlines and out-of-range positions; they are listed in the [design](design/core.md) and tracked for 0.2.0 in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
+msgstr ""
+
+#: manual/index.md:28
+msgid "Install"
+msgstr ""
+
+#: manual/index.md:34
+msgid "Then import `\"KCN-judu/err_marker\"` in your `moon.pkg`; the package is available as `@err_marker`. The module needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and depends only on `moonbitlang/core`."
+msgstr ""
+
+#: manual/index.md:38
+msgid "Pages"
+msgstr ""
+
+#: manual/index.md:40
+msgid "The module is one MoonBit package at `src`, documented as `core`."
+msgstr ""
+
+#: manual/index.md:42
+msgid "Part"
+msgstr ""
+
+#: manual/index.md:42
+msgid "Tutorial"
+msgstr ""
+
+#: manual/index.md:42
+msgid "API"
+msgstr ""
+
+#: manual/index.md:42
+msgid "Design"
+msgstr ""
+
+#: manual/index.md:44
+msgid "`core`: sequences, error data and marking"
+msgstr ""
+
+#: manual/index.md:44
+msgid "[tutorial](tutorial/core.md)"
+msgstr ""
+
+#: manual/index.md:44
+msgid "[API](api/core.md)"
+msgstr ""
+
+#: manual/index.md:44
+msgid "[design](design/core.md)"
+msgstr ""
+
+#: manual/index.md:46
+msgid "Exported items"
+msgstr ""
+
+#: manual/index.md:48
+msgid "Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`"
+msgstr ""
+
+#: manual/index.md:49
+msgid "Error data: `ErrorData`, `ErrorData::make`"
+msgstr ""
+
+#: manual/index.md:50
+msgid "Rendering: `ErrorData::mark`"
+msgstr ""
+
+#: manual/index.md:52
+msgid "Where to read next"
+msgstr ""
+
+#: manual/index.md:54
+msgid "New to the package: the [tutorial](tutorial/core.md) builds a small argument checker and prints its errors."
+msgstr ""
+
+#: manual/index.md:56
+msgid "Using it in a program: keep the [API](api/core.md) at hand."
+msgstr ""
+
+#: manual/index.md:57
+msgid "Contributing, or relying on exact output: read the [design](design/core.md), which states how the marker column is computed and where the 0.1 model breaks, and [CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md)."
+msgstr ""
+
+#: manual/index.md:61
+msgid "Validation"
+msgstr ""
+
+#: manual/index.md:63
+msgid "Recommended release checks:"
+msgstr ""
+
+#: manual/index.md:70
+msgid "`just test-all` runs the tests on wasm, wasm-gc, js and native, in debug and release."
+msgstr ""
+
+#: manual/tutorial/core.md:1
+msgid "core tutorial"
+msgstr ""
+
+#: manual/tutorial/core.md:3
+msgid "This tutorial builds the error reporting of a small command-line program, one step at a time. You need a MoonBit toolchain (`moonc` ≥ 0.10) and a module of your own to add the dependency to."
+msgstr ""
+
+#: manual/tutorial/core.md:7
+msgid "1. Add the dependency"
+msgstr ""
+
+#: manual/tutorial/core.md:13
+msgid "and import the package in the `moon.pkg` of the package that reports errors:"
+msgstr ""
+
+#: manual/tutorial/core.md:21
+msgid "2. Mark one argument"
+msgstr ""
+
+#: manual/tutorial/core.md:23
+msgid "A program receives its arguments as an array of strings. Wrap the array in a `Sequence`, describe the error with `ErrorData::make`, and call `mark`. `err_pos` is the index of the bad argument:"
+msgstr ""
+
+#: manual/tutorial/core.md:46
+msgid "`mark` returns a `String`; print it with `println` in a real program."
+msgstr ""
+
+#: manual/tutorial/core.md:48
+msgid "3. Mark several arguments"
+msgstr ""
+
+#: manual/tutorial/core.md:50
+msgid "`err_offset` extends the span to the following elements. With `err_pos=1` and `err_offset=1`, the marker covers elements 1 and 2 and the space between them:"
+msgstr ""
+
+#: manual/tutorial/core.md:72
+msgid "4. Mark a place in a string"
+msgstr ""
+
+#: manual/tutorial/core.md:74
+msgid "For a single string, use `Sequence::from_string`; positions are offsets into the string:"
+msgstr ""
+
+#: manual/tutorial/core.md:92
+msgid "5. Use your own error format"
+msgstr ""
+
+#: manual/tutorial/core.md:94
+msgid "`gen_msg` receives the error type and message and returns the last line; `marker` changes the marker character:"
+msgstr ""
+
+#: manual/tutorial/core.md:121
+msgid "6. Know the limits"
+msgstr ""
+
+#: manual/tutorial/core.md:123
+msgid "In 0.1 the marker column is counted in UTF-16 code units. It is right for ASCII text without tabs or newlines; with Chinese or Japanese text, emoji, tabs or several lines it drifts. Arguments that contain spaces are printed without quotes. The [design](../design/core.md) explains why, and 0.2.0 fixes these cases ([#5](https://github.com/moonbit-community/err_marker/issues/5))."
+msgstr ""
+
+#: manual/tutorial/core.md:130
+msgid "Next"
+msgstr ""
+
+#: manual/tutorial/core.md:132
+msgid "Read the [API](../api/core.md) for every parameter and edge case."
+msgstr ""
