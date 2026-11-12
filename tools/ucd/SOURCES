@@ -1,0 +1,9 @@
+# Unicode Character Database files used by tools/gen_unicode_tables.py.
+# Format: version line, then "<sha256>  <path under ucd/>".
+version 18.0.0
+a0cf29eacd00cfcaec4381c6b7c281685f18dbb4e7ff82b4076ccb342ca839aa  EastAsianWidth.txt
+d6b151d2d40ee9b1876d26f417980f45ffae47b6055ccf7203cb31f07a030f94  extracted/DerivedGeneralCategory.txt
+09c928886a178fcafd93c29e4bd59073a058e5a100b716d425cb563ab50f68c9  DerivedCoreProperties.txt
+80d00f8e616a0ef27fd6b8de3b758c06383b5d917e2977709578e68baf733bf1  emoji/emoji-data.txt
+0839dcb79e4ac639ecd538b1abf7c9d22e3f9dd265b7e182d33627aa4d75b45a  auxiliary/GraphemeBreakProperty.txt
+b0cf047ee94485bbdc846de2b902f5f8a815f6b674f9d04223cddadd91c9df31  auxiliary/GraphemeBreakTest.txt
