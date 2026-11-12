@@ -41,6 +41,9 @@ jobs:
       - name: check
         run: moon check --target all --deny-warn
 
+      - name: unicode tables are up to date
+        run: python3 tools/gen_unicode_tables.py --check
+
       - name: public interface
         run: |
           moon info

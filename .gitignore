@@ -15,3 +15,6 @@ coverage_summary.txt
 .windsurf/
 .aider*
 CLAUDE.local.md
+
+# Downloaded UCD files (tools/gen_unicode_tables.py)
+tools/ucd/cache/

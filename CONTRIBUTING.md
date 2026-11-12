@@ -174,6 +174,24 @@ translations. Commit the pages and the refreshed catalogs together. The `Docs`
 workflow (`.github/workflows/docs.yml`) runs the same check on every pull
 request that touches `doc/`.
 
+## Unicode tables
+
+`src/internal/ucd/tables.mbt` is generated from the Unicode Character
+Database by `tools/gen_unicode_tables.py`. The Unicode version and the sha256
+of every input file are pinned in `tools/ucd/SOURCES`; the script downloads
+the files into `tools/ucd/cache/` (ignored by git) and refuses a file whose
+hash differs. Never edit the generated file by hand:
+
+```bash
+python3 tools/gen_unicode_tables.py          # regenerate
+moon fmt
+python3 tools/gen_unicode_tables.py --check  # what CI runs
+```
+
+`--check` compares the Unicode version and the numbers in every table, not
+the layout. Moving to a new Unicode version is its own pull request: update
+`SOURCES`, regenerate, and update the tests whose expected values changed.
+
 ## Dependencies
 
 - Update dependencies with `just update-deps` and review the `moon.mod` diff.

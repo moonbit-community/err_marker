@@ -1,0 +1,56 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "KCN-judu/err_marker/internal/ucd"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn gcb(Char) -> Gcb
+
+pub fn incb(Char) -> Incb
+
+pub fn is_ambiguous(Char) -> Bool
+
+pub fn is_extended_pictographic(Char) -> Bool
+
+pub fn is_wide(Char) -> Bool
+
+pub fn is_zero_width(Char) -> Bool
+
+pub let unicode_version : String
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) enum Gcb {
+  Other
+  CR
+  LF
+  Control
+  Extend
+  ZWJ
+  RegionalIndicator
+  Prepend
+  SpacingMark
+  L
+  V
+  T
+  LV
+  LVT
+}
+pub fn Gcb::equal(Self, Self) -> Bool
+
+#derive(Eq, @debug.Debug)
+pub(all) enum Incb {
+  None
+  Linker
+  Consonant
+  Extend
+}
+pub fn Incb::equal(Self, Self) -> Bool
+
+// Type aliases
+
+// Traits
