@@ -36,6 +36,11 @@ The roadmap to 0.2.0 is tracked in
   an empty element can be marked. The marker covers the quoted token. Output
   for other elements is unchanged
   ([#11](https://github.com/moonbit-community/err_marker/issues/11)).
+- A string span whose start or end falls inside a surrogate pair is widened
+  to the whole character, so an emoji or another character outside the Basic
+  Multilingual Plane is never split by the marker. The manual now states that
+  string positions are UTF-16 code units
+  ([#7](https://github.com/moonbit-community/err_marker/issues/7)).
 
 ## [0.1.3] — 2026-11-12
 
