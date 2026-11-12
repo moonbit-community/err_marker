@@ -6,6 +6,8 @@ import {
 }
 
 // Values
+pub fn cluster_boundaries(String) -> Array[Int32]
+
 pub fn gcb(Char) -> Gcb
 
 pub fn incb(Char) -> Incb
@@ -17,6 +19,8 @@ pub fn is_extended_pictographic(Char) -> Bool
 pub fn is_wide(Char) -> Bool
 
 pub fn is_zero_width(Char) -> Bool
+
+pub fn snap(Array[Int32], Int32, Int32) -> (Int32, Int32)
 
 pub let unicode_version : String
 
