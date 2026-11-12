@@ -47,10 +47,11 @@ pub fn[T] Sequence::from_array(Array[T], join? : String) -> Self[T]
 ```
 
 `join` defaults to a single space. Positions in this sequence are element
-indices: position `i` covers the rendered text of element `i`. Elements are
-not quoted, so an element that is empty or contains the separator cannot be
-told apart from its neighbours
-([#11](https://github.com/moonbit-community/err_marker/issues/11)).
+indices: position `i` covers the rendered text of element `i`. An element
+that is empty, or contains whitespace, a double quote or the separator, is
+wrapped in double quotes, with `\` and `"` escaped by a backslash, so the
+rendered line can always be split back into its elements; the marker then
+covers the quoted token ([#11](https://github.com/moonbit-community/err_marker/issues/11)).
 
 ```moonbit
 test "from_array joins elements with the separator" {
