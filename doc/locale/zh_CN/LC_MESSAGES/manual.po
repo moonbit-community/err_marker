@@ -84,6 +84,7 @@ msgid "The defaults are `err_type = None`, `err_pos = -1` and `err_offset = 0`. 
 msgstr "默认值为 `err_type = None`、`err_pos = -1` 和 `err_offset = 0`。负的 `err_pos` 表示“没有位置”：此时 `mark` 输出一个空的标记行。`make` 不会失败；位置只在标记错误时才检查。"
 
 #: manual/api/core.md:143
+#: manual/design/core.md:154
 msgid "Rendering"
 msgstr "渲染"
 
@@ -212,32 +213,84 @@ msgid "a tab gets one marker character although it moves to the next tab stop; t
 msgstr "一个 Tab 会移到下一个制表位，却只对应一个标记字符；范围之前的 Tab 会被复制到填充中，不再使标记偏移"
 
 #: manual/design/core.md:70
-msgid "The model in 0.2.0"
-msgstr "0.2.0 的模型"
+msgid "The 0.2.0 contract"
+msgstr "0.2.0 的合约"
 
 #: manual/design/core.md:72
-msgid "0.2.0 measures columns instead of length, with these decisions (details and the rejected alternatives are recorded in #5):"
-msgstr "0.2.0 改为度量列而不是长度，决定如下（细节和被否决的方案记录在 #5 中）："
+msgid "0.2.0 measures columns instead of length. This section is the contract that the 0.2.0 code is written and tested against; the decisions and the rejected alternatives are recorded in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
+msgstr "0.2.0 改为度量列而不是长度。本节是 0.2.0 代码编写与测试所依据的合约；各项决定和被否决的方案记录在 [#5](https://github.com/moonbit-community/err_marker/issues/5) 中。"
 
-#: manual/design/core.md:75
-msgid "**Positions.** Arrays use element indices; strings use Unicode scalar indices. Every span is snapped outward to extended grapheme cluster boundaries (UAX #29). Snapping is a closure operator on spans ordered by inclusion: if $\\sigma$ snaps a span, then $S \\subseteq \\sigma(S)$, $S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$ and $\\sigma(\\sigma(S)) = \\sigma(S)$."
-msgstr "**位置。** 数组用元素下标；字符串用 Unicode 标量下标。每个范围都向外对齐到扩展字形簇的边界（UAX #29）。对齐是范围在包含序上的闭包算子：若 $\\sigma$ 表示对齐，则 $S \\subseteq \\sigma(S)$，$S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$，且 $\\sigma(\\sigma(S)) = \\sigma(S)$。"
+#: manual/design/core.md:77
+msgid "Coordinates"
+msgstr "坐标"
 
-#: manual/design/core.md:81
-msgid "**Columns.** Each grapheme cluster acts on the cursor $(\\ell, c)$: an ordinary cluster of width $w$ maps $c \\mapsto c + w$, a tab maps $c \\mapsto t(\\lfloor c/t \\rfloor + 1)$, and a newline maps $(\\ell, c) \\mapsto (\\ell + 1, 0)$. These moves form a monoid. Every composite is a shift, a tab move $c \\mapsto T(c + a) + b$ with $0 \\le a < t$, or a line break, because $T(T(x) + b) = T(x) + T(b)$. The marker column of a span is the move of its prefix applied to the origin."
-msgstr "**列。** 每个字形簇作用在光标 $(\\ell, c)$ 上：宽度为 $w$ 的普通字形簇把 $c \\mapsto c + w$，Tab 把 $c \\mapsto t(\\lfloor c/t \\rfloor + 1)$，换行把 $(\\ell, c) \\mapsto (\\ell + 1, 0)$。这些移动构成一个幺半群。由于 $T(T(x) + b) = T(x) + T(b)$，任何复合都是一次平移、一次 Tab 移动 $c \\mapsto T(c + a) + b$（其中 $0 \\le a < t$）或一次换行。范围的标记列，就是其前缀对应的移动作用在原点上的结果。"
+#: manual/design/core.md:79
+msgid "An array sequence has elements $x_0, \\dots, x_{n-1}$ and positions $0, \\dots, n$. A string sequence is read as Unicode scalar values $u_0, \\dots, u_{m-1}$ and has positions $0, \\dots, m$. A helper converts a UTF-16 offset $o$ into the number of scalars before it; an offset inside a surrogate pair counts that pair as not yet passed."
+msgstr "数组序列有元素 $x_0, \\dots, x_{n-1}$，位置为 $0, \\dots, n$。字符串序列按 Unicode 标量值 $u_0, \\dots, u_{m-1}$ 读取，位置为 $0, \\dots, m$。一个辅助函数把 UTF-16 偏移 $o$ 换算成它之前的标量个数；落在代理对内部的偏移，视为尚未越过该代理对。"
 
-#: manual/design/core.md:88
-msgid "**Widths** come from tables generated from the Unicode Character Database (Unicode 18.0.0), with East Asian Width (UAX #11) for wide characters."
-msgstr "**宽度** 来自由 Unicode 字符数据库（Unicode 18.0.0）生成的表，宽字符按东亚宽度（UAX #11）判定。"
+#: manual/design/core.md:85
+msgid "Spans"
+msgstr "范围"
 
-#: manual/design/core.md:90
-msgid "**Several marks** overlay as a semilattice, so the output does not depend on the order in which marks are added."
-msgstr "**多处标记** 的叠加构成一个半格，所以输出与添加标记的顺序无关。"
+#: manual/design/core.md:87
+msgid "A span is a half-open interval $[a, b)$ of positions with $0 \\le a \\le b$. Constructors make every span valid: a negative end point becomes $0$, and $b < a$ becomes $b = a$. A zero-width span $[p, p)$ is an insertion point."
+msgstr "范围是位置上的半开区间 $[a, b)$，满足 $0 \\le a \\le b$。构造函数保证每个范围都合法：负的端点变为 $0$，$b < a$ 时令 $b = a$。零宽范围 $[p, p)$ 是一个插入点。"
 
-#: manual/design/core.md:92
-msgid "**Elements are quoted** when needed, so the rendered line can always be split back into its elements."
-msgstr "**元素在需要时加引号**，所以渲染出的行总能拆回各个元素。"
+#: manual/design/core.md:91
+msgid "Clamping to a sequence of length $n$ is the map"
+msgstr "对长度为 $n$ 的序列做截断，是如下映射"
+
+#: manual/design/core.md:97
+msgid "It is a retraction onto the spans inside the sequence: it is idempotent and leaves every span inside the sequence unchanged. A span past the end becomes the insertion point $[n, n)$."
+msgstr "它是到序列内范围的收缩映射：它是幂等的，并保持序列内的每个范围不变。超出末尾的范围变为插入点 $[n, n)$。"
+
+#: manual/design/core.md:101
+msgid "Snapping to grapheme clusters"
+msgstr "对齐到字形簇"
+
+#: manual/design/core.md:103
+msgid "Let $B \\subseteq \\{0, \\dots, m\\}$ be the extended grapheme cluster boundaries of the rendered text (UAX #29); $0 \\in B$ and $m \\in B$. For a position $x$, let $\\lfloor x \\rfloor_B$ be the greatest boundary $\\le x$ and $\\lceil x \\rceil_B$ the least boundary $\\ge x$. Snapping is"
+msgstr "设 $B \\subseteq \\{0, \\dots, m\\}$ 为渲染文本的扩展字形簇边界（UAX #29），且 $0 \\in B$、$m \\in B$。对位置 $x$，令 $\\lfloor x \\rfloor_B$ 为 $\\le x$ 的最大边界，$\\lceil x \\rceil_B$ 为 $\\ge x$ 的最小边界。对齐定义为"
+
+#: manual/design/core.md:112
+msgid "With $e$ the inclusion of $B$ into the positions, $\\lfloor \\cdot \\rfloor_B$ is right adjoint and $\\lceil \\cdot \\rceil_B$ left adjoint to $e$: $e(\\beta) \\le x \\iff \\beta \\le \\lfloor x \\rfloor_B$ and $\\lceil x \\rceil_B \\le \\beta \\iff x \\le e(\\beta)$. Hence $\\sigma$ is a closure operator on spans ordered by inclusion:"
+msgstr "设 $e$ 为 $B$ 到位置集合的包含映射，则 $\\lfloor \\cdot \\rfloor_B$ 与 $\\lceil \\cdot \\rceil_B$ 分别是 $e$ 的右伴随和左伴随：$e(\\beta) \\le x \\iff \\beta \\le \\lfloor x \\rfloor_B$，$\\lceil x \\rceil_B \\le \\beta \\iff x \\le e(\\beta)$。因此 $\\sigma$ 是范围在包含序上的闭包算子："
+
+#: manual/design/core.md:124
+msgid "A zero-width span strictly inside a cluster widens to that cluster. The three laws are property tests."
+msgstr "严格落在一个字形簇内部的零宽范围会扩展为整个字形簇。这三条定律都是性质测试。"
+
+#: manual/design/core.md:127
+msgid "Order of operations"
+msgstr "运算顺序"
+
+#: manual/design/core.md:129
+msgid "A mark on an array is first mapped to the text: element span $[i, j)$ becomes the scalar span from the start of $r_i$ to the end of $r_{j-1}$, the hull of the rendered elements. Every span is then clamped with $\\kappa$ and snapped with $\\sigma$, in that order, and only then turned into columns."
+msgstr "数组上的标记先映射到文本：元素范围 $[i, j)$ 变为从 $r_i$ 开头到 $r_{j-1}$ 末尾的标量范围，即这些渲染元素的凸包。然后每个范围先用 $\\kappa$ 截断、再用 $\\sigma$ 对齐，顺序不变，最后才转换成列。"
+
+#: manual/design/core.md:134
+msgid "Columns"
+msgstr "列"
+
+#: manual/design/core.md:136
+msgid "Each grapheme cluster $g$ acts on the cursor $(\\ell, c)$:"
+msgstr "每个字形簇 $g$ 作用在光标 $(\\ell, c)$ 上："
+
+#: manual/design/core.md:144
+msgid "where $w(g)$ is the cluster width from the generated UCD 18.0.0 tables and $t \\ge 1$ is the tab width of the model, 8 by default. These moves form a monoid under composition. Every composite has exactly one of three normal forms: a shift $c \\mapsto c + k$; a tab move $c \\mapsto T(c + a) + b$ with $0 \\le a < t$, where $T(x) = t(\\lfloor x/t \\rfloor + 1)$; or a line break $(\\ell, c) \\mapsto (\\ell + n, k)$. The forms are closed under composition because $T(T(x) + b) = T(x) + T(b)$. Laying out a text is a monoid homomorphism from cluster sequences, and the column of a span is the move of the text before it applied to $(0, 0)$."
+msgstr "其中 $w(g)$ 是由生成的 UCD 18.0.0 表给出的字形簇宽度，$t \\ge 1$ 是模型的 Tab 宽度，默认为 8。这些移动在复合下构成幺半群。任何复合恰好具有三种范式之一：平移 $c \\mapsto c + k$；Tab 移动 $c \\mapsto T(c + a) + b$，其中 $0 \\le a < t$，$T(x) = t(\\lfloor x/t \\rfloor + 1)$；或换行 $(\\ell, c) \\mapsto (\\ell + n, k)$。由于 $T(T(x) + b) = T(x) + T(b)$，这些范式在复合下封闭。排版一段文本是从字形簇序列出发的幺半群同态，范围的列就是它之前那段文本的移动作用在 $(0, 0)$ 上的结果。"
+
+#: manual/design/core.md:156
+msgid "Array rendering is injective: an element is quoted exactly when its text is empty or contains whitespace, a double quote or the separator."
+msgstr "数组的渲染是单射：当且仅当元素的文本为空，或含有空白、双引号或分隔符时，才给它加引号。"
+
+#: manual/design/core.md:158
+msgid "Several marks overlay as a semilattice (commutative, associative, idempotent). Where marks overlap, the column goes to the higher priority, then the higher severity, then the later start, then the earlier end, then the primary mark, then the message that is smaller in code-point order."
+msgstr "多处标记的叠加构成半格（交换、结合、幂等）。标记重叠时，该列依次归于：优先级更高者、严重级别更高者、起点更靠后者、终点更靠前者、主标记、按码点序更小的说明文字。"
+
+#: manual/design/core.md:162
+msgid "Message rows are assigned greedily by left endpoint, which uses the minimum number of rows: the largest number of messages that overlap at one column."
+msgstr "说明文字的行按左端点贪心分配，所用行数最少：即在同一列上重叠的说明文字的最大个数。"
 
 #: manual/index.md:1
 msgid "err_marker"
@@ -422,6 +475,21 @@ msgstr "下一步"
 #: manual/tutorial/core.md:133
 msgid "Read the [API](../api/core.md) for every parameter and edge case."
 msgstr "阅读 [API](../api/core.md)，了解每个参数和边界情形。"
+
+#~ msgid "0.2.0 measures columns instead of length, with these decisions (details and the rejected alternatives are recorded in #5):"
+#~ msgstr "0.2.0 改为度量列而不是长度，决定如下（细节和被否决的方案记录在 #5 中）："
+
+#~ msgid "**Positions.** Arrays use element indices; strings use Unicode scalar indices. Every span is snapped outward to extended grapheme cluster boundaries (UAX #29). Snapping is a closure operator on spans ordered by inclusion: if $\\sigma$ snaps a span, then $S \\subseteq \\sigma(S)$, $S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$ and $\\sigma(\\sigma(S)) = \\sigma(S)$."
+#~ msgstr "**位置。** 数组用元素下标；字符串用 Unicode 标量下标。每个范围都向外对齐到扩展字形簇的边界（UAX #29）。对齐是范围在包含序上的闭包算子：若 $\\sigma$ 表示对齐，则 $S \\subseteq \\sigma(S)$，$S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$，且 $\\sigma(\\sigma(S)) = \\sigma(S)$。"
+
+#~ msgid "**Widths** come from tables generated from the Unicode Character Database (Unicode 18.0.0), with East Asian Width (UAX #11) for wide characters."
+#~ msgstr "**宽度** 来自由 Unicode 字符数据库（Unicode 18.0.0）生成的表，宽字符按东亚宽度（UAX #11）判定。"
+
+#~ msgid "**Several marks** overlay as a semilattice, so the output does not depend on the order in which marks are added."
+#~ msgstr "**多处标记** 的叠加构成一个半格，所以输出与添加标记的顺序无关。"
+
+#~ msgid "**Elements are quoted** when needed, so the rendered line can always be split back into its elements."
+#~ msgstr "**元素在需要时加引号**，所以渲染出的行总能拆回各个元素。"
 
 #~ msgid "positions are code units, so an odd offset splits a character"
 #~ msgstr "位置是码元，所以奇数偏移会把一个字符切开"
