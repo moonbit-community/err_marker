@@ -1,6 +1,6 @@
 name = "KCN-judu/err_marker"
 
-version = "0.1.3"
+version = "0.1.4"
 
 import {
   "marianoguerra/error-report@0.1.1",
