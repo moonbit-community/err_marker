@@ -17,6 +17,7 @@ msgstr ""
 
 #: manual/api/core.md:5
 #: manual/api/cursor.md:5
+#: manual/api/error_report.md:3
 msgid "Purpose"
 msgstr ""
 
@@ -26,6 +27,7 @@ msgstr ""
 
 #: manual/api/core.md:13
 #: manual/api/cursor.md:13
+#: manual/api/error_report.md:11
 msgid "Importing"
 msgstr ""
 
@@ -194,6 +196,10 @@ msgstr ""
 msgid "The Unicode scalar index of a UTF-16 offset, for callers whose positions come from `String` indexing. An offset inside a surrogate pair counts that pair as not yet passed."
 msgstr ""
 
+#: manual/api/core.md:356
+msgid "`rendered` is the text that `Report::render` draws for the sequence, with elements quoted when needed. `locate` gives the scalar span in that text where a span lands after the hull, clamping and snapping steps of `render`. Together they let other renderers, such as the [`error_report`](error_report.md) adapter, draw exactly the same places."
+msgstr ""
+
 #: manual/api/cursor.md:1
 msgid "cursor API"
 msgstr ""
@@ -267,6 +273,22 @@ msgid ""
 "`cluster` is the move of one cluster: `\"\\t\"` is a tab, `\"\\n"
 "\"`, `\"\\r\"` and `\"\\r\\n"
 "\"` are line breaks, anything else shifts by its width. `text` composes the moves of all clusters of a string; it is a monoid homomorphism."
+msgstr ""
+
+#: manual/api/error_report.md:1
+msgid "error_report API"
+msgstr ""
+
+#: manual/api/error_report.md:5
+msgid "`KCN-judu/err_marker/error_report` converts an `err_marker` report into a [`marianoguerra/error-report`](https://mooncakes.io/docs/marianoguerra/error-report) report, for programs that want its gutter layout, JSON output or fixes. It is the only package of the module that uses `error-report`; the design is in [design](../design/error_report.md)."
+msgstr ""
+
+#: manual/api/error_report.md:22
+msgid "Conversion"
+msgstr ""
+
+#: manual/api/error_report.md:30
+msgid "Returns the converted report and the `Sources` that hold the rendered sequence under `name` (default `\"input\"`). Spans are located exactly as `Report::render` locates them and converted to the UTF-16 offsets that `error-report` uses. `Error` and `Warning` keep their severity; `Note` and `Help` become `Advice`. Marks keep their style, message and priority; notes stay notes. Render the result with any `error-report` renderer."
 msgstr ""
 
 #: manual/design/core.md:1
@@ -529,6 +551,46 @@ msgstr ""
 msgid "The laws are checked exhaustively rather than by sampling: for tab widths 1 to 4 and every text of up to four pieces drawn from a narrow letter, a wide character, a tab and a line break, the tests check associativity, identity, the homomorphism law, that equal actions give equal moves, and that `apply` agrees with stepping the cursor directly. Changing either composition rule for tab moves, or representing a width-1 tab as $U$, makes them fail."
 msgstr ""
 
+#: manual/design/error_report.md:1
+msgid "error_report design"
+msgstr ""
+
+#: manual/design/error_report.md:3
+msgid "Why an adapter"
+msgstr ""
+
+#: manual/design/error_report.md:5
+msgid "`err_marker` 0.2.0 draws one compact layout for sequences such as command-line arguments. `marianoguerra/error-report` draws reports over source files, with a gutter, several sources and JSON output. Rather than grow a second general renderer, `err_marker` converts its reports into `error-report` reports, and users choose the output they need."
+msgstr ""
+
+#: manual/design/error_report.md:11
+msgid "Same places in both renderers"
+msgstr ""
+
+#: manual/design/error_report.md:13
+msgid "The conversion does not recompute positions. It asks the sequence where each span lands with `Sequence::locate`, which runs the same steps as `Report::render`: the hull of the elements, clamping, and snapping to grapheme clusters. It then converts the scalar span into UTF-16 offsets with `Source::span_of_chars` of `error-report`. A mark therefore covers the same characters in both layouts, including whole emoji and combining sequences."
+msgstr ""
+
+#: manual/design/error_report.md:20
+msgid "Mapping"
+msgstr ""
+
+#: manual/design/error_report.md:26
+msgid "`Label::primary` / `secondary`, with the priority"
+msgstr ""
+
+#: manual/design/error_report.md:27
+msgid "notes"
+msgstr ""
+
+#: manual/design/error_report.md:29
+msgid "Dependency"
+msgstr ""
+
+#: manual/design/error_report.md:31
+msgid "The adapter is the only package that imports `error-report`, but a MoonBit module declares dependencies for all its packages, so installing `err_marker` also fetches `error-report`. It has no dependencies of its own."
+msgstr ""
+
 #: manual/index.md:1
 msgid "err_marker"
 msgstr ""
@@ -558,114 +620,134 @@ msgid "Install"
 msgstr ""
 
 #: manual/index.md:33
-msgid "Then import `\"KCN-judu/err_marker\"` in your `moon.pkg`; the package is available as `@err_marker`. The module needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and depends only on `moonbitlang/core`."
+msgid "Then import `\"KCN-judu/err_marker\"` in your `moon.pkg`; the package is available as `@err_marker`. The module needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and depends on `moonbitlang/core` and, for the `error_report` adapter only, `marianoguerra/error-report`."
 msgstr ""
 
-#: manual/index.md:37
+#: manual/index.md:38
 msgid "Pages"
 msgstr ""
 
-#: manual/index.md:39
-msgid "The module has two public packages: the root package at `src`, documented as `core`, and `src/cursor`, documented as `cursor`."
+#: manual/index.md:40
+msgid "The module has three public packages: the root package at `src`, documented as `core`; `src/cursor`, documented as `cursor`; and `src/error_report`, documented as `error_report`."
 msgstr ""
 
-#: manual/index.md:42
+#: manual/index.md:44
 msgid "Part"
 msgstr ""
 
-#: manual/index.md:42
+#: manual/index.md:44
 msgid "Tutorial"
 msgstr ""
 
-#: manual/index.md:42
+#: manual/index.md:44
 msgid "API"
 msgstr ""
 
-#: manual/index.md:42
+#: manual/index.md:44
 msgid "Design"
 msgstr ""
 
-#: manual/index.md:44
+#: manual/index.md:46
 msgid "`core`: sequences, error data and marking"
 msgstr ""
 
-#: manual/index.md:44
+#: manual/index.md:46
 msgid "[tutorial](tutorial/core.md)"
 msgstr ""
 
-#: manual/index.md:44
+#: manual/index.md:46
 msgid "[API](api/core.md)"
 msgstr ""
 
-#: manual/index.md:44
+#: manual/index.md:46
 msgid "[design](design/core.md)"
 msgstr ""
 
-#: manual/index.md:45
+#: manual/index.md:47
 msgid "`cursor`: terminal columns of text (Unicode 18.0.0)"
 msgstr ""
 
-#: manual/index.md:45
+#: manual/index.md:47
 msgid "[tutorial](tutorial/cursor.md)"
 msgstr ""
 
-#: manual/index.md:45
+#: manual/index.md:47
 msgid "[API](api/cursor.md)"
 msgstr ""
 
-#: manual/index.md:45
+#: manual/index.md:47
 msgid "[design](design/cursor.md)"
 msgstr ""
 
-#: manual/index.md:47
-msgid "Exported items"
+#: manual/index.md:48
+msgid "`error_report`: conversion to `marianoguerra/error-report`"
 msgstr ""
 
-#: manual/index.md:49
-msgid "Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`"
+#: manual/index.md:48
+msgid "[tutorial](tutorial/error_report.md)"
+msgstr ""
+
+#: manual/index.md:48
+msgid "[API](api/error_report.md)"
+msgstr ""
+
+#: manual/index.md:48
+msgid "[design](design/error_report.md)"
 msgstr ""
 
 #: manual/index.md:50
-msgid "Error data: `ErrorData`, `ErrorData::make`"
-msgstr ""
-
-#: manual/index.md:51
-msgid "Rendering: `ErrorData::mark`"
+msgid "Exported items"
 msgstr ""
 
 #: manual/index.md:52
-msgid "Reports (0.2.0): `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `utf16_to_scalar`"
+msgid "Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`"
 msgstr ""
 
 #: manual/index.md:53
-msgid "Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`"
+msgid "Error data: `ErrorData`, `ErrorData::make`"
+msgstr ""
+
+#: manual/index.md:54
+msgid "Rendering: `ErrorData::mark`"
 msgstr ""
 
 #: manual/index.md:55
-msgid "Where to read next"
+msgid "Reports (0.2.0): `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `Sequence::rendered`, `Sequence::locate`, `utf16_to_scalar`"
+msgstr ""
+
+#: manual/index.md:56
+msgid "Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`"
 msgstr ""
 
 #: manual/index.md:57
-msgid "New to the package: the [tutorial](tutorial/core.md) builds a small argument checker and prints its errors."
+msgid "Adapter (`@error_report`): `to_error_report`"
 msgstr ""
 
 #: manual/index.md:59
+msgid "Where to read next"
+msgstr ""
+
+#: manual/index.md:61
+msgid "New to the package: the [tutorial](tutorial/core.md) builds a small argument checker and prints its errors."
+msgstr ""
+
+#: manual/index.md:63
 msgid "Using it in a program: keep the [API](api/core.md) at hand."
 msgstr ""
 
-#: manual/index.md:60
+#: manual/index.md:64
 msgid "Contributing, or relying on exact output: read the [design](design/core.md), which states how the marker column is computed and where the 0.1 model breaks, and [CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md)."
 msgstr ""
 
-#: manual/index.md:64
+#: manual/index.md:68
 msgid "Validation"
 msgstr ""
 
-#: manual/index.md:66
+#: manual/index.md:70
 msgid "Recommended release checks:"
 msgstr ""
 
-#: manual/index.md:73
+#: manual/index.md:77
 msgid "`just test-all` runs the tests on wasm, wasm-gc, js and native, in debug and release."
 msgstr ""
 
@@ -796,4 +878,24 @@ msgstr ""
 
 #: manual/tutorial/cursor.md:74
 msgid "The [design](../design/cursor.md) explains why every move has one of three forms."
+msgstr ""
+
+#: manual/tutorial/error_report.md:1
+msgid "error_report tutorial"
+msgstr ""
+
+#: manual/tutorial/error_report.md:3
+msgid "Use this package when you already build `err_marker` reports but want `error-report` to print them. Import it as in the [API](../api/error_report.md)."
+msgstr ""
+
+#: manual/tutorial/error_report.md:6
+msgid "1. Build a report as usual"
+msgstr ""
+
+#: manual/tutorial/error_report.md:15
+msgid "2. Convert and render"
+msgstr ""
+
+#: manual/tutorial/error_report.md:22
+msgid "This prints the `error-report` layout with a gutter, the location `argv:1:21` and the message under the marked argument. The marked place is the same one `report.render(args)` marks, because both use `Sequence::locate`."
 msgstr ""

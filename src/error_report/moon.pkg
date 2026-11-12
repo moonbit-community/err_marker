@@ -1,0 +1,9 @@
+import {
+  "KCN-judu/err_marker",
+  "marianoguerra/error-report" @report,
+}
+
+import {
+  "marianoguerra/error-report/render",
+  "marianoguerra/error-report/style",
+} for "test"

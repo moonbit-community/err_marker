@@ -363,3 +363,29 @@ pub fn[T : Show] Report::render(
   }
   out.join("\n")
 }
+
+///|
+/// The text that `Report::render` draws for this sequence: a string as it
+/// is, or the elements of an array (quoted when needed) joined by the
+/// separator.
+pub fn[T : Show] Sequence::rendered(self : Sequence[T]) -> String {
+  layout(self).0
+}
+
+///|
+/// Where `span` lands in `rendered()`, as Unicode scalar indices
+/// `(start, end)`: element spans become the hull of their elements, then the
+/// span is clamped to the text and snapped outward to grapheme clusters, as
+/// `Report::render` does.
+pub fn[T : Show] Sequence::locate(
+  self : Sequence[T],
+  span : Span,
+) -> (Int32, Int32) {
+  let (text, elements) = layout(self)
+  scalar_span(
+    span,
+    elements,
+    text.to_array().length(),
+    @ucd.cluster_boundaries(text),
+  )
+}

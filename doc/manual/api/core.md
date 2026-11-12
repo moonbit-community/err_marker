@@ -345,3 +345,24 @@ pub fn utf16_to_scalar(String, Int32) -> Int32
 The Unicode scalar index of a UTF-16 offset, for callers whose positions come
 from `String` indexing. An offset inside a surrogate pair counts that pair as
 not yet passed.
+
+### `Sequence::rendered`, `Sequence::locate`
+
+```mbti
+pub fn[T : Show] Sequence::rendered(Self[T]) -> String
+pub fn[T : Show] Sequence::locate(Self[T], Span) -> (Int32, Int32)
+```
+
+`rendered` is the text that `Report::render` draws for the sequence, with
+elements quoted when needed. `locate` gives the scalar span in that text
+where a span lands after the hull, clamping and snapping steps of `render`.
+Together they let other renderers, such as the
+[`error_report`](error_report.md) adapter, draw exactly the same places.
+
+```moonbit
+test "locate a span" {
+  let args = @err_marker.Sequence::from_args(["cp", "a b", "c"])
+  assert_eq(args.rendered(), "cp \"a b\" c")
+  assert_eq(args.locate(@err_marker.Span::new(1, 2)), (3, 8))
+}
+```

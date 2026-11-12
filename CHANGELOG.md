@@ -13,6 +13,12 @@ The roadmap to 0.2.0 is tracked in
 
 ### Added
 
+- New package `KCN-judu/err_marker/error_report` with `to_error_report`,
+  which converts a report into a `marianoguerra/error-report` report (marks
+  land on exactly the same characters), and `Sequence::rendered` /
+  `Sequence::locate`, which expose where `render` draws a span. The module now
+  depends on `marianoguerra/error-report@0.1.1`, used only by the adapter
+  ([#30](https://github.com/moonbit-community/err_marker/issues/30)).
 - Report API (the 0.2.0 replacement for `ErrorData::mark`): `Severity`,
   `Style`, `Span`, `Mark`, `Report` with builders, and `Report::render` in the
   compact layout. Several marks per sequence overlay as a semilattice

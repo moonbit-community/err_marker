@@ -52,6 +52,8 @@ type Sequence[T]
 pub fn Sequence::from_args(Array[String]) -> Self[String]
 pub fn[T] Sequence::from_array(Array[T], join? : String) -> Self[T]
 pub fn Sequence::from_string(String) -> Self[Char]
+pub fn[T : Show] Sequence::locate(Self[T], Span) -> (Int32, Int32)
+pub fn[T : Show] Sequence::rendered(Self[T]) -> String
 
 #derive(Compare, Eq, @debug.Debug)
 pub(all) enum Severity {
