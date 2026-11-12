@@ -39,7 +39,7 @@ test "span starting on the newline marks the end of that line" {
 test "newline inside an array element" {
   assert_eq(
     at(1, 0).mark(@err_marker.Sequence::from_array(["x", "line1\nline2"])),
-    "x line1\n  ^^^^^\nline2\nError: bad",
+    "x \"line1\n  ^^^^^^\nline2\"\nError: bad",
   )
 }
 

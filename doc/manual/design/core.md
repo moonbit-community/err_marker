@@ -22,6 +22,11 @@ $$
 s = r_0 \, \texttt{join} \, r_1 \, \texttt{join} \cdots \texttt{join} \, r_{n-1}.
 $$
 
+If $\texttt{to\_string}(x_i)$ is empty or contains whitespace, a double
+quote or the separator, $r_i$ is that string wrapped in double quotes, with
+`\` and `"` escaped by a backslash. This makes the rendering injective: $s$
+can always be split back into $r_0, \dots, r_{n-1}$.
+
 A span from element $a$ with offset $k$ covers elements $a$ to $a + k$, and
 
 $$
@@ -59,7 +64,6 @@ other:
 | Wide characters (CJK, emoji) | one character is 2 columns but 1 or 2 code units; the marker drifts left | [#6](https://github.com/moonbit-community/err_marker/issues/6) |
 | Surrogate pairs | positions are code units, so an odd offset splits a character | [#7](https://github.com/moonbit-community/err_marker/issues/7) |
 | Tabs inside the span | a tab gets one marker character although it moves to the next tab stop; tabs before the span are copied into the padding and no longer shift the marker | [#8](https://github.com/moonbit-community/err_marker/issues/8) |
-| Separators inside elements, empty elements | the joined text cannot be split back into elements | [#11](https://github.com/moonbit-community/err_marker/issues/11) |
 
 ## The model in 0.2.0
 

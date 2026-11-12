@@ -52,66 +52,66 @@ msgid "Builds a sequence from an array whose elements are rendered with `Show` a
 msgstr ""
 
 #: manual/api/core.md:49
-msgid "`join` defaults to a single space. Positions in this sequence are element indices: position `i` covers the rendered text of element `i`. Elements are not quoted, so an element that is empty or contains the separator cannot be told apart from its neighbours ([#11](https://github.com/moonbit-community/err_marker/issues/11))."
+msgid "`join` defaults to a single space. Positions in this sequence are element indices: position `i` covers the rendered text of element `i`. An element that is empty, or contains whitespace, a double quote or the separator, is wrapped in double quotes, with `\\` and `\"` escaped by a backslash, so the rendered line can always be split back into its elements; the marker then covers the quoted token ([#11](https://github.com/moonbit-community/err_marker/issues/11))."
 msgstr ""
 
-#: manual/api/core.md:72
+#: manual/api/core.md:73
 msgid "Builds a sequence from a string."
 msgstr ""
 
-#: manual/api/core.md:78
+#: manual/api/core.md:79
 msgid "Positions in this sequence are UTF-16 code-unit offsets into the string, which equal character indices only for text in the Basic Multilingual Plane ([#7](https://github.com/moonbit-community/err_marker/issues/7))."
 msgstr ""
 
-#: manual/api/core.md:97
+#: manual/api/core.md:98
 msgid "Error data"
 msgstr ""
 
-#: manual/api/core.md:101
+#: manual/api/core.md:102
 msgid "What went wrong and where: an optional error type, a message, a start position and an offset."
 msgstr ""
 
-#: manual/api/core.md:113
+#: manual/api/core.md:114
 msgid "The marked span is `err_pos` through `err_pos + err_offset`, both ends included, in the units of the sequence it is marked in. The fields are readable from outside the package; build values with `ErrorData::make`."
 msgstr ""
 
-#: manual/api/core.md:119
+#: manual/api/core.md:120
 msgid "Builds an `ErrorData` from a message and optional type, position and offset."
 msgstr ""
 
-#: manual/api/core.md:125
+#: manual/api/core.md:126
 msgid "The defaults are `err_type = None`, `err_pos = -1` and `err_offset = 0`. A negative `err_pos` means \"no position\": `mark` then prints an empty marker line. `make` never fails; positions are only checked when the error is marked."
 msgstr ""
 
-#: manual/api/core.md:140
+#: manual/api/core.md:141
 msgid "Rendering"
 msgstr ""
 
-#: manual/api/core.md:144
+#: manual/api/core.md:145
 msgid "Renders the sequence, a marker line under the span, and the formatted message, separated by newlines."
 msgstr ""
 
-#: manual/api/core.md:151
+#: manual/api/core.md:152
 msgid "`marker` is the character repeated under the span; it defaults to `^`."
 msgstr ""
 
-#: manual/api/core.md:152
+#: manual/api/core.md:153
 msgid "`gen_msg` formats the last line from `err_type` and `err_msg`. The default prints `Error(type): message`, or `Error: message` when `err_type` is `None`."
 msgstr ""
 
-#: manual/api/core.md:155
+#: manual/api/core.md:156
 msgid "If `err_pos` is negative, the marker line is empty. A negative `err_offset` counts as 0. A span that runs past the end is clamped to the last element or character. A start at or past the end marks the point just after the text with one marker character, which is how a missing argument is shown ([#10](https://github.com/moonbit-community/err_marker/issues/10))."
 msgstr ""
 
-#: manual/api/core.md:160
+#: manual/api/core.md:161
 msgid "The marker column counts UTF-16 code units, not terminal columns, so it is only correct for ASCII-width text ([#6](https://github.com/moonbit-community/err_marker/issues/6))."
 msgstr ""
 
-#: manual/api/core.md:162
+#: manual/api/core.md:163
 msgid "If the text has several lines, the marker line goes right under the line that holds the start of the span, with its column counted from the start of that line, and the remaining lines follow it. A span that crosses a line break is marked up to the end of its first line ([#9](https://github.com/moonbit-community/err_marker/issues/9))."
 msgstr ""
 
-#: manual/api/core.md:166
+#: manual/api/core.md:167
 msgid "Tabs before the span are copied into the marker line, so the marker lines up whatever tab width the terminal uses; a tab inside the span still gets a single marker character ([#8](https://github.com/moonbit-community/err_marker/issues/8))."
 msgstr ""
 
@@ -140,106 +140,102 @@ msgid "For elements $x_0, \\dots, x_{n-1}$ rendered as strings $r_i = \\texttt{t
 msgstr ""
 
 #: manual/design/core.md:25
+msgid "If $\\texttt{to\\_string}(x_i)$ is empty or contains whitespace, a double quote or the separator, $r_i$ is that string wrapped in double quotes, with `\\` and `\"` escaped by a backslash. This makes the rendering injective: $s$ can always be split back into $r_0, \\dots, r_{n-1}$."
+msgstr ""
+
+#: manual/design/core.md:30
 msgid "A span from element $a$ with offset $k$ covers elements $a$ to $a + k$, and"
 msgstr ""
 
-#: manual/design/core.md:32
+#: manual/design/core.md:37
 msgid "where $|r|$ is `String::length`, the number of UTF-16 code units. If $a < 0$, nothing is drawn. A negative $k$ counts as $0$, and $a + k$ is clamped to $n - 1$. If $a \\ge n$, the mark is the point after the text: $p = |s|$ and $w = 1$."
 msgstr ""
 
-#: manual/design/core.md:37
+#: manual/design/core.md:42
 msgid "Strings"
 msgstr ""
 
-#: manual/design/core.md:39
+#: manual/design/core.md:44
 msgid "For a string, the span from $a$ with offset $k$ covers code units $a$ to $a + k$, so $p = a$ and $w = k + 1$. The same rules apply with $n = |s|$: $a + k$ is clamped to $n - 1$, and $a \\ge n$ gives the point $p = n$, $w = 1$."
 msgstr ""
 
-#: manual/design/core.md:43
+#: manual/design/core.md:48
 msgid "Several lines"
 msgstr ""
 
-#: manual/design/core.md:45
+#: manual/design/core.md:50
 msgid "If $s$ contains line breaks, let $\\ell$ be the offset where the line holding the start of the span begins. The padding then covers code units $\\ell$ to $p - 1$ only, the marker line is printed right after that line, and $w$ stops at the end of the line."
 msgstr ""
 
-#: manual/design/core.md:50
+#: manual/design/core.md:55
 msgid "Where the model is wrong"
 msgstr ""
 
-#: manual/design/core.md:52
+#: manual/design/core.md:57
 msgid "The formulas measure length, but the reader sees columns. The two agree only when every code unit takes exactly one terminal column. Each known bug is a case where they disagree, or where the two sequence kinds disagree with each other:"
 msgstr ""
 
-#: manual/design/core.md:57
+#: manual/design/core.md:62
 msgid "Case"
 msgstr ""
 
-#: manual/design/core.md:57
+#: manual/design/core.md:62
 msgid "What happens"
 msgstr ""
 
-#: manual/design/core.md:57
+#: manual/design/core.md:62
 msgid "Issue"
 msgstr ""
 
-#: manual/design/core.md:59
+#: manual/design/core.md:64
 msgid "Wide characters (CJK, emoji)"
 msgstr ""
 
-#: manual/design/core.md:59
+#: manual/design/core.md:64
 msgid "one character is 2 columns but 1 or 2 code units; the marker drifts left"
 msgstr ""
 
-#: manual/design/core.md:60
+#: manual/design/core.md:65
 msgid "Surrogate pairs"
 msgstr ""
 
-#: manual/design/core.md:60
+#: manual/design/core.md:65
 msgid "positions are code units, so an odd offset splits a character"
 msgstr ""
 
-#: manual/design/core.md:61
+#: manual/design/core.md:66
 msgid "Tabs inside the span"
 msgstr ""
 
-#: manual/design/core.md:61
+#: manual/design/core.md:66
 msgid "a tab gets one marker character although it moves to the next tab stop; tabs before the span are copied into the padding and no longer shift the marker"
 msgstr ""
 
-#: manual/design/core.md:62
-msgid "Separators inside elements, empty elements"
-msgstr ""
-
-#: manual/design/core.md:62
-msgid "the joined text cannot be split back into elements"
-msgstr ""
-
-#: manual/design/core.md:64
+#: manual/design/core.md:68
 msgid "The model in 0.2.0"
 msgstr ""
 
-#: manual/design/core.md:66
+#: manual/design/core.md:70
 msgid "0.2.0 measures columns instead of length, with these decisions (details and the rejected alternatives are recorded in #5):"
 msgstr ""
 
-#: manual/design/core.md:69
+#: manual/design/core.md:73
 msgid "**Positions.** Arrays use element indices; strings use Unicode scalar indices. Every span is snapped outward to extended grapheme cluster boundaries (UAX #29). Snapping is a closure operator on spans ordered by inclusion: if $\\sigma$ snaps a span, then $S \\subseteq \\sigma(S)$, $S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$ and $\\sigma(\\sigma(S)) = \\sigma(S)$."
 msgstr ""
 
-#: manual/design/core.md:75
+#: manual/design/core.md:79
 msgid "**Columns.** Each grapheme cluster acts on the cursor $(\\ell, c)$: an ordinary cluster of width $w$ maps $c \\mapsto c + w$, a tab maps $c \\mapsto t(\\lfloor c/t \\rfloor + 1)$, and a newline maps $(\\ell, c) \\mapsto (\\ell + 1, 0)$. These moves form a monoid. Every composite is a shift, a tab move $c \\mapsto T(c + a) + b$ with $0 \\le a < t$, or a line break, because $T(T(x) + b) = T(x) + T(b)$. The marker column of a span is the move of its prefix applied to the origin."
 msgstr ""
 
-#: manual/design/core.md:82
+#: manual/design/core.md:86
 msgid "**Widths** come from tables generated from the Unicode Character Database (Unicode 18.0.0), with East Asian Width (UAX #11) for wide characters."
 msgstr ""
 
-#: manual/design/core.md:84
+#: manual/design/core.md:88
 msgid "**Several marks** overlay as a semilattice, so the output does not depend on the order in which marks are added."
 msgstr ""
 
-#: manual/design/core.md:86
+#: manual/design/core.md:90
 msgid "**Elements are quoted** when needed, so the rendered line can always be split back into its elements."
 msgstr ""
 
@@ -416,7 +412,7 @@ msgid "6. Know the limits"
 msgstr ""
 
 #: manual/tutorial/core.md:123
-msgid "In 0.1 the marker column is counted in UTF-16 code units. It is right for ASCII text: tabs are copied into the marker line so they do not shift it, and in text with several lines the marker goes under the line that holds the span. With Chinese or Japanese text or emoji it drifts. Arguments that contain spaces are printed without quotes. The [design](../design/core.md) explains why, and 0.2.0 fixes these cases ([#5](https://github.com/moonbit-community/err_marker/issues/5))."
+msgid "In 0.1 the marker column is counted in UTF-16 code units. It is right for ASCII text: tabs are copied into the marker line so they do not shift it, and in text with several lines the marker goes under the line that holds the span. With Chinese or Japanese text or emoji it drifts. The [design](../design/core.md) explains why, and 0.2.0 fixes these cases ([#5](https://github.com/moonbit-community/err_marker/issues/5))."
 msgstr ""
 
 #: manual/tutorial/core.md:131

@@ -30,6 +30,12 @@ The roadmap to 0.2.0 is tracked in
   last line with the column counted from the start of the whole text. A span
   that crosses a line break is marked up to the end of its first line
   ([#9](https://github.com/moonbit-community/err_marker/issues/9)).
+- `Sequence::from_array` quotes an element that is empty or contains
+  whitespace, a double quote or the separator (`\` and `"` are escaped inside
+  the quotes), so the rendered line can be split back into its elements and
+  an empty element can be marked. The marker covers the quoted token. Output
+  for other elements is unchanged
+  ([#11](https://github.com/moonbit-community/err_marker/issues/11)).
 
 ## [0.1.3] — 2026-11-12
 

@@ -1,4 +1,47 @@
 ///|
+/// Whether an element must be quoted so that the joined line can be split
+/// back into its elements (#11): it is empty, or contains whitespace, a double
+/// quote, or the (non-empty) separator.
+fn needs_quotes(part : String, join : String) -> Bool {
+  if part.is_empty() {
+    return true
+  }
+  if join != "" && part.contains(join) {
+    return true
+  }
+  for c in part {
+    if c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '"' {
+      return true
+    }
+  }
+  false
+}
+
+///|
+/// Renders each element with `Show`, wrapping it in double quotes when
+/// `needs_quotes` says so; inside quotes, `\` and `"` are escaped with a
+/// backslash. Line breaks stay literal, so multi-line elements still render on
+/// several lines (#9).
+fn[T : Show] render_parts(a : Array[T], join : String) -> Array[String] {
+  a.map(x => {
+    let part = x.to_string()
+    if !needs_quotes(part, join) {
+      return part
+    }
+    let sb = StringBuilder()
+    sb.write_char('"')
+    for c in part {
+      if c == '\\' || c == '"' {
+        sb.write_char('\\')
+      }
+      sb.write_char(c)
+    }
+    sb.write_char('"')
+    sb.to_string()
+  })
+}
+
+///|
 /// Locates the start and end character positions in a flattened string
 /// representation of an array sequence.
 ///
@@ -87,7 +130,7 @@ fn[T : Show] locate_span(
       } else {
         // `offset >= n - pos` avoids overflowing `pos + offset`.
         let offset = if offset >= n - pos { n - 1 - pos } else { offset }
-        err_locate_arr(a, pos, offset, join=j.length())
+        err_locate_arr(render_parts(a, j), pos, offset, join=j.length())
       }
     }
     Str(s) => {
@@ -147,7 +190,7 @@ pub fn[T : Show] ErrorData::mark(
 ) -> String {
   let (pos, offset) = (self.err_pos, self.err_offset)
   let seq_str = match seq {
-    Arr(a, j) => a.map(Show::to_string).join(j)
+    Arr(a, j) => render_parts(a, j).join(j)
     Str(s) => s
   }
   let msg = gen_msg(self.err_type, self.err_msg)
