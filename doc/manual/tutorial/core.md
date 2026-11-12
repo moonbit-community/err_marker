@@ -7,7 +7,7 @@ your own to add the dependency to.
 ## 1. Add the dependency
 
 ```bash
-moon add KCN-judu/err_marker@0.1.3
+moon add KCN-judu/err_marker@0.1.4
 ```
 
 and import the package in the `moon.pkg` of the package that reports errors:

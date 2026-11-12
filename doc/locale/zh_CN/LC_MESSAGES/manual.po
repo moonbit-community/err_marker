@@ -537,8 +537,8 @@ msgid "err_marker"
 msgstr "err_marker"
 
 #: manual/index.md:5
-msgid "This manual documents version `v0.1.3` of `KCN-judu/err_marker`."
-msgstr "本手册对应 `KCN-judu/err_marker` 的 `v0.1.3` 版。"
+msgid "This manual documents version `v0.1.4` of `KCN-judu/err_marker`."
+msgstr "本手册对应 `KCN-judu/err_marker` 的 `v0.1.4` 版。"
 
 #: manual/index.md:7
 msgid "Overview"
