@@ -152,10 +152,11 @@ pub fn[T : Show] ErrorData::mark(Self, Sequence[T], marker? : Char, gen_msg? : (
 - `gen_msg` formats the last line from `err_type` and `err_msg`. The default
   prints `Error(type): message`, or `Error: message` when `err_type` is
   `None`.
-- If `err_pos` is negative or not inside the sequence, the marker line is
-  empty. A span that runs past the end is drawn past the end of the text for
-  arrays and not at all for strings
-  ([#10](https://github.com/moonbit-community/err_marker/issues/10)).
+- If `err_pos` is negative, the marker line is empty. A negative
+  `err_offset` counts as 0. A span that runs past the end is clamped to the
+  last element or character. A start at or past the end marks the point just
+  after the text with one marker character, which is how a missing argument
+  is shown ([#10](https://github.com/moonbit-community/err_marker/issues/10)).
 - The marker column counts UTF-16 code units, not terminal columns, so it
   is only correct for ASCII-width text without newlines
   ([#6](https://github.com/moonbit-community/err_marker/issues/6), [#9](https://github.com/moonbit-community/err_marker/issues/9)).

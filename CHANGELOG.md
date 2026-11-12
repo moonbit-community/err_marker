@@ -17,6 +17,13 @@ The roadmap to 0.2.0 is tracked in
   copies tabs from the text above instead of replacing them with one space,
   so the marker lines up whatever tab width the terminal uses
   ([#8](https://github.com/moonbit-community/err_marker/issues/8)).
+- Out-of-range spans follow one rule for arrays and strings: a span that
+  runs past the end is clamped to the last element or character (arrays used
+  to draw markers past the text, strings drew none); a start at or past the
+  end marks the point after the text with one marker; a negative
+  `err_offset` counts as 0; a huge `err_offset` no longer overflows. The doc
+  comment of `err_locate_arr` no longer claims that it panics
+  ([#10](https://github.com/moonbit-community/err_marker/issues/10)).
 
 ## [0.1.3] — 2026-11-12
 
