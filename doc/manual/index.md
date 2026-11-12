@@ -20,7 +20,7 @@ The library is one package with two types and four functions. It does not
 read files, track line numbers or colour its output; it turns a sequence, a
 position and a message into three lines of text.
 
-The 0.1 series has known limits with non-ASCII text, tabs, newlines and
+The 0.1 series has known limits with non-ASCII text, newlines and
 out-of-range positions; they are listed in the [design](design/core.md) and
 tracked for 0.2.0 in
 [#5](https://github.com/moonbit-community/err_marker/issues/5).

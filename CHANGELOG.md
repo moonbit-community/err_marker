@@ -11,6 +11,13 @@ The roadmap to 0.2.0 is tracked in
 
 ## [Unreleased]
 
+### Fixed
+
+- A tab before the marked span no longer shifts the marker: the marker line
+  copies tabs from the text above instead of replacing them with one space,
+  so the marker lines up whatever tab width the terminal uses
+  ([#8](https://github.com/moonbit-community/err_marker/issues/8)).
+
 ## [0.1.3] — 2026-11-12
 
 Toolchain compatibility release. No change in rendered output.
