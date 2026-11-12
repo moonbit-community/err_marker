@@ -40,6 +40,13 @@ For a string, the span from $a$ with offset $k$ covers code units $a$ to
 $a + k$, so $p = a$ and $w = k + 1$. The same rules apply with $n = |s|$: $a + k$
 is clamped to $n - 1$, and $a \ge n$ gives the point $p = n$, $w = 1$.
 
+### Several lines
+
+If $s$ contains line breaks, let $\ell$ be the offset where the line holding
+the start of the span begins. The padding then covers code units $\ell$ to
+$p - 1$ only, the marker line is printed right after that line, and $w$ stops
+at the end of the line.
+
 ## Where the model is wrong
 
 The formulas measure length, but the reader sees columns. The two agree only
@@ -52,7 +59,6 @@ other:
 | Wide characters (CJK, emoji) | one character is 2 columns but 1 or 2 code units; the marker drifts left | [#6](https://github.com/moonbit-community/err_marker/issues/6) |
 | Surrogate pairs | positions are code units, so an odd offset splits a character | [#7](https://github.com/moonbit-community/err_marker/issues/7) |
 | Tabs inside the span | a tab gets one marker character although it moves to the next tab stop; tabs before the span are copied into the padding and no longer shift the marker | [#8](https://github.com/moonbit-community/err_marker/issues/8) |
-| Newlines | the marker is counted from the start of the text, not of its line | [#9](https://github.com/moonbit-community/err_marker/issues/9) |
 | Separators inside elements, empty elements | the joined text cannot be split back into elements | [#11](https://github.com/moonbit-community/err_marker/issues/11) |
 
 ## The model in 0.2.0

@@ -121,9 +121,9 @@ test "custom format" {
 ## 6. Know the limits
 
 In 0.1 the marker column is counted in UTF-16 code units. It is right for
-ASCII text without newlines, and tabs are copied into the marker line so they
-do not shift it; with Chinese or Japanese text, emoji or several lines it
-drifts. Arguments that contain spaces are printed
+ASCII text: tabs are copied into the marker line so they do not shift it, and
+in text with several lines the marker goes under the line that holds the
+span. With Chinese or Japanese text or emoji it drifts. Arguments that contain spaces are printed
 without quotes. The [design](../design/core.md) explains why, and 0.2.0
 fixes these cases
 ([#5](https://github.com/moonbit-community/err_marker/issues/5)).

@@ -104,10 +104,14 @@ msgid "If `err_pos` is negative, the marker line is empty. A negative `err_offse
 msgstr "`err_pos` が負のとき、マーカー行は空になります。負の `err_offset` は 0 として扱います。末尾を越える範囲は最後の要素または文字までに切り詰めます。開始位置が末尾以降のときは、テキストの直後の位置をマーカー文字 1 つで示します。引数が足りないことはこのように表します（[#10](https://github.com/moonbit-community/err_marker/issues/10)）。"
 
 #: manual/api/core.md:160
-msgid "The marker column counts UTF-16 code units, not terminal columns, so it is only correct for ASCII-width text without newlines ([#6](https://github.com/moonbit-community/err_marker/issues/6), [#9](https://github.com/moonbit-community/err_marker/issues/9))."
-msgstr "マーカー列は端末の桁ではなく UTF-16 コード単位で数えるため、改行を含まず ASCII と同じ幅のテキストでしか正しくありません（[#6](https://github.com/moonbit-community/err_marker/issues/6)、[#9](https://github.com/moonbit-community/err_marker/issues/9)）。"
+msgid "The marker column counts UTF-16 code units, not terminal columns, so it is only correct for ASCII-width text ([#6](https://github.com/moonbit-community/err_marker/issues/6))."
+msgstr "マーカー列は端末の桁ではなく UTF-16 コード単位で数えるため、ASCII と同じ幅のテキストでしか正しくありません（[#6](https://github.com/moonbit-community/err_marker/issues/6)）。"
 
-#: manual/api/core.md:163
+#: manual/api/core.md:162
+msgid "If the text has several lines, the marker line goes right under the line that holds the start of the span, with its column counted from the start of that line, and the remaining lines follow it. A span that crosses a line break is marked up to the end of its first line ([#9](https://github.com/moonbit-community/err_marker/issues/9))."
+msgstr "テキストが複数行のとき、マーカー行は範囲の開始位置を含む行の直下に置かれ、桁はその行の先頭から数えます。残りの行はマーカー行の後に続きます。改行をまたぐ範囲は最初の行の末尾までマークします（[#9](https://github.com/moonbit-community/err_marker/issues/9)）。"
+
+#: manual/api/core.md:166
 msgid "Tabs before the span are copied into the marker line, so the marker lines up whatever tab width the terminal uses; a tab inside the span still gets a single marker character ([#8](https://github.com/moonbit-community/err_marker/issues/8))."
 msgstr "範囲より前のタブはマーカー行にそのままコピーされるため、端末のタブ幅にかかわらずマーカーが揃います。範囲内のタブには引き続きマーカー文字が 1 つだけ付きます（[#8](https://github.com/moonbit-community/err_marker/issues/8)）。"
 
@@ -152,90 +156,90 @@ msgid "For a string, the span from $a$ with offset $k$ covers code units $a$ to 
 msgstr "文字列では、$a$ から始まりオフセット $k$ の範囲はコード単位 $a$ から $a + k$ までを覆うので、$p = a$、$w = k + 1$ です。$n = |s|$ として同じ規則が適用されます。$a + k$ は $n - 1$ までに切り詰められ、$a \\ge n$ のときは位置 $p = n$、$w = 1$ になります。"
 
 #: manual/design/core.md:43
+msgid "Several lines"
+msgstr "複数行のテキスト"
+
+#: manual/design/core.md:45
+msgid "If $s$ contains line breaks, let $\\ell$ be the offset where the line holding the start of the span begins. The padding then covers code units $\\ell$ to $p - 1$ only, the marker line is printed right after that line, and $w$ stops at the end of the line."
+msgstr "$s$ が改行を含むとき、範囲の開始位置を含む行が始まるオフセットを $\\ell$ とします。このとき埋め文字はコード単位 $\\ell$ から $p - 1$ までだけを覆い、マーカー行はその行の直後に出力され、$w$ はその行の末尾で止まります。"
+
+#: manual/design/core.md:50
 msgid "Where the model is wrong"
 msgstr "モデルが誤る箇所"
 
-#: manual/design/core.md:45
+#: manual/design/core.md:52
 msgid "The formulas measure length, but the reader sees columns. The two agree only when every code unit takes exactly one terminal column. Each known bug is a case where they disagree, or where the two sequence kinds disagree with each other:"
 msgstr "式が測るのは長さですが、読み手が見るのは桁です。両者が一致するのは、すべてのコード単位がちょうど 1 桁を占めるときだけです。既知のバグはどれも、両者が食い違うか、2 種類のシーケンスの挙動が食い違う場合です。"
 
-#: manual/design/core.md:50
+#: manual/design/core.md:57
 msgid "Case"
 msgstr "ケース"
 
-#: manual/design/core.md:50
+#: manual/design/core.md:57
 msgid "What happens"
 msgstr "起きること"
 
-#: manual/design/core.md:50
+#: manual/design/core.md:57
 msgid "Issue"
 msgstr "Issue"
 
-#: manual/design/core.md:52
+#: manual/design/core.md:59
 msgid "Wide characters (CJK, emoji)"
 msgstr "全角文字（CJK、絵文字）"
 
-#: manual/design/core.md:52
+#: manual/design/core.md:59
 msgid "one character is 2 columns but 1 or 2 code units; the marker drifts left"
 msgstr "1 文字が 2 桁を占めるのに 1 または 2 コード単位なので、マーカーが左にずれる"
 
-#: manual/design/core.md:53
+#: manual/design/core.md:60
 msgid "Surrogate pairs"
 msgstr "サロゲートペア"
 
-#: manual/design/core.md:53
+#: manual/design/core.md:60
 msgid "positions are code units, so an odd offset splits a character"
 msgstr "位置がコード単位なので、奇数のオフセットが 1 文字を分断する"
 
-#: manual/design/core.md:54
+#: manual/design/core.md:61
 msgid "Tabs inside the span"
 msgstr "範囲内のタブ"
 
-#: manual/design/core.md:54
+#: manual/design/core.md:61
 msgid "a tab gets one marker character although it moves to the next tab stop; tabs before the span are copied into the padding and no longer shift the marker"
 msgstr "タブは次のタブ位置まで進むのにマーカー文字は 1 つだけ。範囲より前のタブは埋め文字にコピーされ、マーカーをずらさなくなった"
 
-#: manual/design/core.md:55
-msgid "Newlines"
-msgstr "改行"
-
-#: manual/design/core.md:55
-msgid "the marker is counted from the start of the text, not of its line"
-msgstr "マーカーが行頭ではなくテキスト全体の先頭から数えられる"
-
-#: manual/design/core.md:56
+#: manual/design/core.md:62
 msgid "Separators inside elements, empty elements"
 msgstr "区切り文字を含む要素、空の要素"
 
-#: manual/design/core.md:56
+#: manual/design/core.md:62
 msgid "the joined text cannot be split back into elements"
 msgstr "連結したテキストを元の要素に分割し直せない"
 
-#: manual/design/core.md:58
+#: manual/design/core.md:64
 msgid "The model in 0.2.0"
 msgstr "0.2.0 のモデル"
 
-#: manual/design/core.md:60
+#: manual/design/core.md:66
 msgid "0.2.0 measures columns instead of length, with these decisions (details and the rejected alternatives are recorded in #5):"
 msgstr "0.2.0 では長さではなく桁を測ります。決定事項は次のとおりです（詳細と却下した案は #5 に記録されています）。"
 
-#: manual/design/core.md:63
+#: manual/design/core.md:69
 msgid "**Positions.** Arrays use element indices; strings use Unicode scalar indices. Every span is snapped outward to extended grapheme cluster boundaries (UAX #29). Snapping is a closure operator on spans ordered by inclusion: if $\\sigma$ snaps a span, then $S \\subseteq \\sigma(S)$, $S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$ and $\\sigma(\\sigma(S)) = \\sigma(S)$."
 msgstr "**位置。** 配列は要素の添字、文字列は Unicode スカラー値の添字を使います。各範囲は拡張書記素クラスタの境界（UAX #29）まで外側に揃えられます。この揃えは包含順序に関する範囲上の閉包作用素です。$\\sigma$ を揃えとすると、$S \\subseteq \\sigma(S)$、$S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$、$\\sigma(\\sigma(S)) = \\sigma(S)$ が成り立ちます。"
 
-#: manual/design/core.md:69
+#: manual/design/core.md:75
 msgid "**Columns.** Each grapheme cluster acts on the cursor $(\\ell, c)$: an ordinary cluster of width $w$ maps $c \\mapsto c + w$, a tab maps $c \\mapsto t(\\lfloor c/t \\rfloor + 1)$, and a newline maps $(\\ell, c) \\mapsto (\\ell + 1, 0)$. These moves form a monoid. Every composite is a shift, a tab move $c \\mapsto T(c + a) + b$ with $0 \\le a < t$, or a line break, because $T(T(x) + b) = T(x) + T(b)$. The marker column of a span is the move of its prefix applied to the origin."
 msgstr "**桁。** 各書記素クラスタはカーソル $(\\ell, c)$ に作用します。幅 $w$ の通常のクラスタは $c \\mapsto c + w$、タブは $c \\mapsto t(\\lfloor c/t \\rfloor + 1)$、改行は $(\\ell, c) \\mapsto (\\ell + 1, 0)$ です。これらの移動はモノイドをなします。$T(T(x) + b) = T(x) + T(b)$ なので、任意の合成はシフト、タブ移動 $c \\mapsto T(c + a) + b$（$0 \\le a < t$）、改行のいずれかです。範囲のマーカー列は、その前置部分の移動を原点に作用させた結果です。"
 
-#: manual/design/core.md:76
+#: manual/design/core.md:82
 msgid "**Widths** come from tables generated from the Unicode Character Database (Unicode 18.0.0), with East Asian Width (UAX #11) for wide characters."
 msgstr "**幅** は Unicode 文字データベース（Unicode 18.0.0）から生成した表に基づき、全角文字は東アジアの文字幅（UAX #11）で判定します。"
 
-#: manual/design/core.md:78
+#: manual/design/core.md:84
 msgid "**Several marks** overlay as a semilattice, so the output does not depend on the order in which marks are added."
 msgstr "**複数のマーク** の重ね合わせは半束をなすので、出力はマークを追加する順序に依存しません。"
 
-#: manual/design/core.md:80
+#: manual/design/core.md:86
 msgid "**Elements are quoted** when needed, so the rendered line can always be split back into its elements."
 msgstr "**要素は必要に応じて引用符で囲まれる** ので、レンダリングした行は常に元の要素に分割し直せます。"
 
@@ -260,8 +264,8 @@ msgid "The library is one package with two types and four functions. It does not
 msgstr "このライブラリは 1 つのパッケージで、2 つの型と 4 つの関数からなります。ファイルを読まず、行番号も追跡せず、出力に色も付けません。シーケンス・位置・メッセージを 3 行のテキストに変換するだけです。"
 
 #: manual/index.md:23
-msgid "The 0.1 series has known limits with non-ASCII text and newlines; they are listed in the [design](design/core.md) and tracked for 0.2.0 in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
-msgstr "0.1 系には、非 ASCII テキストと改行について既知の制限があります。これらは[設計](design/core.md)に列挙され、0.2.0 に向けて [#5](https://github.com/moonbit-community/err_marker/issues/5) で追跡されています。"
+msgid "The 0.1 series has known limits with non-ASCII text; they are listed in the [design](design/core.md) and tracked for 0.2.0 in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
+msgstr "0.1 系には、非 ASCII テキストについて既知の制限があります。これらは[設計](design/core.md)に列挙され、0.2.0 に向けて [#5](https://github.com/moonbit-community/err_marker/issues/5) で追跡されています。"
 
 #: manual/index.md:27
 msgid "Install"
@@ -412,8 +416,8 @@ msgid "6. Know the limits"
 msgstr "6. 制限を知る"
 
 #: manual/tutorial/core.md:123
-msgid "In 0.1 the marker column is counted in UTF-16 code units. It is right for ASCII text without newlines, and tabs are copied into the marker line so they do not shift it; with Chinese or Japanese text, emoji or several lines it drifts. Arguments that contain spaces are printed without quotes. The [design](../design/core.md) explains why, and 0.2.0 fixes these cases ([#5](https://github.com/moonbit-community/err_marker/issues/5))."
-msgstr "0.1 では、マーカー列は UTF-16 コード単位で数えられます。改行を含まない ASCII テキストでは正しく、タブはマーカー行にコピーされるのでマーカーをずらしません。中国語や日本語のテキスト、絵文字、複数行ではずれます。空白を含む引数は引用符なしで出力されます。理由は[設計](../design/core.md)で説明しており、0.2.0 でこれらのケースは修正されます（[#5](https://github.com/moonbit-community/err_marker/issues/5)）。"
+msgid "In 0.1 the marker column is counted in UTF-16 code units. It is right for ASCII text: tabs are copied into the marker line so they do not shift it, and in text with several lines the marker goes under the line that holds the span. With Chinese or Japanese text or emoji it drifts. Arguments that contain spaces are printed without quotes. The [design](../design/core.md) explains why, and 0.2.0 fixes these cases ([#5](https://github.com/moonbit-community/err_marker/issues/5))."
+msgstr "0.1 では、マーカー列は UTF-16 コード単位で数えられます。ASCII テキストでは正しく、タブはマーカー行にコピーされるのでマーカーをずらさず、複数行のテキストではマーカーは範囲を含む行の下に置かれます。中国語や日本語のテキスト、絵文字ではずれます。空白を含む引数は引用符なしで出力されます。理由は[設計](../design/core.md)で説明しており、0.2.0 でこれらのケースは修正されます（[#5](https://github.com/moonbit-community/err_marker/issues/5)）。"
 
 #: manual/tutorial/core.md:131
 msgid "Next"
@@ -422,6 +426,12 @@ msgstr "次へ"
 #: manual/tutorial/core.md:133
 msgid "Read the [API](../api/core.md) for every parameter and edge case."
 msgstr "各パラメータと境界ケースについては [API](../api/core.md) を読んでください。"
+
+#~ msgid "Newlines"
+#~ msgstr "改行"
+
+#~ msgid "the marker is counted from the start of the text, not of its line"
+#~ msgstr "マーカーが行頭ではなくテキスト全体の先頭から数えられる"
 
 #~ msgid "Spans past the end"
 #~ msgstr "末尾を越える範囲"
