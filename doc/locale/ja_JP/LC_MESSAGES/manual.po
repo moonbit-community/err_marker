@@ -17,6 +17,7 @@ msgstr "core API"
 
 #: manual/api/core.md:5
 #: manual/api/cursor.md:5
+#: manual/api/error_report.md:3
 msgid "Purpose"
 msgstr "目的"
 
@@ -26,6 +27,7 @@ msgstr "`KCN-judu/err_marker` のルートパッケージは、シーケンス�
 
 #: manual/api/core.md:13
 #: manual/api/cursor.md:13
+#: manual/api/error_report.md:11
 msgid "Importing"
 msgstr "インポート"
 
@@ -194,6 +196,10 @@ msgstr "コマンドライン引数の配列をシーケンスとして扱いま
 msgid "The Unicode scalar index of a UTF-16 offset, for callers whose positions come from `String` indexing. An offset inside a surrogate pair counts that pair as not yet passed."
 msgstr "UTF-16 オフセットに対応する Unicode スカラー値の添字で、位置を `String` の添字アクセスから得る呼び出し側のためのものです。サロゲートペアの途中にあるオフセットは、そのペアをまだ通過していないものとして数えます。"
 
+#: manual/api/core.md:356
+msgid "`rendered` is the text that `Report::render` draws for the sequence, with elements quoted when needed. `locate` gives the scalar span in that text where a span lands after the hull, clamping and snapping steps of `render`. Together they let other renderers, such as the [`error_report`](error_report.md) adapter, draw exactly the same places."
+msgstr "`rendered` は `Report::render` がそのシーケンスについて描くテキストで、必要に応じて要素が引用符で囲まれます。`locate` は、範囲が `render` の凸包・切り詰め・揃えの手順を経た後に、そのテキスト上で占めるスカラー範囲を返します。この 2 つを使えば、[`error_report`](error_report.md) アダプタのような別のレンダラーでもまったく同じ場所を描けます。"
+
 #: manual/api/cursor.md:1
 msgid "cursor API"
 msgstr "cursor API"
@@ -271,6 +277,22 @@ msgstr ""
 "`cluster` は 1 つのクラスタの移動です。`\"\\t\"` はタブ、`\"\\n"
 "\"`・`\"\\r\"`・`\"\\r\\n"
 "\"` は改行で、それ以外は幅の分だけシフトします。`text` は文字列のすべてのクラスタの移動を合成します。これはモノイド準同型です。"
+
+#: manual/api/error_report.md:1
+msgid "error_report API"
+msgstr "error_report API"
+
+#: manual/api/error_report.md:5
+msgid "`KCN-judu/err_marker/error_report` converts an `err_marker` report into a [`marianoguerra/error-report`](https://mooncakes.io/docs/marianoguerra/error-report) report, for programs that want its gutter layout, JSON output or fixes. It is the only package of the module that uses `error-report`; the design is in [design](../design/error_report.md)."
+msgstr "`KCN-judu/err_marker/error_report` は `err_marker` のレポートを [`marianoguerra/error-report`](https://mooncakes.io/docs/marianoguerra/error-report) のレポートに変換します。行番号欄付きのレイアウト、JSON 出力、修正案を使いたいプログラム向けです。このモジュールで `error-report` を使うのはこのパッケージだけです。設計は[設計](../design/error_report.md)にあります。"
+
+#: manual/api/error_report.md:22
+msgid "Conversion"
+msgstr "変換"
+
+#: manual/api/error_report.md:30
+msgid "Returns the converted report and the `Sources` that hold the rendered sequence under `name` (default `\"input\"`). Spans are located exactly as `Report::render` locates them and converted to the UTF-16 offsets that `error-report` uses. `Error` and `Warning` keep their severity; `Note` and `Help` become `Advice`. Marks keep their style, message and priority; notes stay notes. Render the result with any `error-report` renderer."
+msgstr "変換したレポートと、レンダリングしたシーケンスを `name`（既定値 `\"input\"`）で保持する `Sources` を返します。範囲は `Report::render` とまったく同じ方法で位置づけられ、`error-report` が使う UTF-16 オフセットに変換されます。`Error` と `Warning` は重大度をそのまま保ち、`Note` と `Help` は `Advice` になります。マークはスタイル・メッセージ・優先度を保ち、注記は注記のままです。結果は任意の `error-report` のレンダラーで描画できます。"
 
 #: manual/design/core.md:1
 msgid "core design"
@@ -532,6 +554,46 @@ msgstr "テスト"
 msgid "The laws are checked exhaustively rather than by sampling: for tab widths 1 to 4 and every text of up to four pieces drawn from a narrow letter, a wide character, a tab and a line break, the tests check associativity, identity, the homomorphism law, that equal actions give equal moves, and that `apply` agrees with stepping the cursor directly. Changing either composition rule for tab moves, or representing a width-1 tab as $U$, makes them fail."
 msgstr "法則は抽出ではなく網羅的に検査します。タブ幅 1 から 4 と、半角文字・全角文字・タブ・改行から最大 4 つを並べたすべてのテキストについて、結合律、単位元、準同型の法則、作用が同じ移動は等しいこと、`apply` がカーソルを直接 1 つずつ進めた結果と一致することを確かめます。タブ移動の合成規則のどちらかを変えるか、幅 1 のタブを $U$ で表すと、テストは失敗します。"
 
+#: manual/design/error_report.md:1
+msgid "error_report design"
+msgstr "error_report の設計"
+
+#: manual/design/error_report.md:3
+msgid "Why an adapter"
+msgstr "なぜアダプタなのか"
+
+#: manual/design/error_report.md:5
+msgid "`err_marker` 0.2.0 draws one compact layout for sequences such as command-line arguments. `marianoguerra/error-report` draws reports over source files, with a gutter, several sources and JSON output. Rather than grow a second general renderer, `err_marker` converts its reports into `error-report` reports, and users choose the output they need."
+msgstr "`err_marker` 0.2.0 は、コマンドライン引数のようなシーケンスに対して 1 つのコンパクトなレイアウトを描きます。`marianoguerra/error-report` は、行番号欄・複数のソース・JSON 出力を備え、ソースファイル上にレポートを描きます。`err_marker` は 2 つ目の汎用レンダラーを育てる代わりに、自分のレポートを `error-report` のレポートに変換し、利用者が必要な出力を選べるようにします。"
+
+#: manual/design/error_report.md:11
+msgid "Same places in both renderers"
+msgstr "2 つのレンダラーで同じ場所"
+
+#: manual/design/error_report.md:13
+msgid "The conversion does not recompute positions. It asks the sequence where each span lands with `Sequence::locate`, which runs the same steps as `Report::render`: the hull of the elements, clamping, and snapping to grapheme clusters. It then converts the scalar span into UTF-16 offsets with `Source::span_of_chars` of `error-report`. A mark therefore covers the same characters in both layouts, including whole emoji and combining sequences."
+msgstr "変換では位置を計算し直しません。`Sequence::locate` を使って各範囲がどこに当たるかをシーケンスに尋ねます。この関数は `Report::render` と同じ手順、つまり要素の凸包、切り詰め、書記素クラスタへの揃えを実行します。その後、`error-report` の `Source::span_of_chars` でスカラー範囲を UTF-16 オフセットに変換します。したがって、マークは両方のレイアウトで同じ文字を覆い、絵文字や結合文字の並びも丸ごと覆います。"
+
+#: manual/design/error_report.md:20
+msgid "Mapping"
+msgstr "対応"
+
+#: manual/design/error_report.md:26
+msgid "`Label::primary` / `secondary`, with the priority"
+msgstr "`Label::primary` / `secondary`（優先度付き）"
+
+#: manual/design/error_report.md:27
+msgid "notes"
+msgstr "注記"
+
+#: manual/design/error_report.md:29
+msgid "Dependency"
+msgstr "依存関係"
+
+#: manual/design/error_report.md:31
+msgid "The adapter is the only package that imports `error-report`, but a MoonBit module declares dependencies for all its packages, so installing `err_marker` also fetches `error-report`. It has no dependencies of its own."
+msgstr "`error-report` をインポートするのはアダプタだけですが、MoonBit のモジュールはすべてのパッケージの依存関係をまとめて宣言するので、`err_marker` をインストールすると `error-report` も取得されます。このパッケージ自体には依存関係がありません。"
+
 #: manual/index.md:1
 msgid "err_marker"
 msgstr "err_marker"
@@ -561,114 +623,134 @@ msgid "Install"
 msgstr "インストール"
 
 #: manual/index.md:33
-msgid "Then import `\"KCN-judu/err_marker\"` in your `moon.pkg`; the package is available as `@err_marker`. The module needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and depends only on `moonbitlang/core`."
-msgstr "次に `moon.pkg` で `\"KCN-judu/err_marker\"` をインポートします。パッケージは `@err_marker` として使えます。このモジュールには MoonBit ツールチェーン 0.10 以降（`moonc` ≥ 0.10）が必要で、依存するのは `moonbitlang/core` だけです。"
+msgid "Then import `\"KCN-judu/err_marker\"` in your `moon.pkg`; the package is available as `@err_marker`. The module needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and depends on `moonbitlang/core` and, for the `error_report` adapter only, `marianoguerra/error-report`."
+msgstr "次に `moon.pkg` で `\"KCN-judu/err_marker\"` をインポートします。パッケージは `@err_marker` として使えます。このモジュールには MoonBit ツールチェーン 0.10 以降（`moonc` ≥ 0.10）が必要で、`moonbitlang/core` と、`error_report` アダプタ専用の `marianoguerra/error-report` に依存します。"
 
-#: manual/index.md:37
+#: manual/index.md:38
 msgid "Pages"
 msgstr "ページ"
 
-#: manual/index.md:39
-msgid "The module has two public packages: the root package at `src`, documented as `core`, and `src/cursor`, documented as `cursor`."
-msgstr "このモジュールには公開パッケージが 2 つあります。`src` にあるルートパッケージ（ドキュメントでは `core`）と、`src/cursor`（ドキュメントでは `cursor`）です。"
+#: manual/index.md:40
+msgid "The module has three public packages: the root package at `src`, documented as `core`; `src/cursor`, documented as `cursor`; and `src/error_report`, documented as `error_report`."
+msgstr "このモジュールには公開パッケージが 3 つあります。`src` にあるルートパッケージ（ドキュメントでは `core`）、`src/cursor`（ドキュメントでは `cursor`）、`src/error_report`（ドキュメントでは `error_report`）です。"
 
-#: manual/index.md:42
+#: manual/index.md:44
 msgid "Part"
 msgstr "部分"
 
-#: manual/index.md:42
+#: manual/index.md:44
 msgid "Tutorial"
 msgstr "チュートリアル"
 
-#: manual/index.md:42
+#: manual/index.md:44
 msgid "API"
 msgstr "API"
 
-#: manual/index.md:42
+#: manual/index.md:44
 msgid "Design"
 msgstr "設計"
 
-#: manual/index.md:44
+#: manual/index.md:46
 msgid "`core`: sequences, error data and marking"
 msgstr "`core`：シーケンス、エラーデータ、マーク"
 
-#: manual/index.md:44
+#: manual/index.md:46
 msgid "[tutorial](tutorial/core.md)"
 msgstr "[チュートリアル](tutorial/core.md)"
 
-#: manual/index.md:44
+#: manual/index.md:46
 msgid "[API](api/core.md)"
 msgstr "[API](api/core.md)"
 
-#: manual/index.md:44
+#: manual/index.md:46
 msgid "[design](design/core.md)"
 msgstr "[設計](design/core.md)"
 
-#: manual/index.md:45
+#: manual/index.md:47
 msgid "`cursor`: terminal columns of text (Unicode 18.0.0)"
 msgstr "`cursor`：テキストの端末上の桁（Unicode 18.0.0）"
 
-#: manual/index.md:45
+#: manual/index.md:47
 msgid "[tutorial](tutorial/cursor.md)"
 msgstr "[チュートリアル](tutorial/cursor.md)"
 
-#: manual/index.md:45
+#: manual/index.md:47
 msgid "[API](api/cursor.md)"
 msgstr "[API](api/cursor.md)"
 
-#: manual/index.md:45
+#: manual/index.md:47
 msgid "[design](design/cursor.md)"
 msgstr "[設計](design/cursor.md)"
 
-#: manual/index.md:47
+#: manual/index.md:48
+msgid "`error_report`: conversion to `marianoguerra/error-report`"
+msgstr "`error_report`：`marianoguerra/error-report` への変換"
+
+#: manual/index.md:48
+msgid "[tutorial](tutorial/error_report.md)"
+msgstr "[チュートリアル](tutorial/error_report.md)"
+
+#: manual/index.md:48
+msgid "[API](api/error_report.md)"
+msgstr "[API](api/error_report.md)"
+
+#: manual/index.md:48
+msgid "[design](design/error_report.md)"
+msgstr "[設計](design/error_report.md)"
+
+#: manual/index.md:50
 msgid "Exported items"
 msgstr "エクスポートされる項目"
 
-#: manual/index.md:49
+#: manual/index.md:52
 msgid "Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`"
 msgstr "シーケンス：`Sequence`、`Sequence::from_array`、`Sequence::from_string`"
 
-#: manual/index.md:50
+#: manual/index.md:53
 msgid "Error data: `ErrorData`, `ErrorData::make`"
 msgstr "エラーデータ：`ErrorData`、`ErrorData::make`"
 
-#: manual/index.md:51
+#: manual/index.md:54
 msgid "Rendering: `ErrorData::mark`"
 msgstr "レンダリング：`ErrorData::mark`"
 
-#: manual/index.md:52
-msgid "Reports (0.2.0): `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `utf16_to_scalar`"
-msgstr "レポート（0.2.0）：`Severity`、`Style`、`Span`、`Mark`、`Report`、`Report::render`、`Sequence::from_args`、`utf16_to_scalar`"
+#: manual/index.md:55
+msgid "Reports (0.2.0): `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `Sequence::rendered`, `Sequence::locate`, `utf16_to_scalar`"
+msgstr "レポート（0.2.0）：`Severity`、`Style`、`Span`、`Mark`、`Report`、`Report::render`、`Sequence::from_args`、`Sequence::rendered`、`Sequence::locate`、`utf16_to_scalar`"
 
-#: manual/index.md:53
+#: manual/index.md:56
 msgid "Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`"
 msgstr "カーソル（`@cursor`）：`Pos`、`Move`、`Model`、`clusters`"
 
-#: manual/index.md:55
+#: manual/index.md:57
+msgid "Adapter (`@error_report`): `to_error_report`"
+msgstr "アダプタ（`@error_report`）：`to_error_report`"
+
+#: manual/index.md:59
 msgid "Where to read next"
 msgstr "次に読むもの"
 
-#: manual/index.md:57
+#: manual/index.md:61
 msgid "New to the package: the [tutorial](tutorial/core.md) builds a small argument checker and prints its errors."
 msgstr "パッケージを初めて使う場合：[チュートリアル](tutorial/core.md)で小さな引数チェッカーを作り、そのエラーを出力します。"
 
-#: manual/index.md:59
+#: manual/index.md:63
 msgid "Using it in a program: keep the [API](api/core.md) at hand."
 msgstr "プログラムで使う場合：[API](api/core.md) を手元に置いてください。"
 
-#: manual/index.md:60
+#: manual/index.md:64
 msgid "Contributing, or relying on exact output: read the [design](design/core.md), which states how the marker column is computed and where the 0.1 model breaks, and [CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md)."
 msgstr "貢献する場合や正確な出力に依存する場合：マーカー列の計算方法と 0.1 のモデルが破綻する箇所を説明する[設計](design/core.md)と、[CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md) を読んでください。"
 
-#: manual/index.md:64
+#: manual/index.md:68
 msgid "Validation"
 msgstr "検証"
 
-#: manual/index.md:66
+#: manual/index.md:70
 msgid "Recommended release checks:"
 msgstr "推奨するリリース前チェック："
 
-#: manual/index.md:73
+#: manual/index.md:77
 msgid "`just test-all` runs the tests on wasm, wasm-gc, js and native, in debug and release."
 msgstr "`just test-all` は wasm、wasm-gc、js、native でテストを debug と release の両方で実行します。"
 
@@ -800,6 +882,26 @@ msgstr "移動は合成できるので、長いテキストの移動を部分か
 #: manual/tutorial/cursor.md:74
 msgid "The [design](../design/cursor.md) explains why every move has one of three forms."
 msgstr "すべての移動が 3 つの形のいずれかになる理由は[設計](../design/cursor.md)で説明しています。"
+
+#: manual/tutorial/error_report.md:1
+msgid "error_report tutorial"
+msgstr "error_report チュートリアル"
+
+#: manual/tutorial/error_report.md:3
+msgid "Use this package when you already build `err_marker` reports but want `error-report` to print them. Import it as in the [API](../api/error_report.md)."
+msgstr "`err_marker` のレポートをすでに作っていて、それを `error-report` に出力させたいときにこのパッケージを使います。インポートは [API](../api/error_report.md) のとおりです。"
+
+#: manual/tutorial/error_report.md:6
+msgid "1. Build a report as usual"
+msgstr "1. いつもどおりレポートを作る"
+
+#: manual/tutorial/error_report.md:15
+msgid "2. Convert and render"
+msgstr "2. 変換して描画する"
+
+#: manual/tutorial/error_report.md:22
+msgid "This prints the `error-report` layout with a gutter, the location `argv:1:21` and the message under the marked argument. The marked place is the same one `report.render(args)` marks, because both use `Sequence::locate`."
+msgstr "これにより、行番号欄、位置 `argv:1:21`、マークした引数の下のメッセージを含む `error-report` のレイアウトが出力されます。マークされる場所は `report.render(args)` がマークする場所と同じです。どちらも `Sequence::locate` を使うからです。"
 
 #~ msgid "The module is one MoonBit package at `src`, documented as `core`."
 #~ msgstr "このモジュールは `src` にある 1 つの MoonBit パッケージで、ドキュメントでは `core` と呼びます。"

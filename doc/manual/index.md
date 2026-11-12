@@ -32,25 +32,29 @@ moon add KCN-judu/err_marker@0.1.3
 
 Then import `"KCN-judu/err_marker"` in your `moon.pkg`; the package is
 available as `@err_marker`. The module needs the MoonBit toolchain 0.10 or
-later (`moonc` ≥ 0.10) and depends only on `moonbitlang/core`.
+later (`moonc` ≥ 0.10) and depends on `moonbitlang/core` and, for the
+`error_report` adapter only, `marianoguerra/error-report`.
 
 ## Pages
 
-The module has two public packages: the root package at `src`, documented as
-`core`, and `src/cursor`, documented as `cursor`.
+The module has three public packages: the root package at `src`, documented
+as `core`; `src/cursor`, documented as `cursor`; and `src/error_report`,
+documented as `error_report`.
 
 | Part | Tutorial | API | Design |
 | --- | --- | --- | --- |
 | `core`: sequences, error data and marking | [tutorial](tutorial/core.md) | [API](api/core.md) | [design](design/core.md) |
 | `cursor`: terminal columns of text (Unicode 18.0.0) | [tutorial](tutorial/cursor.md) | [API](api/cursor.md) | [design](design/cursor.md) |
+| `error_report`: conversion to `marianoguerra/error-report` | [tutorial](tutorial/error_report.md) | [API](api/error_report.md) | [design](design/error_report.md) |
 
 ## Exported items
 
 - Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`
 - Error data: `ErrorData`, `ErrorData::make`
 - Rendering: `ErrorData::mark`
-- Reports (0.2.0): `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `utf16_to_scalar`
+- Reports (0.2.0): `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `Sequence::rendered`, `Sequence::locate`, `utf16_to_scalar`
 - Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`
+- Adapter (`@error_report`): `to_error_report`
 
 ## Where to read next
 
