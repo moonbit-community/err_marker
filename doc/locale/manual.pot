@@ -22,182 +22,141 @@ msgid "Purpose"
 msgstr ""
 
 #: manual/api/core.md:7
-msgid "The root package of `KCN-judu/err_marker` turns a sequence, a position and a message into a three-line error report: the rendered sequence, a marker line under the position, and the message. Its public surface is recorded in `src/pkg.generated.mbti`; how the marker column is computed, and where that computation is wrong in 0.1, is explained in the [design](../design/core.md)."
+msgid "The root package of `KCN-judu/err_marker` turns a report (a severity, a message and marks on places) and a sequence (command-line arguments, tokens or a string) into a few lines of text: the line with the marks, a marker row, messages and the header. Its public surface is recorded in `src/pkg.generated.mbti`; the contract behind the columns is in the [design](../design/core.md). The 0.1 API, `ErrorData::mark`, is deprecated and listed at the end."
 msgstr ""
 
-#: manual/api/core.md:13
+#: manual/api/core.md:15
 #: manual/api/cursor.md:13
 #: manual/api/error_report.md:11
 msgid "Importing"
 msgstr ""
 
-#: manual/api/core.md:15
+#: manual/api/core.md:17
 msgid "Add the package to your `moon.pkg`:"
 msgstr ""
 
-#: manual/api/core.md:23
+#: manual/api/core.md:25
 msgid "The examples on this page call it as `@err_marker`."
 msgstr ""
 
-#: manual/api/core.md:25
+#: manual/api/core.md:27
 msgid "Sequences"
 msgstr ""
 
-#: manual/api/core.md:29
+#: manual/api/core.md:31
 msgid "The text that an error is marked in: an array of elements joined by a separator, or a string."
 msgstr ""
 
-#: manual/api/core.md:36
-msgid "The type is abstract; build values with `Sequence::from_array` or `Sequence::from_string`. The type parameter is the element type, which must implement `Show` when the sequence is rendered by `ErrorData::mark`."
+#: manual/api/core.md:38
+msgid "The type is abstract; build values with `Sequence::from_array` or `Sequence::from_string`. The type parameter is the element type, which must implement `Show` when the sequence is rendered."
 msgstr ""
 
-#: manual/api/core.md:42
+#: manual/api/core.md:44
 msgid "Builds a sequence from an array whose elements are rendered with `Show` and joined by `join`."
 msgstr ""
 
-#: manual/api/core.md:49
-msgid "`join` defaults to a single space. Positions in this sequence are element indices: position `i` covers the rendered text of element `i`. An element that is empty, or contains whitespace, a double quote or the separator, is wrapped in double quotes, with `\\` and `\"` escaped by a backslash, so the rendered line can always be split back into its elements; the marker then covers the quoted token ([#11](https://github.com/moonbit-community/err_marker/issues/11))."
+#: manual/api/core.md:51
+msgid "`join` defaults to a single space. Positions in this sequence are element indices: position `i` covers the rendered text of element `i`. An element that is empty, or contains whitespace, a double quote or the separator, is wrapped in double quotes, with `\\` and `\"` escaped by a backslash, so the rendered line can always be split back into its elements; marks then cover the quoted token."
 msgstr ""
 
-#: manual/api/core.md:73
-msgid "Builds a sequence from a string."
+#: manual/api/core.md:76
+msgid "Builds a sequence from a string. Positions in this sequence are Unicode scalar (character) indices; `utf16_to_scalar` converts a UTF-16 offset."
 msgstr ""
 
-#: manual/api/core.md:79
-msgid "Positions in this sequence are UTF-16 code-unit offsets into the string, which equal character indices only for text in the Basic Multilingual Plane. A span whose start or end falls inside a surrogate pair is widened to the whole character, so a character outside that plane, such as most emoji, is never split ([#7](https://github.com/moonbit-community/err_marker/issues/7)). From 0.2.0, positions are Unicode scalar indices."
-msgstr ""
-
-#: manual/api/core.md:100
-msgid "Error data"
-msgstr ""
-
-#: manual/api/core.md:104
-msgid "What went wrong and where: an optional error type, a message, a start position and an offset."
-msgstr ""
-
-#: manual/api/core.md:116
-msgid "The marked span is `err_pos` through `err_pos + err_offset`, both ends included, in the units of the sequence it is marked in. The fields are readable from outside the package; build values with `ErrorData::make`."
-msgstr ""
-
-#: manual/api/core.md:122
-msgid "Builds an `ErrorData` from a message and optional type, position and offset."
-msgstr ""
-
-#: manual/api/core.md:128
-msgid "The defaults are `err_type = None`, `err_pos = -1` and `err_offset = 0`. A negative `err_pos` means \"no position\": `mark` then prints an empty marker line. `make` never fails; positions are only checked when the error is marked."
-msgstr ""
-
-#: manual/api/core.md:143
-#: manual/design/core.md:154
-msgid "Rendering"
-msgstr ""
-
-#: manual/api/core.md:147
-msgid "Renders the sequence, a marker line under the span, and the formatted message, separated by newlines."
-msgstr ""
-
-#: manual/api/core.md:154
-msgid "`marker` is the character repeated under the span; it defaults to `^`."
-msgstr ""
-
-#: manual/api/core.md:155
-msgid "`gen_msg` formats the last line from `err_type` and `err_msg`. The default prints `Error(type): message`, or `Error: message` when `err_type` is `None`."
-msgstr ""
-
-#: manual/api/core.md:158
-msgid "If `err_pos` is negative, the marker line is empty. A negative `err_offset` counts as 0. A span that runs past the end is clamped to the last element or character. A start at or past the end marks the point just after the text with one marker character, which is how a missing argument is shown ([#10](https://github.com/moonbit-community/err_marker/issues/10))."
-msgstr ""
-
-#: manual/api/core.md:163
-msgid "The marker column counts UTF-16 code units, not terminal columns, so it is only correct for ASCII-width text ([#6](https://github.com/moonbit-community/err_marker/issues/6))."
-msgstr ""
-
-#: manual/api/core.md:165
-msgid "If the text has several lines, the marker line goes right under the line that holds the start of the span, with its column counted from the start of that line, and the remaining lines follow it. A span that crosses a line break is marked up to the end of its first line ([#9](https://github.com/moonbit-community/err_marker/issues/9))."
-msgstr ""
-
-#: manual/api/core.md:169
-msgid "Tabs before the span are copied into the marker line, so the marker lines up whatever tab width the terminal uses; a tab inside the span still gets a single marker character ([#8](https://github.com/moonbit-community/err_marker/issues/8))."
-msgstr ""
-
-#: manual/api/core.md:196
+#: manual/api/core.md:95
 msgid "Reports"
 msgstr ""
 
-#: manual/api/core.md:198
-msgid "The report API is new in 0.2.0. It replaces `ErrorData::mark`, which stays for one release. Positions in a `Span` are element indices for an array sequence and Unicode scalar indices for a string sequence."
+#: manual/api/core.md:97
+msgid "The report API is new in 0.2.0 and replaces `ErrorData::mark`. Positions in a `Span` are element indices for an array sequence and Unicode scalar indices for a string sequence."
 msgstr ""
 
-#: manual/api/core.md:204
+#: manual/api/core.md:102
 msgid "How serious a report is, ordered `Help < Note < Warning < Error`."
 msgstr ""
 
-#: manual/api/core.md:216
+#: manual/api/core.md:114
 msgid "`name` gives the lower-case word used in the header."
 msgstr ""
 
-#: manual/api/core.md:227
+#: manual/api/core.md:125
 msgid "A primary mark is drawn with `^`, a secondary mark with `-`."
 msgstr ""
 
-#: manual/api/core.md:231
+#: manual/api/core.md:129
 msgid "A half-open interval `[start, end)` of positions, valid by construction."
 msgstr ""
 
-#: manual/api/core.md:242
+#: manual/api/core.md:140
 msgid "`new` turns a negative end point into 0 and an `end` before `start` into `start`. `point(at)` is the insertion point `[at, at)`, drawn as one marker."
 msgstr ""
 
-#: manual/api/core.md:247
+#: manual/api/core.md:145
 msgid "A place to mark: a span, a style, an optional message and a priority."
 msgstr ""
 
-#: manual/api/core.md:261
+#: manual/api/core.md:159
 msgid "Where marks overlap, each column goes to the higher priority, then the later start, then the earlier end, then the primary mark, then the message that is smaller in code-point order. The result does not depend on the order in which marks are added, and marks equal in every field count once."
 msgstr ""
 
-#: manual/api/core.md:284
+#: manual/api/core.md:182
 msgid "Renders the report on a sequence in the compact layout."
 msgstr ""
 
-#: manual/api/core.md:290
+#: manual/api/core.md:188
 msgid "The output is, in order:"
 msgstr ""
 
-#: manual/api/core.md:292
+#: manual/api/core.md:190
 msgid "the line of text that holds the primary mark (the whole text when there are no marks), with tabs expanded by `model`;"
 msgstr ""
 
-#: manual/api/core.md:294
+#: manual/api/core.md:192
 msgid "the marker row, followed by the message of the mark that ends rightmost;"
 msgstr ""
 
-#: manual/api/core.md:295
+#: manual/api/core.md:193
 msgid "the other messages, each under the start of its mark, on as few rows as possible;"
 msgstr ""
 
-#: manual/api/core.md:297
+#: manual/api/core.md:195
 msgid "the header `severity[code]: message`, with ` at line:column` (1-based) when the text has several lines;"
 msgstr ""
 
-#: manual/api/core.md:299
+#: manual/api/core.md:197
 msgid "one `note: ...` line per note."
 msgstr ""
 
-#: manual/api/core.md:301
+#: manual/api/core.md:199
 msgid "Marks that start on another line than the primary mark are not drawn. Spans are clamped to the sequence and snapped outward to grapheme clusters, and columns follow Unicode 18.0.0 widths (`@cursor`). With `color`, ANSI SGR colours are used."
 msgstr ""
 
-#: manual/api/core.md:336
+#: manual/api/core.md:234
 msgid "A command-line argument vector as a sequence: arguments joined by a space and quoted when needed."
 msgstr ""
 
-#: manual/api/core.md:345
+#: manual/api/core.md:243
 msgid "The Unicode scalar index of a UTF-16 offset, for callers whose positions come from `String` indexing. An offset inside a surrogate pair counts that pair as not yet passed."
 msgstr ""
 
-#: manual/api/core.md:356
+#: manual/api/core.md:254
 msgid "`rendered` is the text that `Report::render` draws for the sequence, with elements quoted when needed. `locate` gives the scalar span in that text where a span lands after the hull, clamping and snapping steps of `render`. Together they let other renderers, such as the [`error_report`](error_report.md) adapter, draw exactly the same places."
+msgstr ""
+
+#: manual/api/core.md:268
+msgid "Deprecated"
+msgstr ""
+
+#: manual/api/core.md:270
+msgid "Kept for the 0.2.x releases for compatibility. The tutorial's \"Migrating from 0.1\" section shows the replacements."
+msgstr ""
+
+#: manual/api/core.md:285
+msgid "The 0.1 description of an error. Replaced by `Report` and `Mark`."
+msgstr ""
+
+#: manual/api/core.md:293
+msgid "Deprecated: use `Report::render`. It renders with the 0.2.0 engine, so columns follow display widths, but keeps the 0.1 units: the span is `err_pos` to `err_pos + err_offset`, both included; string positions are UTF-16 offsets and every character the span touches is marked; a negative `err_pos` means no position; a negative `err_offset` counts as 0. The last line is `gen_msg(err_type, err_msg)`, by default `Error(type): message`, and `marker` replaces `^`."
 msgstr ""
 
 #: manual/api/cursor.md:1
@@ -296,11 +255,11 @@ msgid "core design"
 msgstr ""
 
 #: manual/design/core.md:3
-msgid "This page explains the model behind `err_marker` 0.1, how the marker line is computed, and where that model is wrong. The 0.2.0 model that replaces it is specified in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
+msgid "This page states the contract that 0.2.0 renders by, after recording the 0.1 model it replaces and where that model went wrong. The decisions are tracked in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
 msgstr ""
 
 #: manual/design/core.md:7
-msgid "The model"
+msgid "The 0.1 model"
 msgstr ""
 
 #: manual/design/core.md:9
@@ -344,134 +303,138 @@ msgid "If $s$ contains line breaks, let $\\ell$ be the offset where the line hol
 msgstr ""
 
 #: manual/design/core.md:57
-msgid "Where the model is wrong"
+msgid "Where the 0.1 model was wrong"
 msgstr ""
 
 #: manual/design/core.md:59
-msgid "The formulas measure length, but the reader sees columns. The two agree only when every code unit takes exactly one terminal column. Each known bug is a case where they disagree, or where the two sequence kinds disagree with each other:"
+msgid "The 0.1.4 release fixed tabs before the span, ranges, newlines, quoting and split surrogate pairs within this model. What remained needs the contract below, which 0.2.0 implements; `ErrorData::mark` now renders by it too. The formulas measure length, but the reader sees columns. The two agree only when every code unit takes exactly one terminal column. Each known bug is a case where they disagree, or where the two sequence kinds disagree with each other:"
 msgstr ""
 
-#: manual/design/core.md:64
+#: manual/design/core.md:67
 msgid "Case"
 msgstr ""
 
-#: manual/design/core.md:64
+#: manual/design/core.md:67
 msgid "What happens"
 msgstr ""
 
-#: manual/design/core.md:64
+#: manual/design/core.md:67
 msgid "Issue"
 msgstr ""
 
-#: manual/design/core.md:66
+#: manual/design/core.md:69
 msgid "Wide characters (CJK, emoji)"
 msgstr ""
 
-#: manual/design/core.md:66
+#: manual/design/core.md:69
 msgid "one character is 2 columns but 1 or 2 code units; the marker drifts left"
 msgstr ""
 
-#: manual/design/core.md:67
+#: manual/design/core.md:70
 msgid "Surrogate pairs"
 msgstr ""
 
-#: manual/design/core.md:67
+#: manual/design/core.md:70
 msgid "positions are code units, so a caller counting characters points at the wrong place; spans are widened to whole characters, so nothing is split"
 msgstr ""
 
-#: manual/design/core.md:68
+#: manual/design/core.md:71
 msgid "Tabs inside the span"
 msgstr ""
 
-#: manual/design/core.md:68
+#: manual/design/core.md:71
 msgid "a tab gets one marker character although it moves to the next tab stop; tabs before the span are copied into the padding and no longer shift the marker"
 msgstr ""
 
-#: manual/design/core.md:70
+#: manual/design/core.md:73
 msgid "The 0.2.0 contract"
 msgstr ""
 
-#: manual/design/core.md:72
+#: manual/design/core.md:75
 msgid "0.2.0 measures columns instead of length. This section is the contract that the 0.2.0 code is written and tested against; the decisions and the rejected alternatives are recorded in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
 msgstr ""
 
-#: manual/design/core.md:77
+#: manual/design/core.md:80
 msgid "Coordinates"
 msgstr ""
 
-#: manual/design/core.md:79
+#: manual/design/core.md:82
 msgid "An array sequence has elements $x_0, \\dots, x_{n-1}$ and positions $0, \\dots, n$. A string sequence is read as Unicode scalar values $u_0, \\dots, u_{m-1}$ and has positions $0, \\dots, m$. A helper converts a UTF-16 offset $o$ into the number of scalars before it; an offset inside a surrogate pair counts that pair as not yet passed."
 msgstr ""
 
-#: manual/design/core.md:85
+#: manual/design/core.md:88
 msgid "Spans"
 msgstr ""
 
-#: manual/design/core.md:87
+#: manual/design/core.md:90
 msgid "A span is a half-open interval $[a, b)$ of positions with $0 \\le a \\le b$. Constructors make every span valid: a negative end point becomes $0$, and $b < a$ becomes $b = a$. A zero-width span $[p, p)$ is an insertion point."
 msgstr ""
 
-#: manual/design/core.md:91
+#: manual/design/core.md:94
 msgid "Clamping to a sequence of length $n$ is the map"
 msgstr ""
 
-#: manual/design/core.md:97
+#: manual/design/core.md:100
 msgid "It is a retraction onto the spans inside the sequence: it is idempotent and leaves every span inside the sequence unchanged. A span past the end becomes the insertion point $[n, n)$."
 msgstr ""
 
-#: manual/design/core.md:101
+#: manual/design/core.md:104
 msgid "Snapping to grapheme clusters"
 msgstr ""
 
-#: manual/design/core.md:103
+#: manual/design/core.md:106
 msgid "Let $B \\subseteq \\{0, \\dots, m\\}$ be the extended grapheme cluster boundaries of the rendered text (UAX #29); $0 \\in B$ and $m \\in B$. For a position $x$, let $\\lfloor x \\rfloor_B$ be the greatest boundary $\\le x$ and $\\lceil x \\rceil_B$ the least boundary $\\ge x$. Snapping is"
 msgstr ""
 
-#: manual/design/core.md:112
+#: manual/design/core.md:115
 msgid "With $e$ the inclusion of $B$ into the positions, $\\lfloor \\cdot \\rfloor_B$ is right adjoint and $\\lceil \\cdot \\rceil_B$ left adjoint to $e$: $e(\\beta) \\le x \\iff \\beta \\le \\lfloor x \\rfloor_B$ and $\\lceil x \\rceil_B \\le \\beta \\iff x \\le e(\\beta)$. Hence $\\sigma$ is a closure operator on spans ordered by inclusion:"
 msgstr ""
 
-#: manual/design/core.md:124
+#: manual/design/core.md:127
 msgid "A zero-width span strictly inside a cluster widens to that cluster. The three laws are property tests."
 msgstr ""
 
-#: manual/design/core.md:127
+#: manual/design/core.md:130
 msgid "Order of operations"
 msgstr ""
 
-#: manual/design/core.md:129
+#: manual/design/core.md:132
 msgid "A mark on an array is first mapped to the text: element span $[i, j)$ becomes the scalar span from the start of $r_i$ to the end of $r_{j-1}$, the hull of the rendered elements. Every span is then clamped with $\\kappa$ and snapped with $\\sigma$, in that order, and only then turned into columns."
 msgstr ""
 
-#: manual/design/core.md:134
+#: manual/design/core.md:137
 msgid "Columns"
 msgstr ""
 
-#: manual/design/core.md:136
+#: manual/design/core.md:139
 msgid "Each grapheme cluster $g$ acts on the cursor $(\\ell, c)$:"
 msgstr ""
 
-#: manual/design/core.md:144
+#: manual/design/core.md:147
 msgid "where $w(g)$ is the cluster width from the generated UCD 18.0.0 tables and $t \\ge 1$ is the tab width of the model, 8 by default. These moves form a monoid under composition. Every composite has exactly one of three normal forms: a shift $c \\mapsto c + k$; a tab move $c \\mapsto T(c + a) + b$ with $0 \\le a < t$, where $T(x) = t(\\lfloor x/t \\rfloor + 1)$; or a line break $(\\ell, c) \\mapsto (\\ell + n, k)$. The forms are closed under composition because $T(T(x) + b) = T(x) + T(b)$. Laying out a text is a monoid homomorphism from cluster sequences, and the column of a span is the move of the text before it applied to $(0, 0)$."
 msgstr ""
 
-#: manual/design/core.md:156
+#: manual/design/core.md:157
+msgid "Rendering"
+msgstr ""
+
+#: manual/design/core.md:159
 msgid "Array rendering is injective: an element is quoted exactly when its text is empty or contains whitespace, a double quote or the separator."
 msgstr ""
 
-#: manual/design/core.md:158
+#: manual/design/core.md:161
 msgid "Several marks overlay as a semilattice (commutative, associative, idempotent). Where marks overlap, the column goes to the higher priority, then the higher severity, then the later start, then the earlier end, then the primary mark, then the message that is smaller in code-point order."
 msgstr ""
 
-#: manual/design/core.md:162
+#: manual/design/core.md:165
 msgid "Message rows are assigned greedily by left endpoint, which uses the minimum number of rows: the largest number of messages that overlap at one column."
 msgstr ""
 
-#: manual/design/core.md:166
+#: manual/design/core.md:169
 msgid "Compact layout"
 msgstr ""
 
-#: manual/design/core.md:168
+#: manual/design/core.md:171
 msgid "`Report::render` draws the line that holds the primary mark (the primary mark with the highest priority, then the earliest start), then the marker row. The message of the mark whose marker ends rightmost follows the markers on that row, which is always free to the right of them. The remaining messages start under their marks, with the rows assigned as above. Marks equal in every field are drawn once, so overlaying is idempotent as well as commutative; the tests check every order of a set of four marks with ties at each level of the tie-break."
 msgstr ""
 
@@ -596,7 +559,7 @@ msgid "err_marker"
 msgstr ""
 
 #: manual/index.md:5
-msgid "This manual documents version `v0.1.4` of `KCN-judu/err_marker`."
+msgid "This manual documents version `v0.2.0` of `KCN-judu/err_marker`."
 msgstr ""
 
 #: manual/index.md:7
@@ -604,150 +567,142 @@ msgid "Overview"
 msgstr ""
 
 #: manual/index.md:9
-msgid "`err_marker` shows a reader where an error is. It renders a sequence (the command-line arguments of a program, a list of tokens, or a string), draws a line of markers under the part that is wrong, and prints a message below:"
+msgid "`err_marker` shows a reader where an error is. It renders a sequence (the command-line arguments of a program, a list of tokens, or a string), draws markers under the places that are wrong, and prints messages and a header:"
 msgstr ""
 
 #: manual/index.md:19
-msgid "The library is one package with two types and four functions. It does not read files, track line numbers or colour its output; it turns a sequence, a position and a message into three lines of text."
+msgid "A `Report` holds a severity, a message, marks and notes; `Report::render` turns it and a sequence into text. Columns follow Unicode 18.0.0, so wide characters, emoji and combining marks line up, and tabs are expanded. The `cursor` package exposes the column arithmetic, and the `error_report` package converts reports for `marianoguerra/error-report`. The 0.1 API, `ErrorData::mark`, is deprecated."
 msgstr ""
 
-#: manual/index.md:23
-msgid "The 0.1 series has known limits with non-ASCII text; they are listed in the [design](design/core.md) and tracked for 0.2.0 in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
-msgstr ""
-
-#: manual/index.md:27
+#: manual/index.md:26
 msgid "Install"
 msgstr ""
 
-#: manual/index.md:33
+#: manual/index.md:32
 msgid "Then import `\"KCN-judu/err_marker\"` in your `moon.pkg`; the package is available as `@err_marker`. The module needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and depends on `moonbitlang/core` and, for the `error_report` adapter only, `marianoguerra/error-report`."
 msgstr ""
 
-#: manual/index.md:38
+#: manual/index.md:37
 msgid "Pages"
 msgstr ""
 
-#: manual/index.md:40
+#: manual/index.md:39
 msgid "The module has three public packages: the root package at `src`, documented as `core`; `src/cursor`, documented as `cursor`; and `src/error_report`, documented as `error_report`."
 msgstr ""
 
-#: manual/index.md:44
+#: manual/index.md:43
 msgid "Part"
 msgstr ""
 
-#: manual/index.md:44
+#: manual/index.md:43
 msgid "Tutorial"
 msgstr ""
 
-#: manual/index.md:44
+#: manual/index.md:43
 msgid "API"
 msgstr ""
 
-#: manual/index.md:44
+#: manual/index.md:43
 msgid "Design"
 msgstr ""
 
-#: manual/index.md:46
-msgid "`core`: sequences, error data and marking"
+#: manual/index.md:45
+msgid "`core`: sequences, reports and rendering"
 msgstr ""
 
-#: manual/index.md:46
+#: manual/index.md:45
 msgid "[tutorial](tutorial/core.md)"
 msgstr ""
 
-#: manual/index.md:46
+#: manual/index.md:45
 msgid "[API](api/core.md)"
 msgstr ""
 
-#: manual/index.md:46
+#: manual/index.md:45
 msgid "[design](design/core.md)"
 msgstr ""
 
-#: manual/index.md:47
+#: manual/index.md:46
 msgid "`cursor`: terminal columns of text (Unicode 18.0.0)"
 msgstr ""
 
-#: manual/index.md:47
+#: manual/index.md:46
 msgid "[tutorial](tutorial/cursor.md)"
 msgstr ""
 
-#: manual/index.md:47
+#: manual/index.md:46
 msgid "[API](api/cursor.md)"
 msgstr ""
 
-#: manual/index.md:47
+#: manual/index.md:46
 msgid "[design](design/cursor.md)"
 msgstr ""
 
-#: manual/index.md:48
+#: manual/index.md:47
 msgid "`error_report`: conversion to `marianoguerra/error-report`"
 msgstr ""
 
-#: manual/index.md:48
+#: manual/index.md:47
 msgid "[tutorial](tutorial/error_report.md)"
 msgstr ""
 
-#: manual/index.md:48
+#: manual/index.md:47
 msgid "[API](api/error_report.md)"
 msgstr ""
 
-#: manual/index.md:48
+#: manual/index.md:47
 msgid "[design](design/error_report.md)"
 msgstr ""
 
-#: manual/index.md:50
+#: manual/index.md:49
 msgid "Exported items"
 msgstr ""
 
-#: manual/index.md:52
+#: manual/index.md:51
 msgid "Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`"
 msgstr ""
 
+#: manual/index.md:52
+msgid "Reports: `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `Sequence::rendered`, `Sequence::locate`, `utf16_to_scalar`"
+msgstr ""
+
 #: manual/index.md:53
-msgid "Error data: `ErrorData`, `ErrorData::make`"
-msgstr ""
-
-#: manual/index.md:54
-msgid "Rendering: `ErrorData::mark`"
-msgstr ""
-
-#: manual/index.md:55
-msgid "Reports (0.2.0): `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `Sequence::rendered`, `Sequence::locate`, `utf16_to_scalar`"
-msgstr ""
-
-#: manual/index.md:56
 msgid "Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`"
 msgstr ""
 
-#: manual/index.md:57
+#: manual/index.md:54
 msgid "Adapter (`@error_report`): `to_error_report`"
 msgstr ""
 
-#: manual/index.md:59
+#: manual/index.md:55
+msgid "Deprecated: `ErrorData`, `ErrorData::make`, `ErrorData::mark`"
+msgstr ""
+
+#: manual/index.md:57
 msgid "Where to read next"
 msgstr ""
 
-#: manual/index.md:61
+#: manual/index.md:59
 msgid "New to the package: the [tutorial](tutorial/core.md) builds a small argument checker and prints its errors."
 msgstr ""
 
-#: manual/index.md:63
+#: manual/index.md:61
 msgid "Using it in a program: keep the [API](api/core.md) at hand."
 msgstr ""
 
-#: manual/index.md:64
+#: manual/index.md:62
 msgid "Contributing, or relying on exact output: read the [design](design/core.md), which states how the marker column is computed and where the 0.1 model breaks, and [CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md)."
 msgstr ""
 
-#: manual/index.md:68
+#: manual/index.md:66
 msgid "Validation"
 msgstr ""
 
-#: manual/index.md:70
+#: manual/index.md:68
 msgid "Recommended release checks:"
 msgstr ""
 
-#: manual/index.md:77
+#: manual/index.md:75
 msgid "`just test-all` runs the tests on wasm, wasm-gc, js and native, in debug and release."
 msgstr ""
 
@@ -772,60 +727,84 @@ msgid "2. Mark one argument"
 msgstr ""
 
 #: manual/tutorial/core.md:23
-msgid "A program receives its arguments as an array of strings. Wrap the array in a `Sequence`, describe the error with `ErrorData::make`, and call `mark`. `err_pos` is the index of the bad argument:"
+msgid "A program receives its arguments as an array of strings. Turn it into a sequence with `Sequence::from_args`, describe the error with a `Report`, mark the bad argument with a `Span` of element indices, and call `render`:"
+msgstr ""
+
+#: manual/tutorial/core.md:44
+msgid "`render` returns a `String`; print it with `println` in a real program."
 msgstr ""
 
 #: manual/tutorial/core.md:46
-msgid "`mark` returns a `String`; print it with `println` in a real program."
+msgid "3. Mark several arguments, or a missing one"
 msgstr ""
 
 #: manual/tutorial/core.md:48
-msgid "3. Mark several arguments"
+msgid "A span `[start, end)` covers elements `start` to `end - 1` and the spaces between them. `Span::point` marks the place right after an element, which is how a missing argument is shown; a message can say what is expected:"
 msgstr ""
 
-#: manual/tutorial/core.md:50
-msgid "`err_offset` extends the span to the following elements. With `err_pos=1` and `err_offset=1`, the marker covers elements 1 and 2 and the space between them:"
-msgstr ""
-
-#: manual/tutorial/core.md:72
+#: manual/tutorial/core.md:69
 msgid "4. Mark a place in a string"
 msgstr ""
 
-#: manual/tutorial/core.md:74
-msgid "For a single string, use `Sequence::from_string`; positions are offsets into the string:"
+#: manual/tutorial/core.md:71
+msgid "For a single string, use `Sequence::from_string`. Positions are character (Unicode scalar) indices, and columns follow the display width, so Chinese, Japanese and emoji line up:"
 msgstr ""
 
-#: manual/tutorial/core.md:92
-msgid "5. Use your own error format"
+#: manual/tutorial/core.md:91
+msgid "5. Several marks and notes"
 msgstr ""
 
-#: manual/tutorial/core.md:94
-msgid "`gen_msg` receives the error type and message and returns the last line; `marker` changes the marker character:"
+#: manual/tutorial/core.md:93
+msgid "A primary mark (`^`) shows the place that is wrong, secondary marks (`-`) related places; each may carry a message. Notes go after the header:"
 msgstr ""
 
-#: manual/tutorial/core.md:121
-msgid "6. Know the limits"
+#: manual/tutorial/core.md:115
+msgid "6. Tabs and colour"
 msgstr ""
 
-#: manual/tutorial/core.md:123
-msgid "In 0.1 the marker column is counted in UTF-16 code units. It is right for ASCII text: tabs are copied into the marker line so they do not shift it, and in text with several lines the marker goes under the line that holds the span. With Chinese or Japanese text or emoji it drifts. The [design](../design/core.md) explains why, and 0.2.0 fixes these cases ([#5](https://github.com/moonbit-community/err_marker/issues/5))."
+#: manual/tutorial/core.md:117
+msgid "Tabs are expanded with the tab width of a `@cursor.Model` (8 by default), and `color=true` adds ANSI colours for terminals:"
 msgstr ""
 
-#: manual/tutorial/core.md:131
-msgid "7. Write a report with several marks"
+#: manual/tutorial/core.md:138
+msgid "7. Migrating from 0.1"
 msgstr ""
 
-#: manual/tutorial/core.md:133
-msgid "From 0.2.0, a `Report` carries several marks: a primary mark for the place that is wrong and secondary marks for related places, each with an optional message. Positions in a string are character (scalar) indices, so wide characters and emoji line up:"
+#: manual/tutorial/core.md:140
+msgid "`ErrorData::mark` still works in 0.2.x but is deprecated. Replace"
 msgstr ""
 
-#: manual/tutorial/core.md:155
+#: manual/tutorial/core.md:142
+msgid "`ErrorData::make(msg, err_type=Some(t), err_pos=p, err_offset=k)` with `Report::new(Error, msg).with_code(t)` and `Mark::primary(Span::new(p, p + k + 1))`: spans are half-open now;"
+msgstr ""
+
+#: manual/tutorial/core.md:145
+msgid "string positions, which were UTF-16 offsets, with character indices; `utf16_to_scalar` converts an offset you already have;"
+msgstr ""
+
+#: manual/tutorial/core.md:147
+msgid "`err_pos = -1` (no position) with a report without marks;"
+msgstr ""
+
+#: manual/tutorial/core.md:148
+msgid "`gen_msg`, which formatted the last line, with `Report`'s fields: the header is `severity[code]: message`;"
+msgstr ""
+
+#: manual/tutorial/core.md:150
+msgid "`marker`, which changed the marker character, with the two built-in styles `^` and `-`."
+msgstr ""
+
+#: manual/tutorial/core.md:153
+msgid "The output also changes: tabs are expanded instead of copied, and for text with several lines only the line of the primary mark is shown, with its `line:col` in the header. `ErrorData::mark` already renders this way in 0.2.x."
+msgstr ""
+
+#: manual/tutorial/core.md:157
 #: manual/tutorial/cursor.md:72
 msgid "Next"
 msgstr ""
 
-#: manual/tutorial/core.md:157
-msgid "Read the [API](../api/core.md) for every parameter and edge case."
+#: manual/tutorial/core.md:159
+msgid "Read the [API](../api/core.md) for every parameter and edge case, and the [design](../design/core.md) for the contract behind the columns."
 msgstr ""
 
 #: manual/tutorial/cursor.md:1

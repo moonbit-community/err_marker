@@ -1,26 +1,26 @@
 ///|
 test {
-  let ed = @err_marker.ErrorData::make(
+  let ed = ErrorData::make(
     "Error_Test",
     err_type=Some("Test"),
     err_pos=2,
     err_offset=3,
   )
-  let ed1 = @err_marker.ErrorData::make(
+  let ed1 = ErrorData::make(
     "Error_Test",
     err_type=Some("Test"),
     err_pos=0,
     err_offset=3,
   )
-  let ed2 = @err_marker.ErrorData::make(
+  let ed2 = ErrorData::make(
     "Error_Test",
     err_type=Some("Test"),
     err_pos=4,
     err_offset=0,
   )
   let raw_seq = [0, 1, 2, 3, 4, 5, 6, 7]
-  let arr_seq = @err_marker.Sequence::from_array(raw_seq)
-  let str_seq = @err_marker.Sequence::from_string(
+  let arr_seq = Sequence::from_array(raw_seq)
+  let str_seq = Sequence::from_string(
     raw_seq
     .map(x => x + 'A'.to_int())
     .map(Int32::unsafe_to_char)

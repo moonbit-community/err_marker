@@ -19,6 +19,7 @@ pub struct ErrorData {
   err_offset : Int32
 }
 pub fn ErrorData::make(err_type? : String?, String, err_pos? : Int32, err_offset? : Int32) -> Self
+#deprecated
 pub fn[T : Show] ErrorData::mark(Self, Sequence[T], marker? : Char, gen_msg? : (String?, String) -> String) -> String
 
 #derive(Eq, @debug.Debug)

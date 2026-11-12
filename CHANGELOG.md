@@ -11,6 +11,23 @@ The roadmap to 0.2.0 is tracked in
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** `ErrorData::mark` now renders with the 0.2.0 engine. Columns
+  follow display widths, so CJK text and emoji line up
+  ([#6](https://github.com/moonbit-community/err_marker/issues/6)); tabs are
+  expanded instead of copied; for text with several lines only the marked line
+  is shown. Its units are unchanged (UTF-16 offsets for strings, inclusive
+  `err_offset`), as are `marker` and `gen_msg`
+  ([#31](https://github.com/moonbit-community/err_marker/issues/31)).
+- The manual now teaches the report API and has a "Migrating from 0.1"
+  section; the README shows 0.2.0 usage.
+
+### Deprecated
+
+- `ErrorData::mark`: use `Report::render`. It stays for the 0.2.x releases
+  ([#31](https://github.com/moonbit-community/err_marker/issues/31)).
+
 ### Added
 
 - New package `KCN-judu/err_marker/error_report` with `to_error_report`,
