@@ -1,7 +1,13 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "KCN-judu/err_marker"
 
+import {
+  "KCN-judu/err_marker/cursor",
+  "moonbitlang/core/debug",
+}
+
 // Values
+pub fn utf16_to_scalar(String, Int32) -> Int32
 
 // Errors
 
@@ -15,9 +21,64 @@ pub struct ErrorData {
 pub fn ErrorData::make(err_type? : String?, String, err_pos? : Int32, err_offset? : Int32) -> Self
 pub fn[T : Show] ErrorData::mark(Self, Sequence[T], marker? : Char, gen_msg? : (String?, String) -> String) -> String
 
+#derive(Eq, @debug.Debug)
+pub struct Mark {
+  span : Span
+  style : Style
+  message : String?
+  priority : Int32
+}
+pub fn Mark::equal(Self, Self) -> Bool
+pub fn Mark::primary(Span, message? : String) -> Self
+pub fn Mark::secondary(Span, message? : String) -> Self
+pub fn Mark::with_priority(Self, Int32) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct Report {
+  severity : Severity
+  code : String?
+  message : String
+  marks : Array[Mark]
+  notes : Array[String]
+}
+pub fn Report::equal(Self, Self) -> Bool
+pub fn Report::new(Severity, String) -> Self
+pub fn[T : Show] Report::render(Self, Sequence[T], model? : @cursor.Model, color? : Bool) -> String
+pub fn Report::with_code(Self, String) -> Self
+pub fn Report::with_mark(Self, Mark) -> Self
+pub fn Report::with_note(Self, String) -> Self
+
 type Sequence[T]
+pub fn Sequence::from_args(Array[String]) -> Self[String]
 pub fn[T] Sequence::from_array(Array[T], join? : String) -> Self[T]
 pub fn Sequence::from_string(String) -> Self[Char]
+
+#derive(Compare, Eq, @debug.Debug)
+pub(all) enum Severity {
+  Help
+  Note
+  Warning
+  Error
+}
+pub fn Severity::compare(Self, Self) -> Int32
+pub fn Severity::equal(Self, Self) -> Bool
+pub fn Severity::name(Self) -> String
+
+#derive(Eq, @debug.Debug)
+pub struct Span {
+  start : Int32
+  end : Int32
+}
+pub fn Span::equal(Self, Self) -> Bool
+pub fn Span::new(Int32, Int32) -> Self
+pub fn Span::point(Int32) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum Style {
+  Primary
+  Secondary
+}
+pub fn Style::equal(Self, Self) -> Bool
 
 // Type aliases
 
