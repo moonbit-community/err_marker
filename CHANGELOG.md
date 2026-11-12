@@ -24,6 +24,12 @@ The roadmap to 0.2.0 is tracked in
   `err_offset` counts as 0; a huge `err_offset` no longer overflows. The doc
   comment of `err_locate_arr` no longer claims that it panics
   ([#10](https://github.com/moonbit-community/err_marker/issues/10)).
+- Text with several lines: the marker line now goes right under the line that
+  holds the start of the span, with its column counted from the start of that
+  line, and the remaining lines follow it. It used to be printed after the
+  last line with the column counted from the start of the whole text. A span
+  that crosses a line break is marked up to the end of its first line
+  ([#9](https://github.com/moonbit-community/err_marker/issues/9)).
 
 ## [0.1.3] — 2026-11-12
 

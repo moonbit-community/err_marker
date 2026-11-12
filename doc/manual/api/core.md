@@ -158,8 +158,11 @@ pub fn[T : Show] ErrorData::mark(Self, Sequence[T], marker? : Char, gen_msg? : (
   after the text with one marker character, which is how a missing argument
   is shown ([#10](https://github.com/moonbit-community/err_marker/issues/10)).
 - The marker column counts UTF-16 code units, not terminal columns, so it
-  is only correct for ASCII-width text without newlines
-  ([#6](https://github.com/moonbit-community/err_marker/issues/6), [#9](https://github.com/moonbit-community/err_marker/issues/9)).
+  is only correct for ASCII-width text ([#6](https://github.com/moonbit-community/err_marker/issues/6)).
+- If the text has several lines, the marker line goes right under the line
+  that holds the start of the span, with its column counted from the start of
+  that line, and the remaining lines follow it. A span that crosses a line
+  break is marked up to the end of its first line ([#9](https://github.com/moonbit-community/err_marker/issues/9)).
 - Tabs before the span are copied into the marker line, so the marker lines
   up whatever tab width the terminal uses; a tab inside the span still gets a
   single marker character ([#8](https://github.com/moonbit-community/err_marker/issues/8)).
