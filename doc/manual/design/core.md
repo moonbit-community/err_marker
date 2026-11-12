@@ -7,9 +7,11 @@ specified in [#5](https://github.com/moonbit-community/err_marker/issues/5).
 ## The model
 
 A report has three lines: the rendered sequence $s$, a marker line, and the
-message. The marker line is $p$ spaces followed by $w$ marker characters, so
-the whole design is the choice of $p$ (where the span starts) and $w$ (how
-wide it is).
+message. The marker line is $p$ padding characters followed by $w$ marker
+characters, so the whole design is the choice of $p$ (where the span starts)
+and $w$ (how wide it is). The padding is a space for each of the first $p$
+code units of $s$, except that a tab is copied as a tab, so the marker lines
+up whatever tab width the terminal uses.
 
 ### Arrays
 
@@ -47,7 +49,7 @@ other:
 | --- | --- | --- |
 | Wide characters (CJK, emoji) | one character is 2 columns but 1 or 2 code units; the marker drifts left | [#6](https://github.com/moonbit-community/err_marker/issues/6) |
 | Surrogate pairs | positions are code units, so an odd offset splits a character | [#7](https://github.com/moonbit-community/err_marker/issues/7) |
-| Tabs | a tab is 1 code unit but moves to the next tab stop | [#8](https://github.com/moonbit-community/err_marker/issues/8) |
+| Tabs inside the span | a tab gets one marker character although it moves to the next tab stop; tabs before the span are copied into the padding and no longer shift the marker | [#8](https://github.com/moonbit-community/err_marker/issues/8) |
 | Newlines | the marker is counted from the start of the text, not of its line | [#9](https://github.com/moonbit-community/err_marker/issues/9) |
 | Spans past the end | arrays draw past the text, strings draw nothing | [#10](https://github.com/moonbit-community/err_marker/issues/10) |
 | Separators inside elements, empty elements | the joined text cannot be split back into elements | [#11](https://github.com/moonbit-community/err_marker/issues/11) |

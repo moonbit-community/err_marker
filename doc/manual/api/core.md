@@ -157,10 +157,11 @@ pub fn[T : Show] ErrorData::mark(Self, Sequence[T], marker? : Char, gen_msg? : (
   arrays and not at all for strings
   ([#10](https://github.com/moonbit-community/err_marker/issues/10)).
 - The marker column counts UTF-16 code units, not terminal columns, so it
-  is only correct for ASCII-width text without tabs or newlines
-  ([#6](https://github.com/moonbit-community/err_marker/issues/6),
-  [#8](https://github.com/moonbit-community/err_marker/issues/8),
-  [#9](https://github.com/moonbit-community/err_marker/issues/9)).
+  is only correct for ASCII-width text without newlines
+  ([#6](https://github.com/moonbit-community/err_marker/issues/6), [#9](https://github.com/moonbit-community/err_marker/issues/9)).
+- Tabs before the span are copied into the marker line, so the marker lines
+  up whatever tab width the terminal uses; a tab inside the span still gets a
+  single marker character ([#8](https://github.com/moonbit-community/err_marker/issues/8)).
 
 ```moonbit
 test "mark with a custom marker and formatter" {
