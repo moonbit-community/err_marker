@@ -16,8 +16,8 @@ impl Show for Point with fn output(self, logger) {
 }
 
 ///|
-fn ed(pos : Int32, offset : Int32) -> @err_marker.ErrorData {
-  @err_marker.ErrorData::make(
+fn ed(pos : Int32, offset : Int32) -> ErrorData {
+  ErrorData::make(
     "bad value",
     err_type=Some("Arg"),
     err_pos=pos,
@@ -28,7 +28,7 @@ fn ed(pos : Int32, offset : Int32) -> @err_marker.ErrorData {
 ///|
 test "array: first element" {
   inspect(
-    ed(0, 0).mark(@err_marker.Sequence::from_array(["solve", "a.txt", "out"])),
+    ed(0, 0).mark(Sequence::from_array(["solve", "a.txt", "out"])),
     content=(
       #|solve a.txt out
       #|^^^^^
@@ -40,9 +40,7 @@ test "array: first element" {
 ///|
 test "array: middle span" {
   inspect(
-    ed(1, 1).mark(
-      @err_marker.Sequence::from_array(["export", "a.txt", "fmt", "out"]),
-    ),
+    ed(1, 1).mark(Sequence::from_array(["export", "a.txt", "fmt", "out"])),
     content=(
       #|export a.txt fmt out
       #|       ^^^^^^^^^
@@ -54,7 +52,7 @@ test "array: middle span" {
 ///|
 test "array: last element" {
   inspect(
-    ed(2, 0).mark(@err_marker.Sequence::from_array(["solve", "a.txt", "out"])),
+    ed(2, 0).mark(Sequence::from_array(["solve", "a.txt", "out"])),
     content=(
       #|solve a.txt out
       #|            ^^^
@@ -66,7 +64,7 @@ test "array: last element" {
 ///|
 test "array: multi-character separator" {
   inspect(
-    ed(1, 1).mark(@err_marker.Sequence::from_array([1, 22, 333, 4], join=", ")),
+    ed(1, 1).mark(Sequence::from_array([1, 22, 333, 4], join=", ")),
     content=(
       #|1, 22, 333, 4
       #|   ^^^^^^^
@@ -78,9 +76,7 @@ test "array: multi-character separator" {
 ///|
 test "array: elements with a custom Show" {
   inspect(
-    ed(1, 0).mark(
-      @err_marker.Sequence::from_array([{ x: 1, y: 2, }, { x: 30, y: 40, }]),
-    ),
+    ed(1, 0).mark(Sequence::from_array([{ x: 1, y: 2, }, { x: 30, y: 40, }])),
     content=(
       #|(1,2) (30,40)
       #|      ^^^^^^^
@@ -91,7 +87,7 @@ test "array: elements with a custom Show" {
 
 ///|
 test "string: start, middle and end" {
-  let s = @err_marker.Sequence::from_string("sudoku solve")
+  let s = Sequence::from_string("sudoku solve")
   inspect(
     ed(0, 5).mark(s),
     content=(
@@ -121,9 +117,7 @@ test "string: start, middle and end" {
 ///|
 test "default position draws no marker" {
   inspect(
-    @err_marker.ErrorData::make("no position").mark(
-      @err_marker.Sequence::from_string("abc"),
-    ),
+    ErrorData::make("no position").mark(Sequence::from_string("abc")),
     content=(
       #|abc
       #|
@@ -135,10 +129,7 @@ test "default position draws no marker" {
 ///|
 test "custom marker character" {
   inspect(
-    ed(1, 0).mark(
-      @err_marker.Sequence::from_array(["a", "bb", "c"]),
-      marker='~',
-    ),
+    ed(1, 0).mark(Sequence::from_array(["a", "bb", "c"]), marker='~'),
     content=(
       #|a bb c
       #|  ~~
@@ -156,7 +147,7 @@ test "custom message formatter and missing error type" {
     }
   }
   inspect(
-    ed(0, 0).mark(@err_marker.Sequence::from_string("xy"), gen_msg~),
+    ed(0, 0).mark(Sequence::from_string("xy"), gen_msg~),
     content=(
       #|xy
       #|^
@@ -164,8 +155,8 @@ test "custom message formatter and missing error type" {
     ),
   )
   inspect(
-    @err_marker.ErrorData::make("plain", err_pos=1).mark(
-      @err_marker.Sequence::from_string("xy"),
+    ErrorData::make("plain", err_pos=1).mark(
+      Sequence::from_string("xy"),
       gen_msg~,
     ),
     content=(
@@ -175,9 +166,7 @@ test "custom message formatter and missing error type" {
     ),
   )
   inspect(
-    @err_marker.ErrorData::make("plain", err_pos=1).mark(
-      @err_marker.Sequence::from_string("xy"),
-    ),
+    ErrorData::make("plain", err_pos=1).mark(Sequence::from_string("xy")),
     content=(
       #|xy
       #| ^

@@ -157,6 +157,21 @@ pub fn[T : Show] Report::render(
   model~ : @cursor.Model = @cursor.Model::new(),
   color~ : Bool = false,
 ) -> String {
+  self.render_impl(seq, model, color, '^', None)
+}
+
+///|
+/// `Report::render` with the primary marker character `glyph`, and, if
+/// `header` is given, that line in place of the header (used by the
+/// deprecated `ErrorData::mark`).
+fn[T : Show] Report::render_impl(
+  self : Report,
+  seq : Sequence[T],
+  model : @cursor.Model,
+  color : Bool,
+  glyph : Char,
+  header : String?,
+) -> String {
   // Marks equal in every field are one mark, so overlaying is idempotent.
   let marks : Array[Mark] = []
   for m in self.marks {
@@ -236,7 +251,7 @@ pub fn[T : Show] Report::render(
       for l in lines {
         out.push(l.text.to_string())
       }
-      out.push(header_sev + code + ": " + self.message)
+      out.push(header.unwrap_or(header_sev + code + ": " + self.message))
     }
     Some(pm) => {
       let shown = pm.line
@@ -274,13 +289,13 @@ pub fn[T : Show] Report::render(
           e += 1
         }
         let m = marks[w]
-        let glyph = if m.style == Primary { '^' } else { '-' }
+        let g = if m.style == Primary { glyph } else { '-' }
         let code = if m.style == Primary {
           severity_sgr(self.severity)
         } else {
           "34"
         }
-        row.write_string(sgr(code, String::make(e - c, glyph), color))
+        row.write_string(sgr(code, String::make(e - c, g), color))
         c = e
       }
       // Messages: the mark that ends rightmost keeps its message on the
@@ -355,7 +370,7 @@ pub fn[T : Show] Report::render(
       } else {
         ""
       }
-      out.push(header_sev + code + loc + ": " + self.message)
+      out.push(header.unwrap_or(header_sev + code + loc + ": " + self.message))
     }
   }
   for n in self.notes {
