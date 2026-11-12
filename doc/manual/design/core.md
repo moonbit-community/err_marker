@@ -162,3 +162,14 @@ the text before it applied to $(0, 0)$.
 - Message rows are assigned greedily by left endpoint, which uses the
   minimum number of rows: the largest number of messages that overlap at one
   column.
+
+### Compact layout
+
+`Report::render` draws the line that holds the primary mark (the primary
+mark with the highest priority, then the earliest start), then the marker
+row. The message of the mark whose marker ends rightmost follows the markers
+on that row, which is always free to the right of them. The remaining
+messages start under their marks, with the rows assigned as above. Marks
+equal in every field are drawn once, so overlaying is idempotent as well as
+commutative; the tests check every order of a set of four marks with ties at
+each level of the tie-break.

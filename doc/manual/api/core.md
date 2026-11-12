@@ -192,3 +192,156 @@ test "mark with a custom marker and formatter" {
   )
 }
 ```
+
+## Reports
+
+The report API is new in 0.2.0. It replaces `ErrorData::mark`, which stays
+for one release. Positions in a `Span` are element indices for an array
+sequence and Unicode scalar indices for a string sequence.
+
+### `Severity`
+
+How serious a report is, ordered `Help < Note < Warning < Error`.
+
+```mbti
+pub(all) enum Severity {
+  Help
+  Note
+  Warning
+  Error
+}
+pub fn Severity::name(Self) -> String
+```
+
+`name` gives the lower-case word used in the header.
+
+### `Style`
+
+```mbti
+pub(all) enum Style {
+  Primary
+  Secondary
+}
+```
+
+A primary mark is drawn with `^`, a secondary mark with `-`.
+
+### `Span`
+
+A half-open interval `[start, end)` of positions, valid by construction.
+
+```mbti
+pub struct Span {
+  start : Int32
+  end : Int32
+}
+pub fn Span::new(Int32, Int32) -> Self
+pub fn Span::point(Int32) -> Self
+```
+
+`new` turns a negative end point into 0 and an `end` before `start` into
+`start`. `point(at)` is the insertion point `[at, at)`, drawn as one marker.
+
+### `Mark`
+
+A place to mark: a span, a style, an optional message and a priority.
+
+```mbti
+pub struct Mark {
+  span : Span
+  style : Style
+  message : String?
+  priority : Int32
+}
+pub fn Mark::primary(Span, message? : String) -> Self
+pub fn Mark::secondary(Span, message? : String) -> Self
+pub fn Mark::with_priority(Self, Int32) -> Self
+```
+
+Where marks overlap, each column goes to the higher priority, then the later
+start, then the earlier end, then the primary mark, then the message that is
+smaller in code-point order. The result does not depend on the order in which
+marks are added, and marks equal in every field count once.
+
+### `Report`
+
+```mbti
+pub struct Report {
+  severity : Severity
+  code : String?
+  message : String
+  marks : Array[Mark]
+  notes : Array[String]
+}
+pub fn Report::new(Severity, String) -> Self
+pub fn Report::with_code(Self, String) -> Self
+pub fn Report::with_mark(Self, Mark) -> Self
+pub fn Report::with_note(Self, String) -> Self
+```
+
+### `Report::render`
+
+Renders the report on a sequence in the compact layout.
+
+```mbti
+pub fn[T : Show] Report::render(Self, Sequence[T], model? : @cursor.Model, color? : Bool) -> String
+```
+
+The output is, in order:
+
+- the line of text that holds the primary mark (the whole text when there
+  are no marks), with tabs expanded by `model`;
+- the marker row, followed by the message of the mark that ends rightmost;
+- the other messages, each under the start of its mark, on as few rows as
+  possible;
+- the header `severity[code]: message`, with ` at line:column` (1-based) when
+  the text has several lines;
+- one `note: ...` line per note.
+
+Marks that start on another line than the primary mark are not drawn. Spans
+are clamped to the sequence and snapped outward to grapheme clusters, and
+columns follow Unicode 18.0.0 widths (`@cursor`). With `color`, ANSI SGR
+colours are used.
+
+```moonbit
+test "render a report on command-line arguments" {
+  let report = @err_marker.Report::new(Error, "unknown mode 'sovle'")
+    .with_code("E01")
+    .with_mark(
+      @err_marker.Mark::primary(
+        @err_marker.Span::new(3, 4),
+        message="did you mean 'solve'?",
+      ),
+    )
+  let args = @err_marker.Sequence::from_args([
+    "sudoku", "export", "a.txt", "sovle", "out.txt",
+  ])
+  inspect(
+    report.render(args),
+    content=(
+      #|sudoku export a.txt sovle out.txt
+      #|                    ^^^^^ did you mean 'solve'?
+      #|error[E01]: unknown mode 'sovle'
+    ),
+  )
+}
+```
+
+### `Sequence::from_args`
+
+```mbti
+pub fn Sequence::from_args(Array[String]) -> Sequence[String]
+```
+
+A command-line argument vector as a sequence: arguments joined by a space and
+quoted when needed.
+
+### `utf16_to_scalar`
+
+```mbti
+pub fn utf16_to_scalar(String, Int32) -> Int32
+```
+
+The Unicode scalar index of a UTF-16 offset, for callers whose positions come
+from `String` indexing. An offset inside a surrogate pair counts that pair as
+not yet passed.

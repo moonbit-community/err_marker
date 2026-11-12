@@ -49,6 +49,7 @@ The module has two public packages: the root package at `src`, documented as
 - Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`
 - Error data: `ErrorData`, `ErrorData::make`
 - Rendering: `ErrorData::mark`
+- Reports (0.2.0): `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `utf16_to_scalar`
 - Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`
 
 ## Where to read next

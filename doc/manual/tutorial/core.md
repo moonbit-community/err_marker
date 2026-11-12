@@ -128,6 +128,30 @@ The [design](../design/core.md) explains why, and 0.2.0
 fixes these cases
 ([#5](https://github.com/moonbit-community/err_marker/issues/5)).
 
+## 7. Write a report with several marks
+
+From 0.2.0, a `Report` carries several marks: a primary mark for the place
+that is wrong and secondary marks for related places, each with an optional
+message. Positions in a string are character (scalar) indices, so wide
+characters and emoji line up:
+
+```moonbit
+test "a report with two marks" {
+  let report = @err_marker.Report::new(Warning, "duplicate cell")
+    .with_mark(@err_marker.Mark::primary(@err_marker.Span::new(4, 5), message="again here"))
+    .with_mark(@err_marker.Mark::secondary(@err_marker.Span::new(1, 2), message="first"))
+  inspect(
+    report.render(@err_marker.Sequence::from_string("数5独.5")),
+    content=(
+      #|数5独.5
+      #|  -   ^ again here
+      #|  first
+      #|warning: duplicate cell
+    ),
+  )
+}
+```
+
 ## Next
 
 Read the [API](../api/core.md) for every parameter and edge case.
