@@ -105,6 +105,46 @@ fn pad_like(text : String, from : Int32, to : Int32) -> String {
 }
 
 ///|
+/// Widens `[start, end)` (UTF-16 offsets into `text`) so that neither end
+/// falls inside a surrogate pair: a character outside the Basic Multilingual
+/// Plane is marked whole or not at all (#7). Element boundaries of an array
+/// sequence are always code point boundaries, so this only moves spans of
+/// string sequences.
+fn snap_to_code_points(
+  text : String,
+  start : Int32,
+  end : Int32,
+) -> (Int32, Int32) {
+  let start = if start > 0 &&
+    start < text.length() &&
+    is_low_surrogate(text[start]) &&
+    is_high_surrogate(text[start - 1]) {
+    start - 1
+  } else {
+    start
+  }
+  let end = if end > 0 &&
+    end < text.length() &&
+    is_high_surrogate(text[end - 1]) &&
+    is_low_surrogate(text[end]) {
+    end + 1
+  } else {
+    end
+  }
+  (start, if end < start { start } else { end })
+}
+
+///|
+fn is_high_surrogate(u : UInt16) -> Bool {
+  u >= (0xD800 : UInt16) && u <= (0xDBFF : UInt16)
+}
+
+///|
+fn is_low_surrogate(u : UInt16) -> Bool {
+  u >= (0xDC00 : UInt16) && u <= (0xDFFF : UInt16)
+}
+
+///|
 /// Locates the marked span in the rendered `text` as UTF-16 offsets
 /// `(start, end)`, `end` exclusive; `start == end` is a zero-width point.
 /// Returns `None` when there is no position (`pos < 0`).
@@ -197,6 +237,7 @@ pub fn[T : Show] ErrorData::mark(
   guard locate_span(seq, seq_str, pos, offset) is Some((start, end)) else {
     return seq_str + "\n\n" + msg
   }
+  let (start, end) = snap_to_code_points(seq_str, start, end)
   // The marker goes right under the line that holds the start of the span,
   // and its column is counted from the start of that line. A span that crosses
   // a line break is marked up to the end of its first line (#9).

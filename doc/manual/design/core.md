@@ -44,6 +44,8 @@ $w = 1$.
 For a string, the span from $a$ with offset $k$ covers code units $a$ to
 $a + k$, so $p = a$ and $w = k + 1$. The same rules apply with $n = |s|$: $a + k$
 is clamped to $n - 1$, and $a \ge n$ gives the point $p = n$, $w = 1$.
+If the span would start or end between the two code units of a surrogate
+pair, it is widened to include the whole pair, so a character is never split.
 
 ### Several lines
 
@@ -62,7 +64,7 @@ other:
 | Case | What happens | Issue |
 | --- | --- | --- |
 | Wide characters (CJK, emoji) | one character is 2 columns but 1 or 2 code units; the marker drifts left | [#6](https://github.com/moonbit-community/err_marker/issues/6) |
-| Surrogate pairs | positions are code units, so an odd offset splits a character | [#7](https://github.com/moonbit-community/err_marker/issues/7) |
+| Surrogate pairs | positions are code units, so a caller counting characters points at the wrong place; spans are widened to whole characters, so nothing is split | [#7](https://github.com/moonbit-community/err_marker/issues/7) |
 | Tabs inside the span | a tab gets one marker character although it moves to the next tab stop; tabs before the span are copied into the padding and no longer shift the marker | [#8](https://github.com/moonbit-community/err_marker/issues/8) |
 
 ## The model in 0.2.0

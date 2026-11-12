@@ -77,8 +77,10 @@ pub fn Sequence::from_string(String) -> Self[Char]
 ```
 
 Positions in this sequence are UTF-16 code-unit offsets into the string,
-which equal character indices only for text in the Basic Multilingual Plane
-([#7](https://github.com/moonbit-community/err_marker/issues/7)).
+which equal character indices only for text in the Basic Multilingual Plane.
+A span whose start or end falls inside a surrogate pair is widened to the
+whole character, so a character outside that plane, such as most emoji, is
+never split ([#7](https://github.com/moonbit-community/err_marker/issues/7)). From 0.2.0, positions are Unicode scalar indices.
 
 ```moonbit
 test "from_string marks code units" {
