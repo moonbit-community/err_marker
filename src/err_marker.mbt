@@ -11,13 +11,11 @@
 /// * `join` : The number of characters used to join elements when flattening to
 /// string (default: 1).
 ///
-/// Returns a tuple `(start, end)` where `start` is the character position of the
-/// beginning of the target range and `end` is the character position of the end
-/// of the target range in the flattened string. Returns `(-1, -1)` if the
-/// position or offset parameters are invalid.
-///
-/// Panics if `pos` is negative, `pos` is greater than or equal to the array
-/// length, or `offset` is negative.
+/// Returns a tuple `(start, end)` of UTF-16 offsets into the flattened string:
+/// the target range is `start` (inclusive) to `end` (exclusive). Returns
+/// `(-1, -1)` if `pos` is negative, `pos` is greater than or equal to the array
+/// length, or `offset` is negative; it never panics. Callers clamp `offset`
+/// first (see `gen_marker`).
 ///
 fn[T : Show] err_locate_arr(
   seq : Array[T],
@@ -85,22 +83,37 @@ fn[T : Show] gen_marker(
   offset : Int32,
   marker : Char,
 ) -> String {
-  match seq {
+  // One rule for both sequence kinds (#10): a negative `pos` means "no
+  // position"; a negative `offset` counts as 0; a span that runs past the end
+  // is clamped to the last element; a `pos` at or past the end is a zero-width
+  // point after the text, drawn as one marker.
+  if pos < 0 {
+    return ""
+  }
+  let offset = if offset < 0 { 0 } else { offset }
+  let (start, end) = match seq {
     Arr(a, j) => {
-      let (start, end) = err_locate_arr(a, pos, offset, join=j.length())
-      if start == -1 {
-        return ""
+      let n = a.length()
+      if pos >= n {
+        (text.length(), text.length())
+      } else {
+        // `offset >= n - pos` avoids overflowing `pos + offset`.
+        let offset = if offset >= n - pos { n - 1 - pos } else { offset }
+        err_locate_arr(a, pos, offset, join=j.length())
       }
-      pad_like(text, start) + String::make(end - start, marker)
     }
     Str(s) => {
-      let (start, end) = (pos, pos + offset)
-      if start >= s.length() || end >= s.length() || start < 0 || end < 0 {
-        return ""
+      let n = s.length()
+      if pos >= n {
+        (n, n)
+      } else {
+        let last = if offset >= n - pos { n - 1 } else { pos + offset }
+        (pos, last + 1)
       }
-      pad_like(text, start) + String::make(end - start + 1, marker)
     }
   }
+  let width = if end > start { end - start } else { 1 }
+  pad_like(text, start) + String::make(width, marker)
 }
 
 ///|
