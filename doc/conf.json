@@ -1,0 +1,8 @@
+{
+  "title": "err_marker",
+  "summary": "Marks the place of an error under a rendered sequence (command-line arguments, tokens or a string) and prints it with a message.",
+  "locales": [
+    "zh_CN",
+    "ja_JP"
+  ]
+}

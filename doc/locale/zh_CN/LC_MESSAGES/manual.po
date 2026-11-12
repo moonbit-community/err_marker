@@ -1,0 +1,428 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luna-Flow documentation\n"
+"Report-Msgid-Bugs-To: https://github.com/Luna-Flow\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: conf.json:summary
+msgid "Marks the place of an error under a rendered sequence (command-line arguments, tokens or a string) and prints it with a message."
+msgstr "在渲染出的序列（命令行参数、词法单元或字符串）下面标出错误所在的位置，并连同错误信息一起输出。"
+
+#: manual/api/core.md:1
+msgid "core API"
+msgstr "core API"
+
+#: manual/api/core.md:5
+msgid "Purpose"
+msgstr "用途"
+
+#: manual/api/core.md:7
+msgid "The root package of `KCN-judu/err_marker` turns a sequence, a position and a message into a three-line error report: the rendered sequence, a marker line under the position, and the message. Its public surface is recorded in `src/pkg.generated.mbti`; how the marker column is computed, and where that computation is wrong in 0.1, is explained in the [design](../design/core.md)."
+msgstr "`KCN-judu/err_marker` 的根包把一个序列、一个位置和一条信息变成三行错误报告：渲染出的序列、位置下方的标记行，以及错误信息。其公开接口记录在 `src/pkg.generated.mbti` 中；标记列是如何计算的、这个计算在 0.1 中哪里有错，见[设计](../design/core.md)。"
+
+#: manual/api/core.md:13
+msgid "Importing"
+msgstr "导入"
+
+#: manual/api/core.md:15
+msgid "Add the package to your `moon.pkg`:"
+msgstr "在你的 `moon.pkg` 中加入这个包："
+
+#: manual/api/core.md:23
+msgid "The examples on this page call it as `@err_marker`."
+msgstr "本页的示例以 `@err_marker` 调用它。"
+
+#: manual/api/core.md:25
+msgid "Sequences"
+msgstr "序列"
+
+#: manual/api/core.md:29
+msgid "The text that an error is marked in: an array of elements joined by a separator, or a string."
+msgstr "错误被标记在其中的文本：用分隔符连接起来的元素数组，或一个字符串。"
+
+#: manual/api/core.md:36
+msgid "The type is abstract; build values with `Sequence::from_array` or `Sequence::from_string`. The type parameter is the element type, which must implement `Show` when the sequence is rendered by `ErrorData::mark`."
+msgstr "这是抽象类型；用 `Sequence::from_array` 或 `Sequence::from_string` 构造值。类型参数是元素类型；序列由 `ErrorData::mark` 渲染时，元素类型必须实现 `Show`。"
+
+#: manual/api/core.md:42
+msgid "Builds a sequence from an array whose elements are rendered with `Show` and joined by `join`."
+msgstr "从数组构造序列，元素用 `Show` 渲染，并用 `join` 连接。"
+
+#: manual/api/core.md:49
+msgid "`join` defaults to a single space. Positions in this sequence are element indices: position `i` covers the rendered text of element `i`. Elements are not quoted, so an element that is empty or contains the separator cannot be told apart from its neighbours ([#11](https://github.com/moonbit-community/err_marker/issues/11))."
+msgstr "`join` 默认是一个空格。这种序列中的位置是元素下标：位置 `i` 覆盖元素 `i` 渲染出的文本。元素不加引号，所以空元素或含有分隔符的元素无法与相邻元素区分开（[#11](https://github.com/moonbit-community/err_marker/issues/11)）。"
+
+#: manual/api/core.md:72
+msgid "Builds a sequence from a string."
+msgstr "从字符串构造序列。"
+
+#: manual/api/core.md:78
+msgid "Positions in this sequence are UTF-16 code-unit offsets into the string, which equal character indices only for text in the Basic Multilingual Plane ([#7](https://github.com/moonbit-community/err_marker/issues/7))."
+msgstr "这种序列中的位置是字符串中的 UTF-16 码元偏移，只有对基本多文种平面内的文本才等于字符下标（[#7](https://github.com/moonbit-community/err_marker/issues/7)）。"
+
+#: manual/api/core.md:97
+msgid "Error data"
+msgstr "错误数据"
+
+#: manual/api/core.md:101
+msgid "What went wrong and where: an optional error type, a message, a start position and an offset."
+msgstr "出了什么错、错在哪里：可选的错误类型、一条信息、起始位置和偏移量。"
+
+#: manual/api/core.md:113
+msgid "The marked span is `err_pos` through `err_pos + err_offset`, both ends included, in the units of the sequence it is marked in. The fields are readable from outside the package; build values with `ErrorData::make`."
+msgstr "被标记的范围是从 `err_pos` 到 `err_pos + err_offset`，两端都包含，单位与所标记的序列一致。字段可以在包外读取；用 `ErrorData::make` 构造值。"
+
+#: manual/api/core.md:119
+msgid "Builds an `ErrorData` from a message and optional type, position and offset."
+msgstr "由一条信息以及可选的类型、位置和偏移量构造 `ErrorData`。"
+
+#: manual/api/core.md:125
+msgid "The defaults are `err_type = None`, `err_pos = -1` and `err_offset = 0`. A negative `err_pos` means \"no position\": `mark` then prints an empty marker line. `make` never fails; positions are only checked when the error is marked."
+msgstr "默认值为 `err_type = None`、`err_pos = -1` 和 `err_offset = 0`。负的 `err_pos` 表示“没有位置”：此时 `mark` 输出一个空的标记行。`make` 不会失败；位置只在标记错误时才检查。"
+
+#: manual/api/core.md:140
+msgid "Rendering"
+msgstr "渲染"
+
+#: manual/api/core.md:144
+msgid "Renders the sequence, a marker line under the span, and the formatted message, separated by newlines."
+msgstr "渲染序列、范围下方的标记行以及格式化后的信息，三者之间用换行分隔。"
+
+#: manual/api/core.md:151
+msgid "`marker` is the character repeated under the span; it defaults to `^`."
+msgstr "`marker` 是在范围下方重复的字符，默认为 `^`。"
+
+#: manual/api/core.md:152
+msgid "`gen_msg` formats the last line from `err_type` and `err_msg`. The default prints `Error(type): message`, or `Error: message` when `err_type` is `None`."
+msgstr "`gen_msg` 由 `err_type` 和 `err_msg` 生成最后一行。默认输出 `Error(type): message`；`err_type` 为 `None` 时输出 `Error: message`。"
+
+#: manual/api/core.md:155
+msgid "If `err_pos` is negative or not inside the sequence, the marker line is empty. A span that runs past the end is drawn past the end of the text for arrays and not at all for strings ([#10](https://github.com/moonbit-community/err_marker/issues/10))."
+msgstr "如果 `err_pos` 为负或不在序列内，标记行为空。超出末尾的范围，对数组会画到文本末尾之外，对字符串则完全不画（[#10](https://github.com/moonbit-community/err_marker/issues/10)）。"
+
+#: manual/api/core.md:159
+msgid "The marker column counts UTF-16 code units, not terminal columns, so it is only correct for ASCII-width text without tabs or newlines ([#6](https://github.com/moonbit-community/err_marker/issues/6), [#8](https://github.com/moonbit-community/err_marker/issues/8), [#9](https://github.com/moonbit-community/err_marker/issues/9))."
+msgstr "标记列按 UTF-16 码元计数，而不是按终端列数计数，所以只有对不含 Tab 和换行、宽度与 ASCII 相同的文本才正确（[#6](https://github.com/moonbit-community/err_marker/issues/6)、[#8](https://github.com/moonbit-community/err_marker/issues/8)、[#9](https://github.com/moonbit-community/err_marker/issues/9)）。"
+
+#: manual/design/core.md:1
+msgid "core design"
+msgstr "core 设计"
+
+#: manual/design/core.md:3
+msgid "This page explains the model behind `err_marker` 0.1, how the marker line is computed, and where that model is wrong. The 0.2.0 model that replaces it is specified in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
+msgstr "本页说明 `err_marker` 0.1 背后的模型、标记行是如何计算的，以及这个模型哪里有错。取代它的 0.2.0 模型规定在 [#5](https://github.com/moonbit-community/err_marker/issues/5) 中。"
+
+#: manual/design/core.md:7
+msgid "The model"
+msgstr "模型"
+
+#: manual/design/core.md:9
+msgid "A report has three lines: the rendered sequence $s$, a marker line, and the message. The marker line is $p$ spaces followed by $w$ marker characters, so the whole design is the choice of $p$ (where the span starts) and $w$ (how wide it is)."
+msgstr "一份报告有三行：渲染出的序列 $s$、标记行和错误信息。标记行是 $p$ 个空格后跟 $w$ 个标记字符，所以整个设计就是 $p$（范围从哪里开始）和 $w$（范围有多宽）的选择。"
+
+#: manual/design/core.md:14
+msgid "Arrays"
+msgstr "数组"
+
+#: manual/design/core.md:16
+msgid "For elements $x_0, \\dots, x_{n-1}$ rendered as strings $r_i = \\texttt{to\\_string}(x_i)$ and a separator of length $j$, the rendered text is"
+msgstr "设元素 $x_0, \\dots, x_{n-1}$ 渲染为字符串 $r_i = \\texttt{to\\_string}(x_i)$，分隔符长度为 $j$，则渲染出的文本为"
+
+#: manual/design/core.md:23
+msgid "A span from element $a$ with offset $k$ covers elements $a$ to $a + k$, and"
+msgstr "从元素 $a$ 开始、偏移量为 $k$ 的范围覆盖元素 $a$ 到 $a + k$，并且"
+
+#: manual/design/core.md:30
+msgid "where $|r|$ is `String::length`, the number of UTF-16 code units. The span is drawn only if $0 \\le a < n$ and $k \\ge 0$."
+msgstr "其中 $|r|$ 是 `String::length`，即 UTF-16 码元的个数。只有当 $0 \\le a < n$ 且 $k \\ge 0$ 时才画出这个范围。"
+
+#: manual/design/core.md:33
+msgid "Strings"
+msgstr "字符串"
+
+#: manual/design/core.md:35
+msgid "For a string, the span from $a$ with offset $k$ covers code units $a$ to $a + k$, so $p = a$ and $w = k + 1$. It is drawn only if both $a$ and $a + k$ lie inside the string."
+msgstr "对字符串，从 $a$ 开始、偏移量为 $k$ 的范围覆盖码元 $a$ 到 $a + k$，所以 $p = a$，$w = k + 1$。只有当 $a$ 和 $a + k$ 都落在字符串内时才画出。"
+
+#: manual/design/core.md:39
+msgid "Where the model is wrong"
+msgstr "模型哪里有错"
+
+#: manual/design/core.md:41
+msgid "The formulas measure length, but the reader sees columns. The two agree only when every code unit takes exactly one terminal column. Each known bug is a case where they disagree, or where the two sequence kinds disagree with each other:"
+msgstr "公式量的是长度，读者看到的却是列。只有每个码元恰好占一个终端列时两者才一致。每个已知的 bug，要么是两者不一致的情形，要么是两种序列之间行为不一致的情形："
+
+#: manual/design/core.md:46
+msgid "Case"
+msgstr "情形"
+
+#: manual/design/core.md:46
+msgid "What happens"
+msgstr "发生了什么"
+
+#: manual/design/core.md:46
+msgid "Issue"
+msgstr "Issue"
+
+#: manual/design/core.md:48
+msgid "Wide characters (CJK, emoji)"
+msgstr "宽字符（中日韩文字、emoji）"
+
+#: manual/design/core.md:48
+msgid "one character is 2 columns but 1 or 2 code units; the marker drifts left"
+msgstr "一个字符占 2 列，却是 1 或 2 个码元；标记向左偏"
+
+#: manual/design/core.md:49
+msgid "Surrogate pairs"
+msgstr "代理对"
+
+#: manual/design/core.md:49
+msgid "positions are code units, so an odd offset splits a character"
+msgstr "位置是码元，所以奇数偏移会把一个字符切开"
+
+#: manual/design/core.md:50
+msgid "Tabs"
+msgstr "Tab"
+
+#: manual/design/core.md:50
+msgid "a tab is 1 code unit but moves to the next tab stop"
+msgstr "一个 Tab 是 1 个码元，却会移到下一个制表位"
+
+#: manual/design/core.md:51
+msgid "Newlines"
+msgstr "换行"
+
+#: manual/design/core.md:51
+msgid "the marker is counted from the start of the text, not of its line"
+msgstr "标记从整段文本的开头计数，而不是从所在行的开头"
+
+#: manual/design/core.md:52
+msgid "Spans past the end"
+msgstr "超出末尾的范围"
+
+#: manual/design/core.md:52
+msgid "arrays draw past the text, strings draw nothing"
+msgstr "数组画到文本之外，字符串什么都不画"
+
+#: manual/design/core.md:53
+msgid "Separators inside elements, empty elements"
+msgstr "元素内含分隔符、空元素"
+
+#: manual/design/core.md:53
+msgid "the joined text cannot be split back into elements"
+msgstr "连接后的文本无法再拆回各个元素"
+
+#: manual/design/core.md:55
+msgid "The model in 0.2.0"
+msgstr "0.2.0 的模型"
+
+#: manual/design/core.md:57
+msgid "0.2.0 measures columns instead of length, with these decisions (details and the rejected alternatives are recorded in #5):"
+msgstr "0.2.0 改为度量列而不是长度，决定如下（细节和被否决的方案记录在 #5 中）："
+
+#: manual/design/core.md:60
+msgid "**Positions.** Arrays use element indices; strings use Unicode scalar indices. Every span is snapped outward to extended grapheme cluster boundaries (UAX #29). Snapping is a closure operator on spans ordered by inclusion: if $\\sigma$ snaps a span, then $S \\subseteq \\sigma(S)$, $S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$ and $\\sigma(\\sigma(S)) = \\sigma(S)$."
+msgstr "**位置。** 数组用元素下标；字符串用 Unicode 标量下标。每个范围都向外对齐到扩展字形簇的边界（UAX #29）。对齐是范围在包含序上的闭包算子：若 $\\sigma$ 表示对齐，则 $S \\subseteq \\sigma(S)$，$S \\subseteq T \\Rightarrow \\sigma(S) \\subseteq \\sigma(T)$，且 $\\sigma(\\sigma(S)) = \\sigma(S)$。"
+
+#: manual/design/core.md:66
+msgid "**Columns.** Each grapheme cluster acts on the cursor $(\\ell, c)$: an ordinary cluster of width $w$ maps $c \\mapsto c + w$, a tab maps $c \\mapsto t(\\lfloor c/t \\rfloor + 1)$, and a newline maps $(\\ell, c) \\mapsto (\\ell + 1, 0)$. These moves form a monoid. Every composite is a shift, a tab move $c \\mapsto T(c + a) + b$ with $0 \\le a < t$, or a line break, because $T(T(x) + b) = T(x) + T(b)$. The marker column of a span is the move of its prefix applied to the origin."
+msgstr "**列。** 每个字形簇作用在光标 $(\\ell, c)$ 上：宽度为 $w$ 的普通字形簇把 $c \\mapsto c + w$，Tab 把 $c \\mapsto t(\\lfloor c/t \\rfloor + 1)$，换行把 $(\\ell, c) \\mapsto (\\ell + 1, 0)$。这些移动构成一个幺半群。由于 $T(T(x) + b) = T(x) + T(b)$，任何复合都是一次平移、一次 Tab 移动 $c \\mapsto T(c + a) + b$（其中 $0 \\le a < t$）或一次换行。范围的标记列，就是其前缀对应的移动作用在原点上的结果。"
+
+#: manual/design/core.md:73
+msgid "**Widths** come from tables generated from the Unicode Character Database (Unicode 18.0.0), with East Asian Width (UAX #11) for wide characters."
+msgstr "**宽度** 来自由 Unicode 字符数据库（Unicode 18.0.0）生成的表，宽字符按东亚宽度（UAX #11）判定。"
+
+#: manual/design/core.md:75
+msgid "**Several marks** overlay as a semilattice, so the output does not depend on the order in which marks are added."
+msgstr "**多处标记** 的叠加构成一个半格，所以输出与添加标记的顺序无关。"
+
+#: manual/design/core.md:77
+msgid "**Elements are quoted** when needed, so the rendered line can always be split back into its elements."
+msgstr "**元素在需要时加引号**，所以渲染出的行总能拆回各个元素。"
+
+#: manual/index.md:1
+msgid "err_marker"
+msgstr "err_marker"
+
+#: manual/index.md:5
+msgid "This manual documents version `v0.1.3` of `KCN-judu/err_marker`."
+msgstr "本手册对应 `KCN-judu/err_marker` 的 `v0.1.3` 版。"
+
+#: manual/index.md:7
+msgid "Overview"
+msgstr "概览"
+
+#: manual/index.md:9
+msgid "`err_marker` shows a reader where an error is. It renders a sequence (the command-line arguments of a program, a list of tokens, or a string), draws a line of markers under the part that is wrong, and prints a message below:"
+msgstr "`err_marker` 告诉读者错误在哪里。它渲染一个序列（程序的命令行参数、一串词法单元或一个字符串），在出错的部分下面画一行标记，再在下面输出一条信息："
+
+#: manual/index.md:19
+msgid "The library is one package with two types and four functions. It does not read files, track line numbers or colour its output; it turns a sequence, a position and a message into three lines of text."
+msgstr "这个库只有一个包，包含两个类型和四个函数。它不读文件、不记行号、也不给输出上色；它只把一个序列、一个位置和一条信息变成三行文本。"
+
+#: manual/index.md:23
+msgid "The 0.1 series has known limits with non-ASCII text, tabs, newlines and out-of-range positions; they are listed in the [design](design/core.md) and tracked for 0.2.0 in [#5](https://github.com/moonbit-community/err_marker/issues/5)."
+msgstr "0.1 系列在非 ASCII 文本、Tab、换行和越界位置上有已知的局限；它们列在[设计](design/core.md)中，并在 [#5](https://github.com/moonbit-community/err_marker/issues/5) 中为 0.2.0 跟踪。"
+
+#: manual/index.md:28
+msgid "Install"
+msgstr "安装"
+
+#: manual/index.md:34
+msgid "Then import `\"KCN-judu/err_marker\"` in your `moon.pkg`; the package is available as `@err_marker`. The module needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and depends only on `moonbitlang/core`."
+msgstr "然后在你的 `moon.pkg` 中导入 `\"KCN-judu/err_marker\"`；包以 `@err_marker` 的名字可用。该模块需要 MoonBit 工具链 0.10 或更高版本（`moonc` ≥ 0.10），只依赖 `moonbitlang/core`。"
+
+#: manual/index.md:38
+msgid "Pages"
+msgstr "页面"
+
+#: manual/index.md:40
+msgid "The module is one MoonBit package at `src`, documented as `core`."
+msgstr "该模块是位于 `src` 的一个 MoonBit 包，文档中称为 `core`。"
+
+#: manual/index.md:42
+msgid "Part"
+msgstr "部分"
+
+#: manual/index.md:42
+msgid "Tutorial"
+msgstr "教程"
+
+#: manual/index.md:42
+msgid "API"
+msgstr "API"
+
+#: manual/index.md:42
+msgid "Design"
+msgstr "设计"
+
+#: manual/index.md:44
+msgid "`core`: sequences, error data and marking"
+msgstr "`core`：序列、错误数据与标记"
+
+#: manual/index.md:44
+msgid "[tutorial](tutorial/core.md)"
+msgstr "[教程](tutorial/core.md)"
+
+#: manual/index.md:44
+msgid "[API](api/core.md)"
+msgstr "[API](api/core.md)"
+
+#: manual/index.md:44
+msgid "[design](design/core.md)"
+msgstr "[设计](design/core.md)"
+
+#: manual/index.md:46
+msgid "Exported items"
+msgstr "导出项"
+
+#: manual/index.md:48
+msgid "Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`"
+msgstr "序列：`Sequence`、`Sequence::from_array`、`Sequence::from_string`"
+
+#: manual/index.md:49
+msgid "Error data: `ErrorData`, `ErrorData::make`"
+msgstr "错误数据：`ErrorData`、`ErrorData::make`"
+
+#: manual/index.md:50
+msgid "Rendering: `ErrorData::mark`"
+msgstr "渲染：`ErrorData::mark`"
+
+#: manual/index.md:52
+msgid "Where to read next"
+msgstr "接下来读什么"
+
+#: manual/index.md:54
+msgid "New to the package: the [tutorial](tutorial/core.md) builds a small argument checker and prints its errors."
+msgstr "初次使用这个包：[教程](tutorial/core.md)会构建一个小的参数检查器并输出它的错误。"
+
+#: manual/index.md:56
+msgid "Using it in a program: keep the [API](api/core.md) at hand."
+msgstr "在程序中使用：把 [API](api/core.md) 放在手边。"
+
+#: manual/index.md:57
+msgid "Contributing, or relying on exact output: read the [design](design/core.md), which states how the marker column is computed and where the 0.1 model breaks, and [CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md)."
+msgstr "参与贡献，或依赖精确的输出：阅读[设计](design/core.md)，它说明标记列是如何计算的、0.1 的模型在哪里失效；以及 [CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md)。"
+
+#: manual/index.md:61
+msgid "Validation"
+msgstr "验证"
+
+#: manual/index.md:63
+msgid "Recommended release checks:"
+msgstr "建议的发布检查："
+
+#: manual/index.md:70
+msgid "`just test-all` runs the tests on wasm, wasm-gc, js and native, in debug and release."
+msgstr "`just test-all` 在 wasm、wasm-gc、js 和 native 上分别以 debug 和 release 运行测试。"
+
+#: manual/tutorial/core.md:1
+msgid "core tutorial"
+msgstr "core 教程"
+
+#: manual/tutorial/core.md:3
+msgid "This tutorial builds the error reporting of a small command-line program, one step at a time. You need a MoonBit toolchain (`moonc` ≥ 0.10) and a module of your own to add the dependency to."
+msgstr "本教程一步一步地为一个小的命令行程序构建错误报告。你需要 MoonBit 工具链（`moonc` ≥ 0.10），以及一个要添加依赖的自己的模块。"
+
+#: manual/tutorial/core.md:7
+msgid "1. Add the dependency"
+msgstr "1. 添加依赖"
+
+#: manual/tutorial/core.md:13
+msgid "and import the package in the `moon.pkg` of the package that reports errors:"
+msgstr "并在负责报告错误的包的 `moon.pkg` 中导入这个包："
+
+#: manual/tutorial/core.md:21
+msgid "2. Mark one argument"
+msgstr "2. 标记一个参数"
+
+#: manual/tutorial/core.md:23
+msgid "A program receives its arguments as an array of strings. Wrap the array in a `Sequence`, describe the error with `ErrorData::make`, and call `mark`. `err_pos` is the index of the bad argument:"
+msgstr "程序以字符串数组的形式接收参数。把数组包装成 `Sequence`，用 `ErrorData::make` 描述错误，再调用 `mark`。`err_pos` 是出错参数的下标："
+
+#: manual/tutorial/core.md:46
+msgid "`mark` returns a `String`; print it with `println` in a real program."
+msgstr "`mark` 返回一个 `String`；在实际程序中用 `println` 输出它。"
+
+#: manual/tutorial/core.md:48
+msgid "3. Mark several arguments"
+msgstr "3. 标记多个参数"
+
+#: manual/tutorial/core.md:50
+msgid "`err_offset` extends the span to the following elements. With `err_pos=1` and `err_offset=1`, the marker covers elements 1 and 2 and the space between them:"
+msgstr "`err_offset` 把范围延伸到后面的元素。当 `err_pos=1` 且 `err_offset=1` 时，标记覆盖元素 1 和 2 以及它们之间的空格："
+
+#: manual/tutorial/core.md:72
+msgid "4. Mark a place in a string"
+msgstr "4. 在字符串中标记一个位置"
+
+#: manual/tutorial/core.md:74
+msgid "For a single string, use `Sequence::from_string`; positions are offsets into the string:"
+msgstr "对单个字符串，用 `Sequence::from_string`；位置是字符串中的偏移："
+
+#: manual/tutorial/core.md:92
+msgid "5. Use your own error format"
+msgstr "5. 使用自己的错误格式"
+
+#: manual/tutorial/core.md:94
+msgid "`gen_msg` receives the error type and message and returns the last line; `marker` changes the marker character:"
+msgstr "`gen_msg` 接收错误类型和信息并返回最后一行；`marker` 改变标记字符："
+
+#: manual/tutorial/core.md:121
+msgid "6. Know the limits"
+msgstr "6. 了解局限"
+
+#: manual/tutorial/core.md:123
+msgid "In 0.1 the marker column is counted in UTF-16 code units. It is right for ASCII text without tabs or newlines; with Chinese or Japanese text, emoji, tabs or several lines it drifts. Arguments that contain spaces are printed without quotes. The [design](../design/core.md) explains why, and 0.2.0 fixes these cases ([#5](https://github.com/moonbit-community/err_marker/issues/5))."
+msgstr "在 0.1 中，标记列按 UTF-16 码元计数。对不含 Tab 和换行的 ASCII 文本它是正确的；遇到中文或日文文本、emoji、Tab 或多行文本时会偏移。含空格的参数输出时不加引号。[设计](../design/core.md)解释了原因，0.2.0 会修复这些情形（[#5](https://github.com/moonbit-community/err_marker/issues/5)）。"
+
+#: manual/tutorial/core.md:130
+msgid "Next"
+msgstr "下一步"
+
+#: manual/tutorial/core.md:132
+msgid "Read the [API](../api/core.md) for every parameter and edge case."
+msgstr "阅读 [API](../api/core.md)，了解每个参数和边界情形。"
