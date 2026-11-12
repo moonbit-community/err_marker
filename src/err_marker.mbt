@@ -47,6 +47,22 @@ fn[T : Show] err_locate_arr(
 }
 
 ///|
+/// Padding that puts the marker under code unit `n` of `text`: one space per
+/// code unit, except that a tab is copied as a tab. The marker then lines up
+/// with the text above it whatever tab width the terminal uses (#8).
+fn pad_like(text : String, n : Int32) -> String {
+  let sb = StringBuilder()
+  for i in 0..<n {
+    if i < text.length() && text[i] == '\t'.to_int().to_uint16() {
+      sb.write_char('\t')
+    } else {
+      sb.write_char(' ')
+    }
+  }
+  sb.to_string()
+}
+
+///|
 /// Generates a visual marker string to highlight a specific position and range
 /// within a sequence.
 ///
@@ -64,6 +80,7 @@ fn[T : Show] err_locate_arr(
 /// the position or range is invalid.
 fn[T : Show] gen_marker(
   seq : Sequence[T],
+  text : String,
   pos : Int32,
   offset : Int32,
   marker : Char,
@@ -74,14 +91,14 @@ fn[T : Show] gen_marker(
       if start == -1 {
         return ""
       }
-      String::make(start, ' ') + String::make(end - start, marker)
+      pad_like(text, start) + String::make(end - start, marker)
     }
     Str(s) => {
       let (start, end) = (pos, pos + offset)
       if start >= s.length() || end >= s.length() || start < 0 || end < 0 {
         return ""
       }
-      String::make(start, ' ') + String::make(end - start + 1, marker)
+      pad_like(text, start) + String::make(end - start + 1, marker)
     }
   }
 }
@@ -133,7 +150,7 @@ pub fn[T : Show] ErrorData::mark(
     Arr(a, j) => a.map(Show::to_string).join(j)
     Str(s) => s
   }
-  let marker_str = gen_marker(seq, pos, offset, marker)
+  let marker_str = gen_marker(seq, seq_str, pos, offset, marker)
   (
     $|\{seq_str}
     $|\{marker_str}
