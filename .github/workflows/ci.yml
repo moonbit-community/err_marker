@@ -1,0 +1,84 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: fmt, check, interface, coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: install moonbit (latest, unpinned)
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: version
+        run: moon version --all
+
+      - name: update registry
+        run: moon update
+
+      - name: format
+        run: |
+          moon fmt
+          git diff --exit-code
+
+      - name: check
+        run: moon check --target all --deny-warn
+
+      - name: public interface
+        run: |
+          moon info
+          git diff --exit-code
+
+      - name: coverage
+        run: |
+          moon test --target native --enable-coverage
+          moon coverage report -f summary | tee coverage_summary.txt
+
+      - name: upload coverage summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-summary
+          path: coverage_summary.txt
+
+  test:
+    name: test (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # `moon test --target all` does not run wasm, so every backend is listed.
+        target: [wasm, wasm-gc, js, native]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: install moonbit (latest, unpinned)
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: update registry
+        run: moon update
+
+      - name: test (debug)
+        run: moon test --target ${{ matrix.target }}
+
+      - name: test (release)
+        run: moon test --target ${{ matrix.target }} --release
