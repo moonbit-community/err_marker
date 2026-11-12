@@ -11,6 +11,11 @@ The roadmap to 0.2.0 is tracked in
 
 ## [Unreleased]
 
+## [0.1.4] — 2026-11-12
+
+Bug-fix release. No public API change; rendered output changes only in the
+cases listed below.
+
 ### Fixed
 
 - A tab before the marked span no longer shifts the marker: the marker line
