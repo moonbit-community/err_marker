@@ -8,7 +8,7 @@ repository = "https://github.com/moonbit-community/err_marker"
 
 license = "Apache-2.0"
 
-keywords = [ "error", "mark", "formate" ]
+keywords = [ "error", "mark", "format" ]
 
 description = "This is a visualizing tool that locates the source of errors within sequences and outputs formatted results, designed to assist users and developers in quickly identifying input that triggers errors."
 
