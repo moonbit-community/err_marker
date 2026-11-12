@@ -2,7 +2,7 @@
 
 <!-- Overview page. Keep this order: one line naming the documented release, Overview, Install, Pages, the exported items grouped by purpose, Where to read next, Validation. Details belong on the package pages. -->
 
-This manual documents version `v0.1.3` of `KCN-judu/err_marker`.
+This manual documents version `v0.1.4` of `KCN-judu/err_marker`.
 
 ## Overview
 
@@ -27,7 +27,7 @@ tracked for 0.2.0 in
 ## Install
 
 ```bash
-moon add KCN-judu/err_marker@0.1.3
+moon add KCN-judu/err_marker@0.1.4
 ```
 
 Then import `"KCN-judu/err_marker"` in your `moon.pkg`; the package is
