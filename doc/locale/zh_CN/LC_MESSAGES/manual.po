@@ -16,6 +16,7 @@ msgid "core API"
 msgstr "core API"
 
 #: manual/api/core.md:5
+#: manual/api/cursor.md:5
 msgid "Purpose"
 msgstr "用途"
 
@@ -24,6 +25,7 @@ msgid "The root package of `KCN-judu/err_marker` turns a sequence, a position an
 msgstr "`KCN-judu/err_marker` 的根包把一个序列、一个位置和一条信息变成三行错误报告：渲染出的序列、位置下方的标记行，以及错误信息。其公开接口记录在 `src/pkg.generated.mbti` 中；标记列是如何计算的、这个计算在 0.1 中哪里有错，见[设计](../design/core.md)。"
 
 #: manual/api/core.md:13
+#: manual/api/cursor.md:13
 msgid "Importing"
 msgstr "导入"
 
@@ -115,6 +117,84 @@ msgstr "如果文本有多行，标记行紧跟在范围起点所在的那一行
 #: manual/api/core.md:169
 msgid "Tabs before the span are copied into the marker line, so the marker lines up whatever tab width the terminal uses; a tab inside the span still gets a single marker character ([#8](https://github.com/moonbit-community/err_marker/issues/8))."
 msgstr "范围之前的 Tab 会被原样复制到标记行中，所以无论终端的 Tab 宽度是多少，标记都能对齐；范围内部的 Tab 仍然只对应一个标记字符（[#8](https://github.com/moonbit-community/err_marker/issues/8)）。"
+
+#: manual/api/cursor.md:1
+msgid "cursor API"
+msgstr "cursor API"
+
+#: manual/api/cursor.md:7
+msgid "`KCN-judu/err_marker/cursor` computes where text puts a terminal cursor. A piece of text becomes a `Move`, moves compose like functions, and applying a move to a `Pos` gives the line and column where the text ends. Widths follow Unicode 18.0.0: grapheme clusters (UAX #29) and East Asian Width (UAX #11). The mathematics is in the [design](../design/cursor.md)."
+msgstr "`KCN-judu/err_marker/cursor` 计算文本会把终端光标带到哪里。一段文本变成一个 `Move`，移动像函数一样复合，把移动作用到 `Pos` 上就得到文本结束处的行和列。宽度遵循 Unicode 18.0.0：字形簇（UAX #29）和东亚宽度（UAX #11）。其中的数学见[设计](../design/cursor.md)。"
+
+#: manual/api/cursor.md:21
+msgid "The examples call it as `@cursor`."
+msgstr "示例以 `@cursor` 调用它。"
+
+#: manual/api/cursor.md:23
+msgid "Positions and moves"
+msgstr "位置与移动"
+
+#: manual/api/cursor.md:27
+msgid "A zero-based line and column, in terminal columns."
+msgstr "从零开始计数的行和列，以终端列为单位。"
+
+#: manual/api/cursor.md:38
+msgid "How a piece of text moves the cursor, in one of three normal forms."
+msgstr "一段文本如何移动光标，取三种范式之一。"
+
+#: manual/api/cursor.md:48
+msgid "With $T(x) = t(\\lfloor x/t \\rfloor + 1)$, the next tab stop after column $x$ for tab width $t$: `Shift(k)` maps column $c$ to $c + k$; `Tab(a, b)` maps $c$ to $T(c + a) + b$ with $0 \\le a < t$; `Break(n, k)` maps $(\\ell, c)$ to $(\\ell + n, k)$. Moves can be matched on but only built through a `Model`, which keeps them in normal form, so two moves are equal exactly when they act the same on every position."
+msgstr "设 $T(x) = t(\\lfloor x/t \\rfloor + 1)$ 为 Tab 宽度 $t$ 下第 $x$ 列之后的下一个制表位：`Shift(k)` 把列 $c$ 映射为 $c + k$；`Tab(a, b)` 把 $c$ 映射为 $T(c + a) + b$，其中 $0 \\le a < t$；`Break(n, k)` 把 $(\\ell, c)$ 映射为 $(\\ell + n, k)$。移动可以做模式匹配，但只能通过 `Model` 构造，它保证移动处于范式，所以两个移动相等当且仅当它们在每个位置上的作用相同。"
+
+#: manual/api/cursor.md:55
+msgid "Models"
+msgstr "模型"
+
+#: manual/api/cursor.md:59
+msgid "The layout model: the tab width and whether East Asian Ambiguous characters are wide."
+msgstr "排版模型：Tab 宽度，以及东亚歧义宽度字符是否算宽。"
+
+#: manual/api/cursor.md:69
+msgid "Moves are composed and applied within one model."
+msgstr "移动在同一个模型内复合与作用。"
+
+#: manual/api/cursor.md:77
+msgid "The defaults are tab width 8 and narrow Ambiguous characters. A tab width below 1 counts as 1."
+msgstr "默认 Tab 宽度为 8，歧义宽度字符按窄处理。小于 1 的 Tab 宽度按 1 处理。"
+
+#: manual/api/cursor.md:89
+msgid "The move that does nothing; `k` columns to the right (a negative `k` counts as 0); one tab; one line break to column 0. With tab width 1, `tab` is `shift(1)`."
+msgstr "分别是：什么都不做的移动；向右 `k` 列（负的 `k` 按 0 处理）；一个 Tab；换行到下一行第 0 列。Tab 宽度为 1 时，`tab` 就是 `shift(1)`。"
+
+#: manual/api/cursor.md:99
+msgid "`compose(first, then)` is the move of `first` followed by `then`. It is associative, has `identity` as unit, and satisfies"
+msgstr "`compose(first, then)` 是先 `first` 后 `then` 的移动。它满足结合律，以 `identity` 为单位元，并满足"
+
+#: manual/api/cursor.md:112
+msgid "Applies a move to a position."
+msgstr "把移动作用到位置上。"
+
+#: manual/api/cursor.md:114
+msgid "Text"
+msgstr "文本"
+
+#: manual/api/cursor.md:122
+msgid "Splits a string into extended grapheme clusters (UAX #29, Unicode 18.0.0)."
+msgstr "把字符串切分为扩展字形簇（UAX #29，Unicode 18.0.0）。"
+
+#: manual/api/cursor.md:130
+msgid "The display width of one cluster that is not a tab or a line break. A flag, an emoji ZWJ sequence and a cluster with U+FE0F are 2. Otherwise the base character decides: 0 for controls, combining and format characters, default ignorables and Hangul medial and final jamo; 2 for East Asian Wide and Fullwidth, and for Ambiguous when the model says so; 1 otherwise."
+msgstr "一个既不是 Tab 也不是换行的字形簇的显示宽度。旗帜、emoji ZWJ 序列以及含 U+FE0F 的字形簇宽度为 2。否则由基字符决定：控制字符、组合与格式字符、默认可忽略字符以及韩文中声和终声为 0；东亚宽字符和全角字符为 2，模型要求时歧义宽度字符也为 2；其余为 1。"
+
+#: manual/api/cursor.md:143
+msgid ""
+"`cluster` is the move of one cluster: `\"\\t\"` is a tab, `\"\\n"
+"\"`, `\"\\r\"` and `\"\\r\\n"
+"\"` are line breaks, anything else shifts by its width. `text` composes the moves of all clusters of a string; it is a monoid homomorphism."
+msgstr ""
+"`cluster` 是一个字形簇的移动：`\"\\t\"` 是 Tab，`\"\\n"
+"\"`、`\"\\r\"` 和 `\"\\r\\n"
+"\"` 是换行，其他都按宽度平移。`text` 把字符串所有字形簇的移动复合起来；它是幺半群同态。"
 
 #: manual/design/core.md:1
 msgid "core design"
@@ -292,6 +372,82 @@ msgstr "多处标记的叠加构成半格（交换、结合、幂等）。标记
 msgid "Message rows are assigned greedily by left endpoint, which uses the minimum number of rows: the largest number of messages that overlap at one column."
 msgstr "说明文字的行按左端点贪心分配，所用行数最少：即在同一列上重叠的说明文字的最大个数。"
 
+#: manual/design/cursor.md:1
+msgid "cursor design"
+msgstr "cursor 设计"
+
+#: manual/design/cursor.md:3
+msgid "The problem"
+msgstr "问题"
+
+#: manual/design/cursor.md:5
+msgid "To put a marker under part of a line, a program must know the column where the text before it ends. Counting characters is not enough: a wide character takes two columns, a combining accent none, a tab jumps to the next tab stop and a line break starts a new line. The package models each of these as a move of the cursor and composes moves."
+msgstr "要在一行的某一部分下面放标记，程序必须知道这部分之前的文本结束在哪一列。只数字符是不够的：宽字符占两列，组合重音不占列，Tab 跳到下一个制表位，换行开始新的一行。本包把这些情形都建模为光标的移动，并把移动复合起来。"
+
+#: manual/design/cursor.md:11
+msgid "Moves"
+msgstr "移动"
+
+#: manual/design/cursor.md:13
+msgid "Write $t \\ge 1$ for the tab width and $T(x) = t(\\lfloor x/t \\rfloor + 1)$ for the next tab stop after column $x$. A grapheme cluster $g$ acts on the cursor $(\\ell, c)$ as"
+msgstr "记 $t \\ge 1$ 为 Tab 宽度，$T(x) = t(\\lfloor x/t \\rfloor + 1)$ 为第 $x$ 列之后的下一个制表位。字形簇 $g$ 对光标 $(\\ell, c)$ 的作用为"
+
+#: manual/design/cursor.md:22
+msgid "Composition of functions makes these moves a monoid. Laying out a text is the monoid homomorphism from cluster sequences that sends each cluster to its move, so the end position of $uv$ is computed from the moves of $u$ and $v$."
+msgstr "函数复合使这些移动构成幺半群。排版一段文本，是从字形簇序列出发、把每个字形簇送到其移动的幺半群同态，所以 $uv$ 的结束位置可以由 $u$ 和 $v$ 的移动算出。"
+
+#: manual/design/cursor.md:26
+msgid "Three normal forms"
+msgstr "三种范式"
+
+#: manual/design/cursor.md:28
+msgid "Every composite move has exactly one of the forms"
+msgstr "任何复合移动恰好具有以下形式之一"
+
+#: manual/design/cursor.md:36
+msgid "They are closed under composition. A line break forgets the column, so anything followed by $B_{n,k}$ is a $B$, and $B$ followed by a column move stays a $B$ with a new column. Shifts add. A shift before a tab move is absorbed by $T(x + qt + r) = T(x + r) + qt$, which keeps $a < t$. Two tab moves combine because $T(x)$ is a multiple of $t$, so"
+msgstr "它们在复合下封闭。换行会忘掉列，所以任何移动之后接 $B_{n,k}$ 都是 $B$，而 $B$ 之后接列移动仍是 $B$，只是列变了。平移相加。Tab 移动之前的平移由 $T(x + qt + r) = T(x + r) + qt$ 吸收，从而保持 $a < t$。两个 Tab 移动可以合并，因为 $T(x)$ 是 $t$ 的倍数，所以"
+
+#: manual/design/cursor.md:46
+msgid "and $U_{a_2,b_2} \\circ U_{a_1,b_1} = U_{a_1,\\, T(b_1 + a_2) + b_2}$."
+msgstr "并且 $U_{a_2,b_2} \\circ U_{a_1,b_1} = U_{a_1,\\, T(b_1 + a_2) + b_2}$。"
+
+#: manual/design/cursor.md:48
+msgid "The forms are canonical: two different values act differently on some position. $S_k$ is strictly increasing, $U_{a,b}$ is constant on runs of $t$ columns that start at $c = t - a$ (for $t \\ge 2$), and $B$ changes the line. With $t = 1$ a tab is $c \\mapsto c + 1$, so the model represents it as $S_1$ and no $U$ ever appears; this keeps the forms unique."
+msgstr "这些范式是规范的：不同的值在某个位置上的作用必然不同。$S_k$ 严格递增，$U_{a,b}$ 在从 $c = t - a$ 开始、每段 $t$ 列的区间上为常数（当 $t \\ge 2$），$B$ 会改变行。当 $t = 1$ 时 Tab 就是 $c \\mapsto c + 1$，所以模型把它表示为 $S_1$，永远不会出现 $U$；这保证了范式唯一。"
+
+#: manual/design/cursor.md:54
+msgid "Widths"
+msgstr "宽度"
+
+#: manual/design/cursor.md:56
+msgid "Cluster widths come from the Unicode Character Database 18.0.0, through tables generated by `tools/gen_unicode_tables.py`:"
+msgstr "字形簇宽度来自 Unicode 字符数据库 18.0.0，经由 `tools/gen_unicode_tables.py` 生成的表："
+
+#: manual/design/cursor.md:59
+msgid "**Standard (UAX #11):** East Asian Wide and Fullwidth are 2, Neutral, Narrow and Halfwidth are 1."
+msgstr "**标准（UAX #11）：** 东亚宽字符和全角字符为 2，中性、窄和半角字符为 1。"
+
+#: manual/design/cursor.md:61
+msgid "**Standard (UAX #44):** General_Category Mn, Me, Cf and Default_Ignorable_Code_Point are 0."
+msgstr "**标准（UAX #44）：** General_Category 为 Mn、Me、Cf 以及 Default_Ignorable_Code_Point 的字符为 0。"
+
+#: manual/design/cursor.md:63
+msgid "**Convention:** Ambiguous is 1, or 2 when the model asks for it; Hangul medial and final jamo are 0; controls are 0."
+msgstr "**惯例：** 歧义宽度字符为 1，模型要求时为 2；韩文中声和终声为 0；控制字符为 0。"
+
+#: manual/design/cursor.md:65
+msgid "**Cluster rule:** a cluster takes the width of its first character, except that a flag, an emoji ZWJ sequence and a cluster containing U+FE0F are 2."
+msgstr "**字形簇规则：** 字形簇取其第一个字符的宽度，但旗帜、emoji ZWJ 序列以及含 U+FE0F 的字形簇为 2。"
+
+#: manual/design/cursor.md:68
+msgid "Tests"
+msgstr "测试"
+
+#: manual/design/cursor.md:70
+msgid "The laws are checked exhaustively rather than by sampling: for tab widths 1 to 4 and every text of up to four pieces drawn from a narrow letter, a wide character, a tab and a line break, the tests check associativity, identity, the homomorphism law, that equal actions give equal moves, and that `apply` agrees with stepping the cursor directly. Changing either composition rule for tab moves, or representing a width-1 tab as $U$, makes them fail."
+msgstr "这些定律是穷举检查的，而不是抽样：对 Tab 宽度 1 到 4，以及由一个窄字母、一个宽字符、一个 Tab 和一个换行组成的、最多四段的所有文本，测试检查结合律、单位元、同态律、作用相同的移动相等，以及 `apply` 与直接逐步移动光标的结果一致。改动任何一条 Tab 移动的复合规则，或把宽度为 1 的 Tab 表示为 $U$，都会使测试失败。"
+
 #: manual/index.md:1
 msgid "err_marker"
 msgstr "err_marker"
@@ -329,82 +485,102 @@ msgid "Pages"
 msgstr "页面"
 
 #: manual/index.md:39
-msgid "The module is one MoonBit package at `src`, documented as `core`."
-msgstr "该模块是位于 `src` 的一个 MoonBit 包，文档中称为 `core`。"
+msgid "The module has two public packages: the root package at `src`, documented as `core`, and `src/cursor`, documented as `cursor`."
+msgstr "该模块有两个公开包：位于 `src` 的根包，文档中称为 `core`；以及 `src/cursor`，文档中称为 `cursor`。"
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "Part"
 msgstr "部分"
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "Tutorial"
 msgstr "教程"
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "API"
 msgstr "API"
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "Design"
 msgstr "设计"
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "`core`: sequences, error data and marking"
 msgstr "`core`：序列、错误数据与标记"
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "[tutorial](tutorial/core.md)"
 msgstr "[教程](tutorial/core.md)"
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "[API](api/core.md)"
 msgstr "[API](api/core.md)"
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "[design](design/core.md)"
 msgstr "[设计](design/core.md)"
 
 #: manual/index.md:45
+msgid "`cursor`: terminal columns of text (Unicode 18.0.0)"
+msgstr "`cursor`：文本的终端列（Unicode 18.0.0）"
+
+#: manual/index.md:45
+msgid "[tutorial](tutorial/cursor.md)"
+msgstr "[教程](tutorial/cursor.md)"
+
+#: manual/index.md:45
+msgid "[API](api/cursor.md)"
+msgstr "[API](api/cursor.md)"
+
+#: manual/index.md:45
+msgid "[design](design/cursor.md)"
+msgstr "[设计](design/cursor.md)"
+
+#: manual/index.md:47
 msgid "Exported items"
 msgstr "导出项"
 
-#: manual/index.md:47
+#: manual/index.md:49
 msgid "Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`"
 msgstr "序列：`Sequence`、`Sequence::from_array`、`Sequence::from_string`"
 
-#: manual/index.md:48
+#: manual/index.md:50
 msgid "Error data: `ErrorData`, `ErrorData::make`"
 msgstr "错误数据：`ErrorData`、`ErrorData::make`"
 
-#: manual/index.md:49
+#: manual/index.md:51
 msgid "Rendering: `ErrorData::mark`"
 msgstr "渲染：`ErrorData::mark`"
 
-#: manual/index.md:51
+#: manual/index.md:52
+msgid "Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`"
+msgstr "光标（`@cursor`）：`Pos`、`Move`、`Model`、`clusters`"
+
+#: manual/index.md:54
 msgid "Where to read next"
 msgstr "接下来读什么"
 
-#: manual/index.md:53
+#: manual/index.md:56
 msgid "New to the package: the [tutorial](tutorial/core.md) builds a small argument checker and prints its errors."
 msgstr "初次使用这个包：[教程](tutorial/core.md)会构建一个小的参数检查器并输出它的错误。"
 
-#: manual/index.md:55
+#: manual/index.md:58
 msgid "Using it in a program: keep the [API](api/core.md) at hand."
 msgstr "在程序中使用：把 [API](api/core.md) 放在手边。"
 
-#: manual/index.md:56
+#: manual/index.md:59
 msgid "Contributing, or relying on exact output: read the [design](design/core.md), which states how the marker column is computed and where the 0.1 model breaks, and [CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md)."
 msgstr "参与贡献，或依赖精确的输出：阅读[设计](design/core.md)，它说明标记列是如何计算的、0.1 的模型在哪里失效；以及 [CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md)。"
 
-#: manual/index.md:60
+#: manual/index.md:63
 msgid "Validation"
 msgstr "验证"
 
-#: manual/index.md:62
+#: manual/index.md:65
 msgid "Recommended release checks:"
 msgstr "建议的发布检查："
 
-#: manual/index.md:69
+#: manual/index.md:72
 msgid "`just test-all` runs the tests on wasm, wasm-gc, js and native, in debug and release."
 msgstr "`just test-all` 在 wasm、wasm-gc、js 和 native 上分别以 debug 和 release 运行测试。"
 
@@ -469,12 +645,68 @@ msgid "In 0.1 the marker column is counted in UTF-16 code units. It is right for
 msgstr "在 0.1 中，标记列按 UTF-16 码元计数。对 ASCII 文本它是正确的：Tab 会被复制到标记行中，不会使标记偏移；多行文本中，标记放在范围所在的那一行下面。遇到中文或日文文本、emoji 时会偏移。[设计](../design/core.md)解释了原因，0.2.0 会修复这些情形（[#5](https://github.com/moonbit-community/err_marker/issues/5)）。"
 
 #: manual/tutorial/core.md:131
+#: manual/tutorial/cursor.md:72
 msgid "Next"
 msgstr "下一步"
 
 #: manual/tutorial/core.md:133
 msgid "Read the [API](../api/core.md) for every parameter and edge case."
 msgstr "阅读 [API](../api/core.md)，了解每个参数和边界情形。"
+
+#: manual/tutorial/cursor.md:1
+msgid "cursor tutorial"
+msgstr "cursor 教程"
+
+#: manual/tutorial/cursor.md:3
+msgid "This tutorial measures text the way a terminal lays it out. Import the package as in the [API](../api/cursor.md)."
+msgstr "本教程按终端排版的方式度量文本。按 [API](../api/cursor.md) 中的方式导入这个包。"
+
+#: manual/tutorial/cursor.md:6
+msgid "1. Make a model"
+msgstr "1. 创建模型"
+
+#: manual/tutorial/cursor.md:8
+msgid "A `Model` fixes the tab width and how wide East Asian Ambiguous characters are. The defaults are tab width 8 and narrow:"
+msgstr "`Model` 固定 Tab 宽度以及东亚歧义宽度字符的宽度。默认 Tab 宽度为 8，歧义宽度字符按窄处理："
+
+#: manual/tutorial/cursor.md:19
+msgid "2. Measure a cluster"
+msgstr "2. 度量一个字形簇"
+
+#: manual/tutorial/cursor.md:21
+msgid "Characters a reader sees as one unit, such as `e` with an accent or a family emoji, are one grapheme cluster. `cluster_width` gives its columns:"
+msgstr "读者视为一个整体的字符，例如带重音的 `e` 或一个家庭 emoji，是一个字形簇。`cluster_width` 给出它占的列数："
+
+#: manual/tutorial/cursor.md:34
+msgid "3. Find where a text ends"
+msgstr "3. 找出文本在哪里结束"
+
+#: manual/tutorial/cursor.md:36
+msgid "`text` turns a whole string into a move; `apply` runs it from a position. Tabs go to the next tab stop, line breaks to column 0 of the next line:"
+msgstr "`text` 把整个字符串变成一个移动；`apply` 从某个位置运行它。Tab 跳到下一个制表位，换行到下一行第 0 列："
+
+#: manual/tutorial/cursor.md:47
+msgid "4. Put a marker under part of a line"
+msgstr "4. 在一行的某部分下面放标记"
+
+#: manual/tutorial/cursor.md:49
+msgid "The column of the marker is where the text before the span ends:"
+msgstr "标记所在的列，就是范围之前那段文本结束的位置："
+
+#: manual/tutorial/cursor.md:59
+msgid "5. Combine moves"
+msgstr "5. 复合移动"
+
+#: manual/tutorial/cursor.md:61
+msgid "Moves compose, so the move of a long text can be built from its parts:"
+msgstr "移动可以复合，所以长文本的移动可以由各部分的移动拼出来："
+
+#: manual/tutorial/cursor.md:74
+msgid "The [design](../design/cursor.md) explains why every move has one of three forms."
+msgstr "[设计](../design/cursor.md)解释了为什么每个移动都只有三种形式之一。"
+
+#~ msgid "The module is one MoonBit package at `src`, documented as `core`."
+#~ msgstr "该模块是位于 `src` 的一个 MoonBit 包，文档中称为 `core`。"
 
 #~ msgid "0.2.0 measures columns instead of length, with these decisions (details and the rejected alternatives are recorded in #5):"
 #~ msgstr "0.2.0 改为度量列而不是长度，决定如下（细节和被否决的方案记录在 #5 中）："

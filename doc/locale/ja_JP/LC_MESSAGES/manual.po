@@ -16,6 +16,7 @@ msgid "core API"
 msgstr "core API"
 
 #: manual/api/core.md:5
+#: manual/api/cursor.md:5
 msgid "Purpose"
 msgstr "目的"
 
@@ -24,6 +25,7 @@ msgid "The root package of `KCN-judu/err_marker` turns a sequence, a position an
 msgstr "`KCN-judu/err_marker` のルートパッケージは、シーケンス・位置・メッセージを 3 行のエラーレポートに変換します。レンダリングしたシーケンス、位置の下のマーカー行、そしてメッセージです。公開インターフェースは `src/pkg.generated.mbti` に記録されています。マーカー列の計算方法と、0.1 でその計算が誤る箇所は[設計](../design/core.md)で説明します。"
 
 #: manual/api/core.md:13
+#: manual/api/cursor.md:13
 msgid "Importing"
 msgstr "インポート"
 
@@ -115,6 +117,84 @@ msgstr "テキストが複数行のとき、マーカー行は範囲の開始位
 #: manual/api/core.md:169
 msgid "Tabs before the span are copied into the marker line, so the marker lines up whatever tab width the terminal uses; a tab inside the span still gets a single marker character ([#8](https://github.com/moonbit-community/err_marker/issues/8))."
 msgstr "範囲より前のタブはマーカー行にそのままコピーされるため、端末のタブ幅にかかわらずマーカーが揃います。範囲内のタブには引き続きマーカー文字が 1 つだけ付きます（[#8](https://github.com/moonbit-community/err_marker/issues/8)）。"
+
+#: manual/api/cursor.md:1
+msgid "cursor API"
+msgstr "cursor API"
+
+#: manual/api/cursor.md:7
+msgid "`KCN-judu/err_marker/cursor` computes where text puts a terminal cursor. A piece of text becomes a `Move`, moves compose like functions, and applying a move to a `Pos` gives the line and column where the text ends. Widths follow Unicode 18.0.0: grapheme clusters (UAX #29) and East Asian Width (UAX #11). The mathematics is in the [design](../design/cursor.md)."
+msgstr "`KCN-judu/err_marker/cursor` は、テキストが端末のカーソルをどこへ運ぶかを計算します。テキストの断片は `Move` になり、移動は関数のように合成でき、移動を `Pos` に作用させるとテキストの終わる行と桁が得られます。幅は Unicode 18.0.0 の書記素クラスタ（UAX #29）と東アジアの文字幅（UAX #11）に従います。数学的な背景は[設計](../design/cursor.md)にあります。"
+
+#: manual/api/cursor.md:21
+msgid "The examples call it as `@cursor`."
+msgstr "例では `@cursor` として呼び出します。"
+
+#: manual/api/cursor.md:23
+msgid "Positions and moves"
+msgstr "位置と移動"
+
+#: manual/api/cursor.md:27
+msgid "A zero-based line and column, in terminal columns."
+msgstr "0 から数える行と桁で、単位は端末の桁です。"
+
+#: manual/api/cursor.md:38
+msgid "How a piece of text moves the cursor, in one of three normal forms."
+msgstr "テキストの断片がカーソルをどう動かすかを、3 つの標準形のいずれかで表します。"
+
+#: manual/api/cursor.md:48
+msgid "With $T(x) = t(\\lfloor x/t \\rfloor + 1)$, the next tab stop after column $x$ for tab width $t$: `Shift(k)` maps column $c$ to $c + k$; `Tab(a, b)` maps $c$ to $T(c + a) + b$ with $0 \\le a < t$; `Break(n, k)` maps $(\\ell, c)$ to $(\\ell + n, k)$. Moves can be matched on but only built through a `Model`, which keeps them in normal form, so two moves are equal exactly when they act the same on every position."
+msgstr "$T(x) = t(\\lfloor x/t \\rfloor + 1)$ をタブ幅 $t$ における桁 $x$ の次のタブ位置とします。`Shift(k)` は桁 $c$ を $c + k$ に、`Tab(a, b)` は $c$ を $T(c + a) + b$ に（$0 \\le a < t$）、`Break(n, k)` は $(\\ell, c)$ を $(\\ell + n, k)$ に写します。移動はパターンマッチできますが、作れるのは `Model` を通してだけで、モデルが移動を標準形に保つので、2 つの移動が等しいのは、すべての位置で同じように作用するときに限ります。"
+
+#: manual/api/cursor.md:55
+msgid "Models"
+msgstr "モデル"
+
+#: manual/api/cursor.md:59
+msgid "The layout model: the tab width and whether East Asian Ambiguous characters are wide."
+msgstr "レイアウトのモデルです。タブ幅と、東アジアの曖昧幅の文字を全角として扱うかどうかを持ちます。"
+
+#: manual/api/cursor.md:69
+msgid "Moves are composed and applied within one model."
+msgstr "移動の合成と作用は 1 つのモデルの中で行います。"
+
+#: manual/api/cursor.md:77
+msgid "The defaults are tab width 8 and narrow Ambiguous characters. A tab width below 1 counts as 1."
+msgstr "既定値はタブ幅 8 で、曖昧幅の文字は半角です。1 未満のタブ幅は 1 として扱います。"
+
+#: manual/api/cursor.md:89
+msgid "The move that does nothing; `k` columns to the right (a negative `k` counts as 0); one tab; one line break to column 0. With tab width 1, `tab` is `shift(1)`."
+msgstr "それぞれ、何もしない移動、右へ `k` 桁（負の `k` は 0 として扱う）、タブ 1 つ、次の行の桁 0 への改行です。タブ幅が 1 のとき、`tab` は `shift(1)` です。"
+
+#: manual/api/cursor.md:99
+msgid "`compose(first, then)` is the move of `first` followed by `then`. It is associative, has `identity` as unit, and satisfies"
+msgstr "`compose(first, then)` は `first` の後に `then` を行う移動です。結合的で、`identity` を単位元とし、次を満たします。"
+
+#: manual/api/cursor.md:112
+msgid "Applies a move to a position."
+msgstr "移動を位置に作用させます。"
+
+#: manual/api/cursor.md:114
+msgid "Text"
+msgstr "テキスト"
+
+#: manual/api/cursor.md:122
+msgid "Splits a string into extended grapheme clusters (UAX #29, Unicode 18.0.0)."
+msgstr "文字列を拡張書記素クラスタ（UAX #29、Unicode 18.0.0）に分割します。"
+
+#: manual/api/cursor.md:130
+msgid "The display width of one cluster that is not a tab or a line break. A flag, an emoji ZWJ sequence and a cluster with U+FE0F are 2. Otherwise the base character decides: 0 for controls, combining and format characters, default ignorables and Hangul medial and final jamo; 2 for East Asian Wide and Fullwidth, and for Ambiguous when the model says so; 1 otherwise."
+msgstr "タブでも改行でもない 1 つのクラスタの表示幅です。国旗、絵文字の ZWJ シーケンス、U+FE0F を含むクラスタは 2 です。それ以外は基底文字で決まります。制御文字、結合文字と書式文字、既定で無視される文字、ハングルの中声と終声は 0、東アジアの全角（W）と全角形（F）は 2、モデルがそう指定すれば曖昧幅も 2、それ以外は 1 です。"
+
+#: manual/api/cursor.md:143
+msgid ""
+"`cluster` is the move of one cluster: `\"\\t\"` is a tab, `\"\\n"
+"\"`, `\"\\r\"` and `\"\\r\\n"
+"\"` are line breaks, anything else shifts by its width. `text` composes the moves of all clusters of a string; it is a monoid homomorphism."
+msgstr ""
+"`cluster` は 1 つのクラスタの移動です。`\"\\t\"` はタブ、`\"\\n"
+"\"`・`\"\\r\"`・`\"\\r\\n"
+"\"` は改行で、それ以外は幅の分だけシフトします。`text` は文字列のすべてのクラスタの移動を合成します。これはモノイド準同型です。"
 
 #: manual/design/core.md:1
 msgid "core design"
@@ -292,6 +372,82 @@ msgstr "複数のマークの重ね合わせは半束（可換・結合的・冪
 msgid "Message rows are assigned greedily by left endpoint, which uses the minimum number of rows: the largest number of messages that overlap at one column."
 msgstr "メッセージの行は左端点の順に貪欲に割り当てられ、使う行数は最小になります。すなわち、1 つの桁で重なるメッセージの最大個数です。"
 
+#: manual/design/cursor.md:1
+msgid "cursor design"
+msgstr "cursor の設計"
+
+#: manual/design/cursor.md:3
+msgid "The problem"
+msgstr "問題"
+
+#: manual/design/cursor.md:5
+msgid "To put a marker under part of a line, a program must know the column where the text before it ends. Counting characters is not enough: a wide character takes two columns, a combining accent none, a tab jumps to the next tab stop and a line break starts a new line. The package models each of these as a move of the cursor and composes moves."
+msgstr "行の一部の下にマーカーを置くには、その前のテキストがどの桁で終わるかを知る必要があります。文字数を数えるだけでは足りません。全角文字は 2 桁、結合アクセントは 0 桁を占め、タブは次のタブ位置へ跳び、改行は新しい行を始めます。このパッケージはそれぞれをカーソルの移動としてモデル化し、移動を合成します。"
+
+#: manual/design/cursor.md:11
+msgid "Moves"
+msgstr "移動"
+
+#: manual/design/cursor.md:13
+msgid "Write $t \\ge 1$ for the tab width and $T(x) = t(\\lfloor x/t \\rfloor + 1)$ for the next tab stop after column $x$. A grapheme cluster $g$ acts on the cursor $(\\ell, c)$ as"
+msgstr "$t \\ge 1$ をタブ幅、$T(x) = t(\\lfloor x/t \\rfloor + 1)$ を桁 $x$ の次のタブ位置とします。書記素クラスタ $g$ はカーソル $(\\ell, c)$ に次のように作用します。"
+
+#: manual/design/cursor.md:22
+msgid "Composition of functions makes these moves a monoid. Laying out a text is the monoid homomorphism from cluster sequences that sends each cluster to its move, so the end position of $uv$ is computed from the moves of $u$ and $v$."
+msgstr "関数の合成によって、これらの移動はモノイドをなします。テキストのレイアウトは、各クラスタをその移動に送る、クラスタ列からのモノイド準同型です。したがって $uv$ の終わりの位置は $u$ と $v$ の移動から計算できます。"
+
+#: manual/design/cursor.md:26
+msgid "Three normal forms"
+msgstr "3 つの標準形"
+
+#: manual/design/cursor.md:28
+msgid "Every composite move has exactly one of the forms"
+msgstr "合成した移動は、ちょうど次のいずれかの形を持ちます。"
+
+#: manual/design/cursor.md:36
+msgid "They are closed under composition. A line break forgets the column, so anything followed by $B_{n,k}$ is a $B$, and $B$ followed by a column move stays a $B$ with a new column. Shifts add. A shift before a tab move is absorbed by $T(x + qt + r) = T(x + r) + qt$, which keeps $a < t$. Two tab moves combine because $T(x)$ is a multiple of $t$, so"
+msgstr "これらは合成について閉じています。改行は桁を忘れるので、何の後に $B_{n,k}$ が続いても $B$ になり、$B$ の後に桁の移動が続いても桁が変わった $B$ のままです。シフトは足し合わされます。タブ移動の前のシフトは $T(x + qt + r) = T(x + r) + qt$ によって吸収され、$a < t$ が保たれます。$T(x)$ は $t$ の倍数なので、2 つのタブ移動は次のようにまとまります。"
+
+#: manual/design/cursor.md:46
+msgid "and $U_{a_2,b_2} \\circ U_{a_1,b_1} = U_{a_1,\\, T(b_1 + a_2) + b_2}$."
+msgstr "そして $U_{a_2,b_2} \\circ U_{a_1,b_1} = U_{a_1,\\, T(b_1 + a_2) + b_2}$ です。"
+
+#: manual/design/cursor.md:48
+msgid "The forms are canonical: two different values act differently on some position. $S_k$ is strictly increasing, $U_{a,b}$ is constant on runs of $t$ columns that start at $c = t - a$ (for $t \\ge 2$), and $B$ changes the line. With $t = 1$ a tab is $c \\mapsto c + 1$, so the model represents it as $S_1$ and no $U$ ever appears; this keeps the forms unique."
+msgstr "これらの形は正準です。異なる値は、ある位置で必ず異なる作用をします。$S_k$ は狭義単調増加、$U_{a,b}$ は $c = t - a$ から始まる $t$ 桁ごとの区間で一定（$t \\ge 2$ のとき）、$B$ は行を変えます。$t = 1$ のときタブは $c \\mapsto c + 1$ なので、モデルはそれを $S_1$ として表し、$U$ は決して現れません。これにより形が一意になります。"
+
+#: manual/design/cursor.md:54
+msgid "Widths"
+msgstr "幅"
+
+#: manual/design/cursor.md:56
+msgid "Cluster widths come from the Unicode Character Database 18.0.0, through tables generated by `tools/gen_unicode_tables.py`:"
+msgstr "クラスタの幅は、`tools/gen_unicode_tables.py` が生成した表を通して、Unicode 文字データベース 18.0.0 から得られます。"
+
+#: manual/design/cursor.md:59
+msgid "**Standard (UAX #11):** East Asian Wide and Fullwidth are 2, Neutral, Narrow and Halfwidth are 1."
+msgstr "**標準（UAX #11）：** 東アジアの全角（W）と全角形（F）は 2、中立・半角（Na）・半角形（H）は 1 です。"
+
+#: manual/design/cursor.md:61
+msgid "**Standard (UAX #44):** General_Category Mn, Me, Cf and Default_Ignorable_Code_Point are 0."
+msgstr "**標準（UAX #44）：** General_Category が Mn・Me・Cf の文字と Default_Ignorable_Code_Point は 0 です。"
+
+#: manual/design/cursor.md:63
+msgid "**Convention:** Ambiguous is 1, or 2 when the model asks for it; Hangul medial and final jamo are 0; controls are 0."
+msgstr "**慣例：** 曖昧幅は 1、モデルが指定すれば 2。ハングルの中声と終声は 0、制御文字は 0 です。"
+
+#: manual/design/cursor.md:65
+msgid "**Cluster rule:** a cluster takes the width of its first character, except that a flag, an emoji ZWJ sequence and a cluster containing U+FE0F are 2."
+msgstr "**クラスタの規則：** クラスタは最初の文字の幅をとります。ただし国旗、絵文字の ZWJ シーケンス、U+FE0F を含むクラスタは 2 です。"
+
+#: manual/design/cursor.md:68
+msgid "Tests"
+msgstr "テスト"
+
+#: manual/design/cursor.md:70
+msgid "The laws are checked exhaustively rather than by sampling: for tab widths 1 to 4 and every text of up to four pieces drawn from a narrow letter, a wide character, a tab and a line break, the tests check associativity, identity, the homomorphism law, that equal actions give equal moves, and that `apply` agrees with stepping the cursor directly. Changing either composition rule for tab moves, or representing a width-1 tab as $U$, makes them fail."
+msgstr "法則は抽出ではなく網羅的に検査します。タブ幅 1 から 4 と、半角文字・全角文字・タブ・改行から最大 4 つを並べたすべてのテキストについて、結合律、単位元、準同型の法則、作用が同じ移動は等しいこと、`apply` がカーソルを直接 1 つずつ進めた結果と一致することを確かめます。タブ移動の合成規則のどちらかを変えるか、幅 1 のタブを $U$ で表すと、テストは失敗します。"
+
 #: manual/index.md:1
 msgid "err_marker"
 msgstr "err_marker"
@@ -329,82 +485,102 @@ msgid "Pages"
 msgstr "ページ"
 
 #: manual/index.md:39
-msgid "The module is one MoonBit package at `src`, documented as `core`."
-msgstr "このモジュールは `src` にある 1 つの MoonBit パッケージで、ドキュメントでは `core` と呼びます。"
+msgid "The module has two public packages: the root package at `src`, documented as `core`, and `src/cursor`, documented as `cursor`."
+msgstr "このモジュールには公開パッケージが 2 つあります。`src` にあるルートパッケージ（ドキュメントでは `core`）と、`src/cursor`（ドキュメントでは `cursor`）です。"
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "Part"
 msgstr "部分"
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "Tutorial"
 msgstr "チュートリアル"
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "API"
 msgstr "API"
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "Design"
 msgstr "設計"
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "`core`: sequences, error data and marking"
 msgstr "`core`：シーケンス、エラーデータ、マーク"
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "[tutorial](tutorial/core.md)"
 msgstr "[チュートリアル](tutorial/core.md)"
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "[API](api/core.md)"
 msgstr "[API](api/core.md)"
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "[design](design/core.md)"
 msgstr "[設計](design/core.md)"
 
 #: manual/index.md:45
+msgid "`cursor`: terminal columns of text (Unicode 18.0.0)"
+msgstr "`cursor`：テキストの端末上の桁（Unicode 18.0.0）"
+
+#: manual/index.md:45
+msgid "[tutorial](tutorial/cursor.md)"
+msgstr "[チュートリアル](tutorial/cursor.md)"
+
+#: manual/index.md:45
+msgid "[API](api/cursor.md)"
+msgstr "[API](api/cursor.md)"
+
+#: manual/index.md:45
+msgid "[design](design/cursor.md)"
+msgstr "[設計](design/cursor.md)"
+
+#: manual/index.md:47
 msgid "Exported items"
 msgstr "エクスポートされる項目"
 
-#: manual/index.md:47
+#: manual/index.md:49
 msgid "Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`"
 msgstr "シーケンス：`Sequence`、`Sequence::from_array`、`Sequence::from_string`"
 
-#: manual/index.md:48
+#: manual/index.md:50
 msgid "Error data: `ErrorData`, `ErrorData::make`"
 msgstr "エラーデータ：`ErrorData`、`ErrorData::make`"
 
-#: manual/index.md:49
+#: manual/index.md:51
 msgid "Rendering: `ErrorData::mark`"
 msgstr "レンダリング：`ErrorData::mark`"
 
-#: manual/index.md:51
+#: manual/index.md:52
+msgid "Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`"
+msgstr "カーソル（`@cursor`）：`Pos`、`Move`、`Model`、`clusters`"
+
+#: manual/index.md:54
 msgid "Where to read next"
 msgstr "次に読むもの"
 
-#: manual/index.md:53
+#: manual/index.md:56
 msgid "New to the package: the [tutorial](tutorial/core.md) builds a small argument checker and prints its errors."
 msgstr "パッケージを初めて使う場合：[チュートリアル](tutorial/core.md)で小さな引数チェッカーを作り、そのエラーを出力します。"
 
-#: manual/index.md:55
+#: manual/index.md:58
 msgid "Using it in a program: keep the [API](api/core.md) at hand."
 msgstr "プログラムで使う場合：[API](api/core.md) を手元に置いてください。"
 
-#: manual/index.md:56
+#: manual/index.md:59
 msgid "Contributing, or relying on exact output: read the [design](design/core.md), which states how the marker column is computed and where the 0.1 model breaks, and [CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md)."
 msgstr "貢献する場合や正確な出力に依存する場合：マーカー列の計算方法と 0.1 のモデルが破綻する箇所を説明する[設計](design/core.md)と、[CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md) を読んでください。"
 
-#: manual/index.md:60
+#: manual/index.md:63
 msgid "Validation"
 msgstr "検証"
 
-#: manual/index.md:62
+#: manual/index.md:65
 msgid "Recommended release checks:"
 msgstr "推奨するリリース前チェック："
 
-#: manual/index.md:69
+#: manual/index.md:72
 msgid "`just test-all` runs the tests on wasm, wasm-gc, js and native, in debug and release."
 msgstr "`just test-all` は wasm、wasm-gc、js、native でテストを debug と release の両方で実行します。"
 
@@ -469,12 +645,68 @@ msgid "In 0.1 the marker column is counted in UTF-16 code units. It is right for
 msgstr "0.1 では、マーカー列は UTF-16 コード単位で数えられます。ASCII テキストでは正しく、タブはマーカー行にコピーされるのでマーカーをずらさず、複数行のテキストではマーカーは範囲を含む行の下に置かれます。中国語や日本語のテキスト、絵文字ではずれます。理由は[設計](../design/core.md)で説明しており、0.2.0 でこれらのケースは修正されます（[#5](https://github.com/moonbit-community/err_marker/issues/5)）。"
 
 #: manual/tutorial/core.md:131
+#: manual/tutorial/cursor.md:72
 msgid "Next"
 msgstr "次へ"
 
 #: manual/tutorial/core.md:133
 msgid "Read the [API](../api/core.md) for every parameter and edge case."
 msgstr "各パラメータと境界ケースについては [API](../api/core.md) を読んでください。"
+
+#: manual/tutorial/cursor.md:1
+msgid "cursor tutorial"
+msgstr "cursor チュートリアル"
+
+#: manual/tutorial/cursor.md:3
+msgid "This tutorial measures text the way a terminal lays it out. Import the package as in the [API](../api/cursor.md)."
+msgstr "このチュートリアルでは、端末がレイアウトするとおりにテキストを測ります。パッケージは [API](../api/cursor.md) のとおりにインポートしてください。"
+
+#: manual/tutorial/cursor.md:6
+msgid "1. Make a model"
+msgstr "1. モデルを作る"
+
+#: manual/tutorial/cursor.md:8
+msgid "A `Model` fixes the tab width and how wide East Asian Ambiguous characters are. The defaults are tab width 8 and narrow:"
+msgstr "`Model` はタブ幅と、東アジアの曖昧幅の文字の幅を決めます。既定値はタブ幅 8、曖昧幅は半角です。"
+
+#: manual/tutorial/cursor.md:19
+msgid "2. Measure a cluster"
+msgstr "2. クラスタを測る"
+
+#: manual/tutorial/cursor.md:21
+msgid "Characters a reader sees as one unit, such as `e` with an accent or a family emoji, are one grapheme cluster. `cluster_width` gives its columns:"
+msgstr "アクセント付きの `e` や家族の絵文字のように、読み手が 1 つの単位として見る文字は 1 つの書記素クラスタです。`cluster_width` はその桁数を返します。"
+
+#: manual/tutorial/cursor.md:34
+msgid "3. Find where a text ends"
+msgstr "3. テキストの終わる位置を求める"
+
+#: manual/tutorial/cursor.md:36
+msgid "`text` turns a whole string into a move; `apply` runs it from a position. Tabs go to the next tab stop, line breaks to column 0 of the next line:"
+msgstr "`text` は文字列全体を 1 つの移動にし、`apply` はそれをある位置から実行します。タブは次のタブ位置へ、改行は次の行の桁 0 へ進みます。"
+
+#: manual/tutorial/cursor.md:47
+msgid "4. Put a marker under part of a line"
+msgstr "4. 行の一部の下にマーカーを置く"
+
+#: manual/tutorial/cursor.md:49
+msgid "The column of the marker is where the text before the span ends:"
+msgstr "マーカーの桁は、範囲の前にあるテキストが終わる位置です。"
+
+#: manual/tutorial/cursor.md:59
+msgid "5. Combine moves"
+msgstr "5. 移動を合成する"
+
+#: manual/tutorial/cursor.md:61
+msgid "Moves compose, so the move of a long text can be built from its parts:"
+msgstr "移動は合成できるので、長いテキストの移動を部分から組み立てられます。"
+
+#: manual/tutorial/cursor.md:74
+msgid "The [design](../design/cursor.md) explains why every move has one of three forms."
+msgstr "すべての移動が 3 つの形のいずれかになる理由は[設計](../design/cursor.md)で説明しています。"
+
+#~ msgid "The module is one MoonBit package at `src`, documented as `core`."
+#~ msgstr "このモジュールは `src` にある 1 つの MoonBit パッケージで、ドキュメントでは `core` と呼びます。"
 
 #~ msgid "0.2.0 measures columns instead of length, with these decisions (details and the rejected alternatives are recorded in #5):"
 #~ msgstr "0.2.0 では長さではなく桁を測ります。決定事項は次のとおりです（詳細と却下した案は #5 に記録されています）。"

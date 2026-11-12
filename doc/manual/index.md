@@ -36,17 +36,20 @@ later (`moonc` ≥ 0.10) and depends only on `moonbitlang/core`.
 
 ## Pages
 
-The module is one MoonBit package at `src`, documented as `core`.
+The module has two public packages: the root package at `src`, documented as
+`core`, and `src/cursor`, documented as `cursor`.
 
 | Part | Tutorial | API | Design |
 | --- | --- | --- | --- |
 | `core`: sequences, error data and marking | [tutorial](tutorial/core.md) | [API](api/core.md) | [design](design/core.md) |
+| `cursor`: terminal columns of text (Unicode 18.0.0) | [tutorial](tutorial/cursor.md) | [API](api/cursor.md) | [design](design/cursor.md) |
 
 ## Exported items
 
 - Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`
 - Error data: `ErrorData`, `ErrorData::make`
 - Rendering: `ErrorData::mark`
+- Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`
 
 ## Where to read next
 

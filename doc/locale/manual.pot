@@ -16,6 +16,7 @@ msgid "core API"
 msgstr ""
 
 #: manual/api/core.md:5
+#: manual/api/cursor.md:5
 msgid "Purpose"
 msgstr ""
 
@@ -24,6 +25,7 @@ msgid "The root package of `KCN-judu/err_marker` turns a sequence, a position an
 msgstr ""
 
 #: manual/api/core.md:13
+#: manual/api/cursor.md:13
 msgid "Importing"
 msgstr ""
 
@@ -114,6 +116,81 @@ msgstr ""
 
 #: manual/api/core.md:169
 msgid "Tabs before the span are copied into the marker line, so the marker lines up whatever tab width the terminal uses; a tab inside the span still gets a single marker character ([#8](https://github.com/moonbit-community/err_marker/issues/8))."
+msgstr ""
+
+#: manual/api/cursor.md:1
+msgid "cursor API"
+msgstr ""
+
+#: manual/api/cursor.md:7
+msgid "`KCN-judu/err_marker/cursor` computes where text puts a terminal cursor. A piece of text becomes a `Move`, moves compose like functions, and applying a move to a `Pos` gives the line and column where the text ends. Widths follow Unicode 18.0.0: grapheme clusters (UAX #29) and East Asian Width (UAX #11). The mathematics is in the [design](../design/cursor.md)."
+msgstr ""
+
+#: manual/api/cursor.md:21
+msgid "The examples call it as `@cursor`."
+msgstr ""
+
+#: manual/api/cursor.md:23
+msgid "Positions and moves"
+msgstr ""
+
+#: manual/api/cursor.md:27
+msgid "A zero-based line and column, in terminal columns."
+msgstr ""
+
+#: manual/api/cursor.md:38
+msgid "How a piece of text moves the cursor, in one of three normal forms."
+msgstr ""
+
+#: manual/api/cursor.md:48
+msgid "With $T(x) = t(\\lfloor x/t \\rfloor + 1)$, the next tab stop after column $x$ for tab width $t$: `Shift(k)` maps column $c$ to $c + k$; `Tab(a, b)` maps $c$ to $T(c + a) + b$ with $0 \\le a < t$; `Break(n, k)` maps $(\\ell, c)$ to $(\\ell + n, k)$. Moves can be matched on but only built through a `Model`, which keeps them in normal form, so two moves are equal exactly when they act the same on every position."
+msgstr ""
+
+#: manual/api/cursor.md:55
+msgid "Models"
+msgstr ""
+
+#: manual/api/cursor.md:59
+msgid "The layout model: the tab width and whether East Asian Ambiguous characters are wide."
+msgstr ""
+
+#: manual/api/cursor.md:69
+msgid "Moves are composed and applied within one model."
+msgstr ""
+
+#: manual/api/cursor.md:77
+msgid "The defaults are tab width 8 and narrow Ambiguous characters. A tab width below 1 counts as 1."
+msgstr ""
+
+#: manual/api/cursor.md:89
+msgid "The move that does nothing; `k` columns to the right (a negative `k` counts as 0); one tab; one line break to column 0. With tab width 1, `tab` is `shift(1)`."
+msgstr ""
+
+#: manual/api/cursor.md:99
+msgid "`compose(first, then)` is the move of `first` followed by `then`. It is associative, has `identity` as unit, and satisfies"
+msgstr ""
+
+#: manual/api/cursor.md:112
+msgid "Applies a move to a position."
+msgstr ""
+
+#: manual/api/cursor.md:114
+msgid "Text"
+msgstr ""
+
+#: manual/api/cursor.md:122
+msgid "Splits a string into extended grapheme clusters (UAX #29, Unicode 18.0.0)."
+msgstr ""
+
+#: manual/api/cursor.md:130
+msgid "The display width of one cluster that is not a tab or a line break. A flag, an emoji ZWJ sequence and a cluster with U+FE0F are 2. Otherwise the base character decides: 0 for controls, combining and format characters, default ignorables and Hangul medial and final jamo; 2 for East Asian Wide and Fullwidth, and for Ambiguous when the model says so; 1 otherwise."
+msgstr ""
+
+#: manual/api/cursor.md:143
+msgid ""
+"`cluster` is the move of one cluster: `\"\\t\"` is a tab, `\"\\n"
+"\"`, `\"\\r\"` and `\"\\r\\n"
+"\"` are line breaks, anything else shifts by its width. `text` composes the moves of all clusters of a string; it is a monoid homomorphism."
 msgstr ""
 
 #: manual/design/core.md:1
@@ -292,6 +369,82 @@ msgstr ""
 msgid "Message rows are assigned greedily by left endpoint, which uses the minimum number of rows: the largest number of messages that overlap at one column."
 msgstr ""
 
+#: manual/design/cursor.md:1
+msgid "cursor design"
+msgstr ""
+
+#: manual/design/cursor.md:3
+msgid "The problem"
+msgstr ""
+
+#: manual/design/cursor.md:5
+msgid "To put a marker under part of a line, a program must know the column where the text before it ends. Counting characters is not enough: a wide character takes two columns, a combining accent none, a tab jumps to the next tab stop and a line break starts a new line. The package models each of these as a move of the cursor and composes moves."
+msgstr ""
+
+#: manual/design/cursor.md:11
+msgid "Moves"
+msgstr ""
+
+#: manual/design/cursor.md:13
+msgid "Write $t \\ge 1$ for the tab width and $T(x) = t(\\lfloor x/t \\rfloor + 1)$ for the next tab stop after column $x$. A grapheme cluster $g$ acts on the cursor $(\\ell, c)$ as"
+msgstr ""
+
+#: manual/design/cursor.md:22
+msgid "Composition of functions makes these moves a monoid. Laying out a text is the monoid homomorphism from cluster sequences that sends each cluster to its move, so the end position of $uv$ is computed from the moves of $u$ and $v$."
+msgstr ""
+
+#: manual/design/cursor.md:26
+msgid "Three normal forms"
+msgstr ""
+
+#: manual/design/cursor.md:28
+msgid "Every composite move has exactly one of the forms"
+msgstr ""
+
+#: manual/design/cursor.md:36
+msgid "They are closed under composition. A line break forgets the column, so anything followed by $B_{n,k}$ is a $B$, and $B$ followed by a column move stays a $B$ with a new column. Shifts add. A shift before a tab move is absorbed by $T(x + qt + r) = T(x + r) + qt$, which keeps $a < t$. Two tab moves combine because $T(x)$ is a multiple of $t$, so"
+msgstr ""
+
+#: manual/design/cursor.md:46
+msgid "and $U_{a_2,b_2} \\circ U_{a_1,b_1} = U_{a_1,\\, T(b_1 + a_2) + b_2}$."
+msgstr ""
+
+#: manual/design/cursor.md:48
+msgid "The forms are canonical: two different values act differently on some position. $S_k$ is strictly increasing, $U_{a,b}$ is constant on runs of $t$ columns that start at $c = t - a$ (for $t \\ge 2$), and $B$ changes the line. With $t = 1$ a tab is $c \\mapsto c + 1$, so the model represents it as $S_1$ and no $U$ ever appears; this keeps the forms unique."
+msgstr ""
+
+#: manual/design/cursor.md:54
+msgid "Widths"
+msgstr ""
+
+#: manual/design/cursor.md:56
+msgid "Cluster widths come from the Unicode Character Database 18.0.0, through tables generated by `tools/gen_unicode_tables.py`:"
+msgstr ""
+
+#: manual/design/cursor.md:59
+msgid "**Standard (UAX #11):** East Asian Wide and Fullwidth are 2, Neutral, Narrow and Halfwidth are 1."
+msgstr ""
+
+#: manual/design/cursor.md:61
+msgid "**Standard (UAX #44):** General_Category Mn, Me, Cf and Default_Ignorable_Code_Point are 0."
+msgstr ""
+
+#: manual/design/cursor.md:63
+msgid "**Convention:** Ambiguous is 1, or 2 when the model asks for it; Hangul medial and final jamo are 0; controls are 0."
+msgstr ""
+
+#: manual/design/cursor.md:65
+msgid "**Cluster rule:** a cluster takes the width of its first character, except that a flag, an emoji ZWJ sequence and a cluster containing U+FE0F are 2."
+msgstr ""
+
+#: manual/design/cursor.md:68
+msgid "Tests"
+msgstr ""
+
+#: manual/design/cursor.md:70
+msgid "The laws are checked exhaustively rather than by sampling: for tab widths 1 to 4 and every text of up to four pieces drawn from a narrow letter, a wide character, a tab and a line break, the tests check associativity, identity, the homomorphism law, that equal actions give equal moves, and that `apply` agrees with stepping the cursor directly. Changing either composition rule for tab moves, or representing a width-1 tab as $U$, makes them fail."
+msgstr ""
+
 #: manual/index.md:1
 msgid "err_marker"
 msgstr ""
@@ -329,82 +482,102 @@ msgid "Pages"
 msgstr ""
 
 #: manual/index.md:39
-msgid "The module is one MoonBit package at `src`, documented as `core`."
+msgid "The module has two public packages: the root package at `src`, documented as `core`, and `src/cursor`, documented as `cursor`."
 msgstr ""
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "Part"
 msgstr ""
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "Tutorial"
 msgstr ""
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "API"
 msgstr ""
 
-#: manual/index.md:41
+#: manual/index.md:42
 msgid "Design"
 msgstr ""
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "`core`: sequences, error data and marking"
 msgstr ""
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "[tutorial](tutorial/core.md)"
 msgstr ""
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "[API](api/core.md)"
 msgstr ""
 
-#: manual/index.md:43
+#: manual/index.md:44
 msgid "[design](design/core.md)"
 msgstr ""
 
 #: manual/index.md:45
-msgid "Exported items"
+msgid "`cursor`: terminal columns of text (Unicode 18.0.0)"
+msgstr ""
+
+#: manual/index.md:45
+msgid "[tutorial](tutorial/cursor.md)"
+msgstr ""
+
+#: manual/index.md:45
+msgid "[API](api/cursor.md)"
+msgstr ""
+
+#: manual/index.md:45
+msgid "[design](design/cursor.md)"
 msgstr ""
 
 #: manual/index.md:47
-msgid "Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`"
-msgstr ""
-
-#: manual/index.md:48
-msgid "Error data: `ErrorData`, `ErrorData::make`"
+msgid "Exported items"
 msgstr ""
 
 #: manual/index.md:49
-msgid "Rendering: `ErrorData::mark`"
+msgid "Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`"
+msgstr ""
+
+#: manual/index.md:50
+msgid "Error data: `ErrorData`, `ErrorData::make`"
 msgstr ""
 
 #: manual/index.md:51
+msgid "Rendering: `ErrorData::mark`"
+msgstr ""
+
+#: manual/index.md:52
+msgid "Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`"
+msgstr ""
+
+#: manual/index.md:54
 msgid "Where to read next"
 msgstr ""
 
-#: manual/index.md:53
+#: manual/index.md:56
 msgid "New to the package: the [tutorial](tutorial/core.md) builds a small argument checker and prints its errors."
 msgstr ""
 
-#: manual/index.md:55
+#: manual/index.md:58
 msgid "Using it in a program: keep the [API](api/core.md) at hand."
 msgstr ""
 
-#: manual/index.md:56
+#: manual/index.md:59
 msgid "Contributing, or relying on exact output: read the [design](design/core.md), which states how the marker column is computed and where the 0.1 model breaks, and [CONTRIBUTING.md](https://github.com/moonbit-community/err_marker/blob/main/CONTRIBUTING.md)."
 msgstr ""
 
-#: manual/index.md:60
+#: manual/index.md:63
 msgid "Validation"
 msgstr ""
 
-#: manual/index.md:62
+#: manual/index.md:65
 msgid "Recommended release checks:"
 msgstr ""
 
-#: manual/index.md:69
+#: manual/index.md:72
 msgid "`just test-all` runs the tests on wasm, wasm-gc, js and native, in debug and release."
 msgstr ""
 
@@ -469,9 +642,62 @@ msgid "In 0.1 the marker column is counted in UTF-16 code units. It is right for
 msgstr ""
 
 #: manual/tutorial/core.md:131
+#: manual/tutorial/cursor.md:72
 msgid "Next"
 msgstr ""
 
 #: manual/tutorial/core.md:133
 msgid "Read the [API](../api/core.md) for every parameter and edge case."
+msgstr ""
+
+#: manual/tutorial/cursor.md:1
+msgid "cursor tutorial"
+msgstr ""
+
+#: manual/tutorial/cursor.md:3
+msgid "This tutorial measures text the way a terminal lays it out. Import the package as in the [API](../api/cursor.md)."
+msgstr ""
+
+#: manual/tutorial/cursor.md:6
+msgid "1. Make a model"
+msgstr ""
+
+#: manual/tutorial/cursor.md:8
+msgid "A `Model` fixes the tab width and how wide East Asian Ambiguous characters are. The defaults are tab width 8 and narrow:"
+msgstr ""
+
+#: manual/tutorial/cursor.md:19
+msgid "2. Measure a cluster"
+msgstr ""
+
+#: manual/tutorial/cursor.md:21
+msgid "Characters a reader sees as one unit, such as `e` with an accent or a family emoji, are one grapheme cluster. `cluster_width` gives its columns:"
+msgstr ""
+
+#: manual/tutorial/cursor.md:34
+msgid "3. Find where a text ends"
+msgstr ""
+
+#: manual/tutorial/cursor.md:36
+msgid "`text` turns a whole string into a move; `apply` runs it from a position. Tabs go to the next tab stop, line breaks to column 0 of the next line:"
+msgstr ""
+
+#: manual/tutorial/cursor.md:47
+msgid "4. Put a marker under part of a line"
+msgstr ""
+
+#: manual/tutorial/cursor.md:49
+msgid "The column of the marker is where the text before the span ends:"
+msgstr ""
+
+#: manual/tutorial/cursor.md:59
+msgid "5. Combine moves"
+msgstr ""
+
+#: manual/tutorial/cursor.md:61
+msgid "Moves compose, so the move of a long text can be built from its parts:"
+msgstr ""
+
+#: manual/tutorial/cursor.md:74
+msgid "The [design](../design/cursor.md) explains why every move has one of three forms."
 msgstr ""
