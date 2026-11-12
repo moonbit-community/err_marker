@@ -29,14 +29,16 @@ p = \sum_{i < a} |r_i| + j\,a, \qquad
 w = \sum_{i=a}^{a+k} |r_i| + j\,k,
 $$
 
-where $|r|$ is `String::length`, the number of UTF-16 code units. The span is
-drawn only if $0 \le a < n$ and $k \ge 0$.
+where $|r|$ is `String::length`, the number of UTF-16 code units. If $a < 0$,
+nothing is drawn. A negative $k$ counts as $0$, and $a + k$ is clamped to
+$n - 1$. If $a \ge n$, the mark is the point after the text: $p = |s|$ and
+$w = 1$.
 
 ### Strings
 
 For a string, the span from $a$ with offset $k$ covers code units $a$ to
-$a + k$, so $p = a$ and $w = k + 1$. It is drawn only if both $a$ and $a + k$
-lie inside the string.
+$a + k$, so $p = a$ and $w = k + 1$. The same rules apply with $n = |s|$: $a + k$
+is clamped to $n - 1$, and $a \ge n$ gives the point $p = n$, $w = 1$.
 
 ## Where the model is wrong
 
@@ -51,7 +53,6 @@ other:
 | Surrogate pairs | positions are code units, so an odd offset splits a character | [#7](https://github.com/moonbit-community/err_marker/issues/7) |
 | Tabs inside the span | a tab gets one marker character although it moves to the next tab stop; tabs before the span are copied into the padding and no longer shift the marker | [#8](https://github.com/moonbit-community/err_marker/issues/8) |
 | Newlines | the marker is counted from the start of the text, not of its line | [#9](https://github.com/moonbit-community/err_marker/issues/9) |
-| Spans past the end | arrays draw past the text, strings draw nothing | [#10](https://github.com/moonbit-community/err_marker/issues/10) |
 | Separators inside elements, empty elements | the joined text cannot be split back into elements | [#11](https://github.com/moonbit-community/err_marker/issues/11) |
 
 ## The model in 0.2.0
