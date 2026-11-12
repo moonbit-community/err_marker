@@ -6,6 +6,17 @@ This is a visualizing tool that locates the source of errors within sequences an
 
 这是一个用于在序列中定位错误来源的可视化工具，并输出格式化结果，旨在帮助用户和开发者快速识别引发错误的输入内容。
 
+## 📖 Manual 手册
+
+The manual (API, tutorial and design, in English, 简体中文 and 日本語) is in
+[`doc/manual`](doc/manual/index.md); translations live in `doc/locale`. The
+roadmap to 0.2.0 is tracked in
+[#5](https://github.com/moonbit-community/err_marker/issues/5).
+
+手册（API、教程、设计；英文、简体中文、日本語）位于
+[`doc/manual`](doc/manual/index.md)，译文在 `doc/locale`。0.2.0 的路线图见
+[#5](https://github.com/moonbit-community/err_marker/issues/5)。
+
 ## 📦 Public API 公共API
 
 ### 🧬 Type Definitions 类型定义
