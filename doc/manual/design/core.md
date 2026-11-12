@@ -1,10 +1,10 @@
 # core design
 
-This page explains the model behind `err_marker` 0.1, how the marker line is
-computed, and where that model is wrong. The 0.2.0 model that replaces it is
-specified in [#5](https://github.com/moonbit-community/err_marker/issues/5).
+This page states the contract that 0.2.0 renders by, after recording the 0.1
+model it replaces and where that model went wrong. The decisions are tracked
+in [#5](https://github.com/moonbit-community/err_marker/issues/5).
 
-## The model
+## The 0.1 model
 
 A report has three lines: the rendered sequence $s$, a marker line, and the
 message. The marker line is $p$ padding characters followed by $w$ marker
@@ -54,9 +54,12 @@ the start of the span begins. The padding then covers code units $\ell$ to
 $p - 1$ only, the marker line is printed right after that line, and $w$ stops
 at the end of the line.
 
-## Where the model is wrong
+## Where the 0.1 model was wrong
 
-The formulas measure length, but the reader sees columns. The two agree only
+The 0.1.4 release fixed tabs before the span, ranges, newlines, quoting and
+split surrogate pairs within this model. What remained needs the contract
+below, which 0.2.0 implements; `ErrorData::mark` now renders by it too. The
+formulas measure length, but the reader sees columns. The two agree only
 when every code unit takes exactly one terminal column. Each known bug is a
 case where they disagree, or where the two sequence kinds disagree with each
 other:

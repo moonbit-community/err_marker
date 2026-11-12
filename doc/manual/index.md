@@ -2,32 +2,31 @@
 
 <!-- Overview page. Keep this order: one line naming the documented release, Overview, Install, Pages, the exported items grouped by purpose, Where to read next, Validation. Details belong on the package pages. -->
 
-This manual documents version `v0.1.3` of `KCN-judu/err_marker`.
+This manual documents version `v0.2.0` of `KCN-judu/err_marker`.
 
 ## Overview
 
 `err_marker` shows a reader where an error is. It renders a sequence (the
-command-line arguments of a program, a list of tokens, or a string), draws a
-line of markers under the part that is wrong, and prints a message below:
+command-line arguments of a program, a list of tokens, or a string), draws
+markers under the places that are wrong, and prints messages and a header:
 
 ```text
 sudoku export a.txt sovle out.txt
-                    ^^^^^
-Error(ArgError): unknown mode 'sovle'
+                    ^^^^^ did you mean 'solve'?
+error[E01]: unknown mode 'sovle'
 ```
 
-The library is one package with two types and four functions. It does not
-read files, track line numbers or colour its output; it turns a sequence, a
-position and a message into three lines of text.
-
-The 0.1 series has known limits with non-ASCII text; they are listed in the [design](design/core.md) and
-tracked for 0.2.0 in
-[#5](https://github.com/moonbit-community/err_marker/issues/5).
+A `Report` holds a severity, a message, marks and notes; `Report::render`
+turns it and a sequence into text. Columns follow Unicode 18.0.0, so wide
+characters, emoji and combining marks line up, and tabs are expanded. The
+`cursor` package exposes the column arithmetic, and the `error_report`
+package converts reports for `marianoguerra/error-report`. The 0.1 API,
+`ErrorData::mark`, is deprecated.
 
 ## Install
 
 ```bash
-moon add KCN-judu/err_marker@0.1.3
+moon add KCN-judu/err_marker@0.2.0
 ```
 
 Then import `"KCN-judu/err_marker"` in your `moon.pkg`; the package is
@@ -43,18 +42,17 @@ documented as `error_report`.
 
 | Part | Tutorial | API | Design |
 | --- | --- | --- | --- |
-| `core`: sequences, error data and marking | [tutorial](tutorial/core.md) | [API](api/core.md) | [design](design/core.md) |
+| `core`: sequences, reports and rendering | [tutorial](tutorial/core.md) | [API](api/core.md) | [design](design/core.md) |
 | `cursor`: terminal columns of text (Unicode 18.0.0) | [tutorial](tutorial/cursor.md) | [API](api/cursor.md) | [design](design/cursor.md) |
 | `error_report`: conversion to `marianoguerra/error-report` | [tutorial](tutorial/error_report.md) | [API](api/error_report.md) | [design](design/error_report.md) |
 
 ## Exported items
 
 - Sequences: `Sequence`, `Sequence::from_array`, `Sequence::from_string`
-- Error data: `ErrorData`, `ErrorData::make`
-- Rendering: `ErrorData::mark`
-- Reports (0.2.0): `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `Sequence::rendered`, `Sequence::locate`, `utf16_to_scalar`
+- Reports: `Severity`, `Style`, `Span`, `Mark`, `Report`, `Report::render`, `Sequence::from_args`, `Sequence::rendered`, `Sequence::locate`, `utf16_to_scalar`
 - Cursor (`@cursor`): `Pos`, `Move`, `Model`, `clusters`
 - Adapter (`@error_report`): `to_error_report`
+- Deprecated: `ErrorData`, `ErrorData::make`, `ErrorData::mark`
 
 ## Where to read next
 
